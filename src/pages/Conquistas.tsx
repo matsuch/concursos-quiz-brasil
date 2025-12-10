@@ -230,32 +230,32 @@ const Conquistas = () => {
         </div>
 
         {/* Overall Progress */}
-        <div className="bg-card rounded-2xl p-6 border border-border mb-8 max-w-2xl mx-auto">
+        <div className="bg-card rounded-2xl p-4 sm:p-6 border border-border mb-6 sm:mb-8 max-w-2xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="font-bold text-lg">Progresso Geral</h2>
-              <p className="text-sm text-muted-foreground">
-                {unlockedBadges} de {totalBadges} conquistas desbloqueadas
+              <h2 className="font-bold text-base sm:text-lg">Progresso Geral</h2>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                {unlockedBadges} de {totalBadges} desbloqueadas
               </p>
             </div>
             <div className="text-right">
-              <span className="text-3xl font-bold text-primary">
+              <span className="text-2xl sm:text-3xl font-bold text-primary">
                 {Math.round(overallProgress)}%
               </span>
             </div>
           </div>
-          <Progress value={overallProgress} className="h-3" />
+          <Progress value={overallProgress} className="h-2 sm:h-3" />
 
           {/* Stats */}
-          <div className="grid grid-cols-4 gap-4 mt-6">
+          <div className="grid grid-cols-4 gap-2 sm:gap-4 mt-4 sm:mt-6">
             {categories.slice(1).map((cat) => {
               const catBadges = badges.filter((b) => b.category === cat.id);
               const catUnlocked = catBadges.filter((b) => b.unlocked).length;
               return (
                 <div key={cat.id} className="text-center">
-                  <cat.icon className="w-5 h-5 mx-auto text-muted-foreground mb-1" />
-                  <p className="text-xs text-muted-foreground">{cat.label}</p>
-                  <p className="font-bold text-sm">
+                  <cat.icon className="w-4 h-4 sm:w-5 sm:h-5 mx-auto text-muted-foreground mb-1" />
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">{cat.label}</p>
+                  <p className="font-bold text-xs sm:text-sm">
                     {catUnlocked}/{catBadges.length}
                   </p>
                 </div>
@@ -272,16 +272,16 @@ const Conquistas = () => {
           if (categoryBadges.length === 0) return null;
 
           return (
-            <section key={category.id} className="mb-8">
-              <div className="flex items-center gap-2 mb-4">
-                <category.icon className="w-5 h-5 text-primary" />
-                <h2 className="text-xl font-bold">{category.label}</h2>
-                <span className="text-sm text-muted-foreground">
+            <section key={category.id} className="mb-6 sm:mb-8">
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                <category.icon className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                <h2 className="text-lg sm:text-xl font-bold">{category.label}</h2>
+                <span className="text-xs sm:text-sm text-muted-foreground">
                   ({categoryBadges.filter((b) => b.unlocked).length}/
                   {categoryBadges.length})
                 </span>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {categoryBadges.map((badge) => (
                   <BadgeCard
                     key={badge.id}
