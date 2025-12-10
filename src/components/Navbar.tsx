@@ -1,5 +1,5 @@
 import { NavLink } from "@/components/NavLink";
-import { Trophy, Brain, Swords, Home, BookOpen } from "lucide-react";
+import { Trophy, Brain, Swords, Home, BookOpen, Award } from "lucide-react";
 
 const Navbar = () => {
   return (
@@ -47,6 +47,14 @@ const Navbar = () => {
             >
               <BookOpen className="w-4 h-4" />
               Estudo
+            </NavLink>
+            <NavLink
+              to="/conquistas"
+              className="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center gap-2"
+              activeClassName="!text-primary !bg-primary/10"
+            >
+              <Award className="w-4 h-4" />
+              Conquistas
             </NavLink>
             <NavLink
               to="/ranking"
