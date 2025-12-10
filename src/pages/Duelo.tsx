@@ -115,34 +115,34 @@ const Duelo = () => {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="container mx-auto px-4 py-20">
+        <div className="container mx-auto px-4 py-10 sm:py-20">
           <div className="max-w-2xl mx-auto text-center">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center mx-auto mb-6">
-              <Swords className="w-12 h-12 text-white" />
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center mx-auto mb-4 sm:mb-6">
+              <Swords className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
             </div>
-            <h1 className="text-4xl font-bold mb-4">Modo Duelo</h1>
-            <p className="text-xl text-muted-foreground mb-8">
+            <h1 className="text-2xl sm:text-4xl font-bold mb-3 sm:mb-4">Modo Duelo</h1>
+            <p className="text-base sm:text-xl text-muted-foreground mb-6 sm:mb-8 px-2">
               Desafie outro jogador em uma batalha de conhecimento! Serão 5 questões com 15 segundos cada.
             </p>
-            <Card className="p-8 mb-8">
-              <div className="grid grid-cols-2 gap-8">
+            <Card className="p-4 sm:p-8 mb-6 sm:mb-8">
+              <div className="grid grid-cols-2 gap-4 sm:gap-8">
                 <div className="text-center">
-                  <Avatar className="w-20 h-20 mx-auto mb-3 bg-primary/10">
-                    <AvatarFallback className="text-primary text-2xl font-bold">P1</AvatarFallback>
+                  <Avatar className="w-14 h-14 sm:w-20 sm:h-20 mx-auto mb-2 sm:mb-3 bg-primary/10">
+                    <AvatarFallback className="text-primary text-lg sm:text-2xl font-bold">P1</AvatarFallback>
                   </Avatar>
-                  <p className="font-semibold">Jogador 1</p>
-                  <p className="text-sm text-muted-foreground">Você</p>
+                  <p className="font-semibold text-sm sm:text-base">Jogador 1</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Você</p>
                 </div>
                 <div className="text-center">
-                  <Avatar className="w-20 h-20 mx-auto mb-3 bg-secondary/10">
-                    <AvatarFallback className="text-secondary text-2xl font-bold">P2</AvatarFallback>
+                  <Avatar className="w-14 h-14 sm:w-20 sm:h-20 mx-auto mb-2 sm:mb-3 bg-secondary/10">
+                    <AvatarFallback className="text-secondary text-lg sm:text-2xl font-bold">P2</AvatarFallback>
                   </Avatar>
-                  <p className="font-semibold">Jogador 2</p>
-                  <p className="text-sm text-muted-foreground">Oponente</p>
+                  <p className="font-semibold text-sm sm:text-base">Jogador 2</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Oponente</p>
                 </div>
               </div>
             </Card>
-            <Button size="lg" onClick={startDuelo} className="bg-gradient-to-r from-primary to-secondary">
+            <Button size="lg" onClick={startDuelo} className="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary">
               <Swords className="w-5 h-5 mr-2" />
               Iniciar Duelo
             </Button>
@@ -212,23 +212,23 @@ const Duelo = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-4 sm:py-8">
         <div className="max-w-6xl mx-auto">
           {/* Header with scores and timer */}
-          <div className="flex justify-between items-center mb-8">
-            <Card className="p-4 flex items-center gap-4">
-              <Avatar className="w-12 h-12 bg-primary/10">
-                <AvatarFallback className="text-primary font-bold">P1</AvatarFallback>
+          <div className="flex justify-between items-center gap-2 sm:gap-4 mb-6 sm:mb-8">
+            <Card className="p-2 sm:p-4 flex items-center gap-2 sm:gap-4">
+              <Avatar className="w-8 h-8 sm:w-12 sm:h-12 bg-primary/10">
+                <AvatarFallback className="text-primary font-bold text-sm sm:text-base">P1</AvatarFallback>
               </Avatar>
               <div>
-                <p className="text-sm text-muted-foreground">Jogador 1</p>
-                <p className="text-2xl font-bold text-primary">{player1Score}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">Jogador 1</p>
+                <p className="text-lg sm:text-2xl font-bold text-primary">{player1Score}</p>
               </div>
             </Card>
 
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground mb-2">
-                Questão {currentQuestion + 1} de 5
+            <div className="text-center flex-1">
+              <p className="text-xs sm:text-sm text-muted-foreground mb-1 sm:mb-2">
+                {currentQuestion + 1}/5
               </p>
               <QuizTimer 
                 duration={15} 
@@ -237,20 +237,20 @@ const Duelo = () => {
               />
             </div>
 
-            <Card className="p-4 flex items-center gap-4">
+            <Card className="p-2 sm:p-4 flex items-center gap-2 sm:gap-4">
               <div className="text-right">
-                <p className="text-sm text-muted-foreground">Jogador 2</p>
-                <p className="text-2xl font-bold text-secondary">{player2Score}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">Jogador 2</p>
+                <p className="text-lg sm:text-2xl font-bold text-secondary">{player2Score}</p>
               </div>
-              <Avatar className="w-12 h-12 bg-secondary/10">
-                <AvatarFallback className="text-secondary font-bold">P2</AvatarFallback>
+              <Avatar className="w-8 h-8 sm:w-12 sm:h-12 bg-secondary/10">
+                <AvatarFallback className="text-secondary font-bold text-sm sm:text-base">P2</AvatarFallback>
               </Avatar>
             </Card>
           </div>
 
           {/* Question */}
-          <Card className="p-8 mb-6">
-            <h2 className="text-2xl font-bold text-center mb-8">{question.question}</h2>
+          <Card className="p-4 sm:p-8 mb-4 sm:mb-6">
+            <h2 className="text-base sm:text-2xl font-bold text-center">{question.question}</h2>
           </Card>
 
           {/* Answers Grid */}

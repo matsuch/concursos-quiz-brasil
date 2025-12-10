@@ -51,20 +51,20 @@ const Home = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-secondary/5 to-background py-20">
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-secondary/5 to-background py-12 sm:py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent leading-tight">
               Conquiste sua aprovação em concursos públicos
             </h1>
-            <p className="text-xl text-muted-foreground mb-8">
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8 px-2">
               Treine com quizzes interativos, desafie outros candidatos em duelos e acompanhe os melhores concursos do Brasil
             </p>
-            <div className="flex gap-4 justify-center flex-wrap">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
               <Button 
                 size="lg" 
                 onClick={() => navigate("/quiz")}
-                className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg"
+                className="w-full sm:w-auto bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg"
               >
                 <Brain className="w-5 h-5 mr-2" />
                 Começar Quiz
@@ -73,6 +73,7 @@ const Home = () => {
                 size="lg" 
                 variant="outline"
                 onClick={() => navigate("/duelo")}
+                className="w-full sm:w-auto"
               >
                 <Swords className="w-5 h-5 mr-2" />
                 Modo Duelo
@@ -83,45 +84,43 @@ const Home = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-12 border-b border-border">
+      <section className="py-8 sm:py-12 border-b border-border">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-3 gap-4 sm:gap-8">
             <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <Trophy className="w-8 h-8 text-primary" />
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2 sm:mb-4">
+                <Trophy className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
               </div>
-              <div className="text-3xl font-bold text-foreground mb-2">2.879</div>
-              <div className="text-sm text-muted-foreground">Concursos cadastrados</div>
+              <div className="text-xl sm:text-3xl font-bold text-foreground mb-1 sm:mb-2">2.879</div>
+              <div className="text-xs sm:text-sm text-muted-foreground">Concursos</div>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-4">
-                <Brain className="w-8 h-8 text-secondary" />
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-2 sm:mb-4">
+                <Brain className="w-6 h-6 sm:w-8 sm:h-8 text-secondary" />
               </div>
-              <div className="text-3xl font-bold text-foreground mb-2">15.420</div>
-              <div className="text-sm text-muted-foreground">Questões disponíveis</div>
+              <div className="text-xl sm:text-3xl font-bold text-foreground mb-1 sm:mb-2">15.420</div>
+              <div className="text-xs sm:text-sm text-muted-foreground">Questões</div>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4">
-                <TrendingUp className="w-8 h-8 text-accent-foreground" />
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-2 sm:mb-4">
+                <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-accent-foreground" />
               </div>
-              <div className="text-3xl font-bold text-foreground mb-2">89%</div>
-              <div className="text-sm text-muted-foreground">Taxa de aprovação</div>
+              <div className="text-xl sm:text-3xl font-bold text-foreground mb-1 sm:mb-2">89%</div>
+              <div className="text-xs sm:text-sm text-muted-foreground">Aprovação</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Concursos Section */}
-      <section className="py-16">
+      <section className="py-10 sm:py-16">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-3xl font-bold text-foreground mb-2">Novos Concursos</h2>
-              <p className="text-muted-foreground">Fique por dentro das últimas oportunidades</p>
-            </div>
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Novos Concursos</h2>
+            <p className="text-sm sm:text-base text-muted-foreground">Fique por dentro das últimas oportunidades</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {mockConcursos.map((concurso, index) => (
               <ConcursoCard key={index} {...concurso} />
             ))}

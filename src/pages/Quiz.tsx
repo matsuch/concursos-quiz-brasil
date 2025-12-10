@@ -93,41 +93,41 @@ const Quiz = () => {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="container mx-auto px-4 py-20">
+        <div className="container mx-auto px-4 py-10 sm:py-20">
           <div className="max-w-2xl mx-auto text-center">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center mx-auto mb-6">
-              <Play className="w-12 h-12 text-white" />
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center mx-auto mb-4 sm:mb-6">
+              <Play className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
             </div>
-            <h1 className="text-4xl font-bold mb-4">Quiz de Concursos</h1>
-            <p className="text-xl text-muted-foreground mb-8">
+            <h1 className="text-2xl sm:text-4xl font-bold mb-3 sm:mb-4">Quiz de Concursos</h1>
+            <p className="text-base sm:text-xl text-muted-foreground mb-6 sm:mb-8 px-2">
               Teste seus conhecimentos com questões de concursos públicos. Você tem 15 segundos para responder cada pergunta!
             </p>
-            <Card className="p-8 mb-8">
+            <Card className="p-5 sm:p-8 mb-6 sm:mb-8">
               <div className="space-y-4 text-left">
                 <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-success mt-0.5" />
+                  <CheckCircle2 className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-semibold">15 segundos por questão</p>
-                    <p className="text-sm text-muted-foreground">Responda rápido para ganhar mais pontos</p>
+                    <p className="font-semibold text-sm sm:text-base">15 segundos por questão</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Responda rápido para ganhar mais pontos</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-success mt-0.5" />
+                  <CheckCircle2 className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-semibold">Feedback imediato</p>
-                    <p className="text-sm text-muted-foreground">Veja se acertou ou errou na hora</p>
+                    <p className="font-semibold text-sm sm:text-base">Feedback imediato</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Veja se acertou ou errou na hora</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-success mt-0.5" />
+                  <CheckCircle2 className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-semibold">Ranking competitivo</p>
-                    <p className="text-sm text-muted-foreground">Compare seu desempenho com outros usuários</p>
+                    <p className="font-semibold text-sm sm:text-base">Ranking competitivo</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Compare seu desempenho com outros usuários</p>
                   </div>
                 </div>
               </div>
             </Card>
-            <Button size="lg" onClick={startQuiz} className="bg-gradient-to-r from-primary to-secondary">
+            <Button size="lg" onClick={startQuiz} className="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary">
               <Play className="w-5 h-5 mr-2" />
               Começar Quiz
             </Button>
@@ -179,14 +179,14 @@ const Quiz = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-6 sm:py-12">
         <div className="max-w-3xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <div>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
+            <div className="w-full sm:w-auto">
               <p className="text-sm text-muted-foreground mb-1">
                 Questão {currentQuestion + 1} de {mockQuestions.length}
               </p>
-              <div className="w-64 h-2 bg-muted rounded-full overflow-hidden">
+              <div className="w-full sm:w-64 h-2 bg-muted rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-gradient-to-r from-primary to-secondary transition-all duration-300"
                   style={{ width: `${((currentQuestion + 1) / mockQuestions.length) * 100}%` }}
@@ -200,8 +200,8 @@ const Quiz = () => {
             />
           </div>
 
-          <Card className="p-8 mb-6">
-            <h2 className="text-2xl font-bold mb-8">{question.question}</h2>
+          <Card className="p-4 sm:p-8 mb-6">
+            <h2 className="text-lg sm:text-2xl font-bold mb-6 sm:mb-8">{question.question}</h2>
             <div className="space-y-3">
               {question.options.map((option, index) => {
                 const isCorrect = index === question.correctAnswer;
@@ -213,7 +213,7 @@ const Quiz = () => {
                     onClick={() => handleAnswer(index)}
                     disabled={answered}
                     className={cn(
-                      "w-full p-4 rounded-lg text-left transition-all duration-200 border-2",
+                      "w-full p-3 sm:p-4 rounded-lg text-left transition-all duration-200 border-2",
                       !answered && "hover:border-primary hover:bg-primary/5",
                       !answered && "border-border bg-card",
                       answered && isCorrect && "border-success bg-success/10",
@@ -221,10 +221,10 @@ const Quiz = () => {
                       answered && !isSelected && !isCorrect && "border-border bg-muted opacity-50"
                     )}
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">{option}</span>
-                      {answered && isCorrect && <CheckCircle2 className="w-5 h-5 text-success" />}
-                      {answered && isSelected && !isCorrect && <XCircle className="w-5 h-5 text-destructive" />}
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-medium text-sm sm:text-base">{option}</span>
+                      {answered && isCorrect && <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />}
+                      {answered && isSelected && !isCorrect && <XCircle className="w-5 h-5 text-destructive flex-shrink-0" />}
                     </div>
                   </button>
                 );
