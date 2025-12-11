@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { NavLink } from "@/components/NavLink";
-import { Trophy, Brain, Swords, Home, BookOpen, Award, Menu, X } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { Trophy, Brain, Swords, Home, BookOpen, Award, Menu, LogIn, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useNavigate } from "react-router-dom";
 
 const navItems = [
   { to: "/", icon: Home, label: "Início" },
@@ -15,6 +17,16 @@ const navItems = [
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleAuthClick = async () => {
+    if (user) {
+      await signOut();
+    } else {
+      navigate("/auth");
+    }
+  };
 
   return (
     <nav className="sticky top-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border">
@@ -30,7 +42,7 @@ const Navbar = () => {
           </div>
           
           {/* Desktop Navigation */}
-          <div className="hidden md:flex gap-1">
+          <div className="hidden md:flex items-center gap-1">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
@@ -42,6 +54,25 @@ const Navbar = () => {
                 <span className="hidden lg:inline">{item.label}</span>
               </NavLink>
             ))}
+            
+            <Button 
+              variant={user ? "ghost" : "default"}
+              size="sm"
+              onClick={handleAuthClick}
+              className="ml-2"
+            >
+              {user ? (
+                <>
+                  <LogOut className="w-4 h-4 mr-2" />
+                  <span className="hidden lg:inline">Sair</span>
+                </>
+              ) : (
+                <>
+                  <LogIn className="w-4 h-4 mr-2" />
+                  <span className="hidden lg:inline">Entrar</span>
+                </>
+              )}
+            </Button>
           </div>
 
           {/* Mobile Navigation */}
@@ -61,6 +92,16 @@ const Navbar = () => {
                     Concursos Brasil
                   </span>
                 </div>
+                
+                {user && (
+                  <div className="px-4 py-3 border-b border-border bg-muted/50">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <User className="w-4 h-4" />
+                      <span className="truncate">{user.email}</span>
+                    </div>
+                  </div>
+                )}
+                
                 <nav className="flex-1 p-4 space-y-2">
                   {navItems.map((item) => (
                     <NavLink
@@ -75,6 +116,29 @@ const Navbar = () => {
                     </NavLink>
                   ))}
                 </nav>
+                
+                <div className="p-4 border-t border-border">
+                  <Button 
+                    variant={user ? "outline" : "default"}
+                    className="w-full"
+                    onClick={() => {
+                      setOpen(false);
+                      handleAuthClick();
+                    }}
+                  >
+                    {user ? (
+                      <>
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Sair
+                      </>
+                    ) : (
+                      <>
+                        <LogIn className="w-4 h-4 mr-2" />
+                        Entrar
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
             </SheetContent>
           </Sheet>
