@@ -14,7 +14,319 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      badges: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          name: string
+          rarity: string | null
+          requirement_type: string
+          requirement_value: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          icon: string
+          id?: string
+          name: string
+          rarity?: string | null
+          requirement_type: string
+          requirement_value: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          name?: string
+          rarity?: string | null
+          requirement_type?: string
+          requirement_value?: number
+        }
+        Relationships: []
+      }
+      duel_questions: {
+        Row: {
+          duel_id: string
+          id: string
+          question_id: string
+          question_order: number
+        }
+        Insert: {
+          duel_id: string
+          id?: string
+          question_id: string
+          question_order: number
+        }
+        Update: {
+          duel_id?: string
+          id?: string
+          question_id?: string
+          question_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "duel_questions_duel_id_fkey"
+            columns: ["duel_id"]
+            isOneToOne: false
+            referencedRelation: "duels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "duel_questions_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      duels: {
+        Row: {
+          created_at: string
+          finished_at: string | null
+          id: string
+          player1_id: string
+          player1_score: number | null
+          player2_id: string | null
+          player2_score: number | null
+          status: string | null
+          subject: string
+          winner_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          finished_at?: string | null
+          id?: string
+          player1_id: string
+          player1_score?: number | null
+          player2_id?: string | null
+          player2_score?: number | null
+          status?: string | null
+          subject: string
+          winner_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          finished_at?: string | null
+          id?: string
+          player1_id?: string
+          player1_score?: number | null
+          player2_id?: string | null
+          player2_score?: number | null
+          status?: string | null
+          subject?: string
+          winner_id?: string | null
+        }
+        Relationships: []
+      }
+      flashcard_progress: {
+        Row: {
+          flashcard_id: string
+          id: string
+          last_reviewed_at: string
+          times_reviewed: number | null
+          user_id: string
+        }
+        Insert: {
+          flashcard_id: string
+          id?: string
+          last_reviewed_at?: string
+          times_reviewed?: number | null
+          user_id: string
+        }
+        Update: {
+          flashcard_id?: string
+          id?: string
+          last_reviewed_at?: string
+          times_reviewed?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flashcard_progress_flashcard_id_fkey"
+            columns: ["flashcard_id"]
+            isOneToOne: false
+            referencedRelation: "flashcards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      flashcards: {
+        Row: {
+          back_content: string
+          created_at: string
+          created_by: string | null
+          front_content: string
+          id: string
+          is_official: boolean | null
+          subject: string
+        }
+        Insert: {
+          back_content: string
+          created_at?: string
+          created_by?: string | null
+          front_content: string
+          id?: string
+          is_official?: boolean | null
+          subject: string
+        }
+        Update: {
+          back_content?: string
+          created_at?: string
+          created_by?: string | null
+          front_content?: string
+          id?: string
+          is_official?: boolean | null
+          subject?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          duels_played: number | null
+          duels_won: number | null
+          flashcards_studied: number | null
+          id: string
+          quizzes_completed: number | null
+          total_points: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          duels_played?: number | null
+          duels_won?: number | null
+          flashcards_studied?: number | null
+          id?: string
+          quizzes_completed?: number | null
+          total_points?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          duels_played?: number | null
+          duels_won?: number | null
+          flashcards_studied?: number | null
+          id?: string
+          quizzes_completed?: number | null
+          total_points?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      questions: {
+        Row: {
+          correct_answer: number
+          created_at: string
+          created_by: string | null
+          difficulty: string | null
+          id: string
+          is_official: boolean | null
+          options: Json
+          question: string
+          subject: string
+        }
+        Insert: {
+          correct_answer: number
+          created_at?: string
+          created_by?: string | null
+          difficulty?: string | null
+          id?: string
+          is_official?: boolean | null
+          options: Json
+          question: string
+          subject: string
+        }
+        Update: {
+          correct_answer?: number
+          created_at?: string
+          created_by?: string | null
+          difficulty?: string | null
+          id?: string
+          is_official?: boolean | null
+          options?: Json
+          question?: string
+          subject?: string
+        }
+        Relationships: []
+      }
+      quiz_attempts: {
+        Row: {
+          correct_answers: number
+          created_at: string
+          id: string
+          points_earned: number
+          subject: string
+          time_spent_seconds: number | null
+          total_questions: number
+          user_id: string
+        }
+        Insert: {
+          correct_answers: number
+          created_at?: string
+          id?: string
+          points_earned: number
+          subject: string
+          time_spent_seconds?: number | null
+          total_questions: number
+          user_id: string
+        }
+        Update: {
+          correct_answers?: number
+          created_at?: string
+          id?: string
+          points_earned?: number
+          subject?: string
+          time_spent_seconds?: number | null
+          total_questions?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_badges: {
+        Row: {
+          badge_id: string
+          id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          badge_id: string
+          id?: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          badge_id?: string
+          id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
