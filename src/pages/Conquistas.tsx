@@ -1,6 +1,10 @@
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/Navbar";
 import BadgeCard from "@/components/BadgeCard";
 import { Progress } from "@/components/ui/progress";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import {
   Award,
   BookOpen,
@@ -17,182 +21,27 @@ import {
   Timer,
   Trophy,
   Zap,
+  LucideIcon,
+  Loader2,
 } from "lucide-react";
 
-const badges = [
-  // Quiz badges
-  {
-    id: 1,
-    icon: Brain,
-    name: "Primeiro Passo",
-    description: "Complete seu primeiro quiz",
-    progress: 1,
-    maxProgress: 1,
-    unlocked: true,
-    rarity: "comum" as const,
-    category: "quiz",
-  },
-  {
-    id: 2,
-    icon: Target,
-    name: "Precisão Cirúrgica",
-    description: "Acerte 10 questões seguidas",
-    progress: 7,
-    maxProgress: 10,
-    unlocked: false,
-    rarity: "raro" as const,
-    category: "quiz",
-  },
-  {
-    id: 3,
-    icon: Zap,
-    name: "Velocista",
-    description: "Responda 5 questões em menos de 5 segundos cada",
-    progress: 3,
-    maxProgress: 5,
-    unlocked: false,
-    rarity: "epico" as const,
-    category: "quiz",
-  },
-  {
-    id: 4,
-    icon: Crown,
-    name: "Mestre dos Quizzes",
-    description: "Complete 100 quizzes com 80% ou mais de acerto",
-    progress: 12,
-    maxProgress: 100,
-    unlocked: false,
-    rarity: "lendario" as const,
-    category: "quiz",
-  },
-  {
-    id: 5,
-    icon: Star,
-    name: "Nota Máxima",
-    description: "Acerte todas as questões de um quiz",
-    progress: 1,
-    maxProgress: 1,
-    unlocked: true,
-    rarity: "raro" as const,
-    category: "quiz",
-  },
-
-  // Duelo badges
-  {
-    id: 6,
-    icon: Swords,
-    name: "Primeiro Duelo",
-    description: "Participe do seu primeiro duelo",
-    progress: 1,
-    maxProgress: 1,
-    unlocked: true,
-    rarity: "comum" as const,
-    category: "duelo",
-  },
-  {
-    id: 7,
-    icon: Medal,
-    name: "Invicto",
-    description: "Vença 5 duelos seguidos",
-    progress: 2,
-    maxProgress: 5,
-    unlocked: false,
-    rarity: "epico" as const,
-    category: "duelo",
-  },
-  {
-    id: 8,
-    icon: Trophy,
-    name: "Campeão Supremo",
-    description: "Vença 50 duelos",
-    progress: 8,
-    maxProgress: 50,
-    unlocked: false,
-    rarity: "lendario" as const,
-    category: "duelo",
-  },
-  {
-    id: 9,
-    icon: Timer,
-    name: "Resposta Relâmpago",
-    description: "Vença um duelo respondendo todas em menos de 3 segundos",
-    progress: 0,
-    maxProgress: 1,
-    unlocked: false,
-    rarity: "lendario" as const,
-    category: "duelo",
-  },
-
-  // Estudo badges
-  {
-    id: 10,
-    icon: BookOpen,
-    name: "Estudante Dedicado",
-    description: "Estude 10 flashcards",
-    progress: 10,
-    maxProgress: 10,
-    unlocked: true,
-    rarity: "comum" as const,
-    category: "estudo",
-  },
-  {
-    id: 11,
-    icon: Lightbulb,
-    name: "Mente Brilhante",
-    description: "Complete todos os flashcards de uma matéria",
-    progress: 1,
-    maxProgress: 1,
-    unlocked: true,
-    rarity: "raro" as const,
-    category: "estudo",
-  },
-  {
-    id: 12,
-    icon: GraduationCap,
-    name: "Especialista",
-    description: "Complete todos os flashcards de todas as matérias",
-    progress: 2,
-    maxProgress: 5,
-    unlocked: false,
-    rarity: "epico" as const,
-    category: "estudo",
-  },
-  {
-    id: 13,
-    icon: Rocket,
-    name: "Maratonista",
-    description: "Estude por 7 dias seguidos",
-    progress: 3,
-    maxProgress: 7,
-    unlocked: false,
-    rarity: "epico" as const,
-    category: "estudo",
-  },
-
-  // General badges
-  {
-    id: 14,
-    icon: Flame,
-    name: "Em Chamas",
-    description: "Mantenha uma sequência de 30 dias ativos",
-    progress: 5,
-    maxProgress: 30,
-    unlocked: false,
-    rarity: "lendario" as const,
-    category: "geral",
-  },
-  {
-    id: 15,
-    icon: Award,
-    name: "Top 10",
-    description: "Alcance o top 10 no ranking geral",
-    progress: 0,
-    maxProgress: 1,
-    unlocked: false,
-    rarity: "epico" as const,
-    category: "geral",
-  },
-];
+const iconMap: Record<string, LucideIcon> = {
+  brain: Brain,
+  target: Target,
+  zap: Zap,
+  crown: Crown,
+  star: Star,
+  swords: Swords,
+  medal: Medal,
+  trophy: Trophy,
+  timer: Timer,
+  bookopen: BookOpen,
+  lightbulb: Lightbulb,
+  graduationcap: GraduationCap,
+  rocket: Rocket,
+  flame: Flame,
+  award: Award,
+};
 
 const categories = [
   { id: "todas", label: "Todas", icon: Award },
@@ -202,10 +51,118 @@ const categories = [
   { id: "geral", label: "Geral", icon: Star },
 ];
 
+interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  category: string;
+  rarity: string;
+  requirement_type: string;
+  requirement_value: number;
+}
+
+interface UserBadge {
+  badge_id: string;
+  unlocked_at: string;
+}
+
+interface ProfileStats {
+  quizzes_completed: number;
+  duels_won: number;
+  duels_played: number;
+  flashcards_studied: number;
+  total_points: number;
+}
+
 const Conquistas = () => {
-  const unlockedBadges = badges.filter((b) => b.unlocked).length;
-  const totalBadges = badges.length;
-  const overallProgress = (unlockedBadges / totalBadges) * 100;
+  const { user } = useAuth();
+
+  const { data: badges = [], isLoading: loadingBadges } = useQuery({
+    queryKey: ["badges"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("badges")
+        .select("*")
+        .order("category", { ascending: true });
+      if (error) throw error;
+      return data as Badge[];
+    },
+  });
+
+  const { data: userBadges = [], isLoading: loadingUserBadges } = useQuery({
+    queryKey: ["user_badges", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      const { data, error } = await supabase
+        .from("user_badges")
+        .select("badge_id, unlocked_at")
+        .eq("user_id", user.id);
+      if (error) throw error;
+      return data as UserBadge[];
+    },
+    enabled: !!user?.id,
+  });
+
+  const { data: profileStats } = useQuery({
+    queryKey: ["profile_stats", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("quizzes_completed, duels_won, duels_played, flashcards_studied, total_points")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (error) throw error;
+      return data as ProfileStats | null;
+    },
+    enabled: !!user?.id,
+  });
+
+  const unlockedBadgeIds = new Set(userBadges.map((ub) => ub.badge_id));
+
+  const getProgressForBadge = (badge: Badge): number => {
+    if (!profileStats) return 0;
+    switch (badge.requirement_type) {
+      case "quizzes_completed":
+        return Math.min(profileStats.quizzes_completed || 0, badge.requirement_value);
+      case "duels_won":
+        return Math.min(profileStats.duels_won || 0, badge.requirement_value);
+      case "duels_played":
+        return Math.min(profileStats.duels_played || 0, badge.requirement_value);
+      case "flashcards_studied":
+        return Math.min(profileStats.flashcards_studied || 0, badge.requirement_value);
+      case "total_points":
+        return Math.min(profileStats.total_points || 0, badge.requirement_value);
+      default:
+        return 0;
+    }
+  };
+
+  const badgesWithProgress = badges.map((badge) => ({
+    ...badge,
+    unlocked: unlockedBadgeIds.has(badge.id),
+    progress: getProgressForBadge(badge),
+    maxProgress: badge.requirement_value,
+    IconComponent: iconMap[badge.icon.toLowerCase()] || Award,
+  }));
+
+  const unlockedCount = badgesWithProgress.filter((b) => b.unlocked).length;
+  const totalBadges = badgesWithProgress.length;
+  const overallProgress = totalBadges > 0 ? (unlockedCount / totalBadges) * 100 : 0;
+
+  const isLoading = loadingBadges || loadingUserBadges;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="flex items-center justify-center h-[60vh]">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -235,7 +192,7 @@ const Conquistas = () => {
             <div>
               <h2 className="font-bold text-base sm:text-lg">Progresso Geral</h2>
               <p className="text-xs sm:text-sm text-muted-foreground">
-                {unlockedBadges} de {totalBadges} desbloqueadas
+                {unlockedCount} de {totalBadges} desbloqueadas
               </p>
             </div>
             <div className="text-right">
@@ -249,7 +206,7 @@ const Conquistas = () => {
           {/* Stats */}
           <div className="grid grid-cols-4 gap-2 sm:gap-4 mt-4 sm:mt-6">
             {categories.slice(1).map((cat) => {
-              const catBadges = badges.filter((b) => b.category === cat.id);
+              const catBadges = badgesWithProgress.filter((b) => b.category === cat.id);
               const catUnlocked = catBadges.filter((b) => b.unlocked).length;
               return (
                 <div key={cat.id} className="text-center">
@@ -266,7 +223,7 @@ const Conquistas = () => {
 
         {/* Badges by Category */}
         {categories.slice(1).map((category) => {
-          const categoryBadges = badges.filter(
+          const categoryBadges = badgesWithProgress.filter(
             (b) => b.category === category.id
           );
           if (categoryBadges.length === 0) return null;
@@ -285,19 +242,26 @@ const Conquistas = () => {
                 {categoryBadges.map((badge) => (
                   <BadgeCard
                     key={badge.id}
-                    icon={badge.icon}
+                    icon={badge.IconComponent}
                     name={badge.name}
                     description={badge.description}
                     progress={badge.progress}
                     maxProgress={badge.maxProgress}
                     unlocked={badge.unlocked}
-                    rarity={badge.rarity}
+                    rarity={badge.rarity as "comum" | "raro" | "epico" | "lendario"}
                   />
                 ))}
               </div>
             </section>
           );
         })}
+
+        {badges.length === 0 && (
+          <div className="text-center py-12">
+            <Award className="w-16 h-16 mx-auto text-muted-foreground/50 mb-4" />
+            <p className="text-muted-foreground">Nenhuma conquista disponível ainda.</p>
+          </div>
+        )}
       </main>
     </div>
   );

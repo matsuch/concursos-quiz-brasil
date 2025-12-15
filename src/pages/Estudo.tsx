@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/Navbar";
 import { Flashcard } from "@/components/Flashcard";
 import { SubjectCard } from "@/components/SubjectCard";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   BookOpen, 
   Scale, 
@@ -14,23 +16,15 @@ import {
   ChevronLeft,
   ChevronRight,
   Shuffle,
-  RotateCcw
+  RotateCcw,
+  Loader2,
+  LucideIcon
 } from "lucide-react";
 
-const subjects = [
-  {
-    id: "direito-constitucional",
-    title: "Direito Constitucional",
-    description: "Princípios fundamentais, direitos e garantias, organização do Estado",
+const subjectConfig: Record<string, { icon: LucideIcon; color: string; summary: string }> = {
+  "Direito Constitucional": {
     icon: Scale,
     color: "#10b981",
-    flashcards: [
-      { front: "Quais são os fundamentos da República Federativa do Brasil?", back: "Soberania, cidadania, dignidade da pessoa humana, valores sociais do trabalho e da livre iniciativa, e pluralismo político (Art. 1º, CF)." },
-      { front: "Quais são os objetivos fundamentais da República?", back: "Construir uma sociedade livre, justa e solidária; garantir o desenvolvimento nacional; erradicar a pobreza; promover o bem de todos (Art. 3º, CF)." },
-      { front: "O que é o princípio da legalidade?", back: "Ninguém será obrigado a fazer ou deixar de fazer alguma coisa senão em virtude de lei (Art. 5º, II, CF)." },
-      { front: "Quais são os Poderes da União?", back: "Legislativo, Executivo e Judiciário, independentes e harmônicos entre si (Art. 2º, CF)." },
-      { front: "O que são cláusulas pétreas?", back: "São limitações materiais ao poder de reforma da Constituição, previstas no Art. 60, §4º: forma federativa, voto direto/secreto/universal/periódico, separação dos Poderes e direitos e garantias individuais." },
-    ],
     summary: `
 ## Direito Constitucional
 
@@ -63,19 +57,9 @@ const subjects = [
 Os entes federativos são: União, Estados, Distrito Federal e Municípios, todos autônomos.
     `
   },
-  {
-    id: "direito-administrativo",
-    title: "Direito Administrativo",
-    description: "Princípios, atos administrativos, licitações e contratos",
+  "Direito Administrativo": {
     icon: Building2,
     color: "#6366f1",
-    flashcards: [
-      { front: "Quais são os princípios expressos da Administração Pública?", back: "LIMPE: Legalidade, Impessoalidade, Moralidade, Publicidade e Eficiência (Art. 37, CF)." },
-      { front: "O que é ato administrativo?", back: "É toda manifestação unilateral de vontade da Administração Pública que, agindo nessa qualidade, tenha por fim imediato adquirir, resguardar, transferir, modificar, extinguir e declarar direitos." },
-      { front: "Quais são os atributos do ato administrativo?", back: "Presunção de legitimidade, imperatividade, autoexecutoriedade e tipicidade." },
-      { front: "Quais são as modalidades de licitação na Lei 14.133/2021?", back: "Pregão, concorrência, concurso, leilão e diálogo competitivo." },
-      { front: "O que é o princípio da autotutela?", back: "A Administração pode anular seus próprios atos quando ilegais, ou revogá-los por conveniência e oportunidade (Súmula 473, STF)." },
-    ],
     summary: `
 ## Direito Administrativo
 
@@ -108,19 +92,9 @@ Os entes federativos são: União, Estados, Distrito Federal e Municípios, todo
 Nova Lei de Licitações e Contratos Administrativos.
     `
   },
-  {
-    id: "portugues",
-    title: "Língua Portuguesa",
-    description: "Interpretação de texto, gramática, redação oficial",
+  "Português": {
     icon: FileText,
     color: "#f59e0b",
-    flashcards: [
-      { front: "O que é coesão textual?", back: "É a conexão entre os elementos do texto através de mecanismos linguísticos como pronomes, conjunções, sinônimos e elipses." },
-      { front: "Qual a diferença entre 'a fim de' e 'afim'?", back: "'A fim de' indica finalidade (para). 'Afim' significa semelhante, parecido." },
-      { front: "Quando usar 'por que', 'por quê', 'porque' e 'porquê'?", back: "Por que (início/pergunta), por quê (final de frase), porque (resposta/causa), porquê (substantivo = motivo)." },
-      { front: "O que é voz passiva sintética?", back: "É formada com verbo transitivo direto + pronome 'se' (partícula apassivadora). Ex: Vendem-se casas." },
-      { front: "Quando usar crase?", back: "Usa-se crase (à) quando há fusão da preposição 'a' com o artigo 'a' ou com pronomes demonstrativos." },
-    ],
     summary: `
 ## Língua Portuguesa
 
@@ -149,19 +123,9 @@ Nova Lei de Licitações e Contratos Administrativos.
 Características: impessoalidade, uso do padrão culto, clareza, concisão e formalidade.
     `
   },
-  {
-    id: "raciocinio-logico",
-    title: "Raciocínio Lógico",
-    description: "Proposições, conectivos lógicos, argumentação",
+  "Raciocínio Lógico": {
     icon: Calculator,
     color: "#ec4899",
-    flashcards: [
-      { front: "O que é uma proposição?", back: "É uma sentença declarativa que pode ser classificada como verdadeira (V) ou falsa (F), mas nunca ambas simultaneamente." },
-      { front: "Qual a tabela-verdade da conjunção (E)?", back: "A conjunção (p ∧ q) só é verdadeira quando ambas as proposições são verdadeiras. V∧V=V, V∧F=F, F∧V=F, F∧F=F." },
-      { front: "Qual a tabela-verdade da disjunção (OU)?", back: "A disjunção (p ∨ q) só é falsa quando ambas as proposições são falsas. V∨V=V, V∨F=V, F∨V=V, F∨F=F." },
-      { front: "O que é a condicional (SE... ENTÃO)?", back: "A condicional (p → q) só é falsa quando p é verdadeira e q é falsa. É a famosa 'Vera Fischer': V→F=F." },
-      { front: "O que é contrapositiva?", back: "É logicamente equivalente à condicional original. Se p → q, então a contrapositiva é ~q → ~p." },
-    ],
     summary: `
 ## Raciocínio Lógico
 
@@ -187,19 +151,9 @@ Características: impessoalidade, uso do padrão culto, clareza, concisão e for
 - De Morgan: ~(p∧q) ≡ ~p∨~q e ~(p∨q) ≡ ~p∧~q
     `
   },
-  {
-    id: "atualidades",
-    title: "Atualidades",
-    description: "Acontecimentos relevantes do Brasil e do mundo",
+  "Atualidades": {
     icon: Globe,
     color: "#14b8a6",
-    flashcards: [
-      { front: "O que é o Marco Legal das Garantias?", back: "Lei 14.711/2023 que moderniza o sistema de garantias no Brasil, facilitando o uso de imóveis como garantia em empréstimos." },
-      { front: "O que é o Novo PAC?", back: "Programa de Aceleração do Crescimento relançado em 2023, com foco em infraestrutura, mobilidade urbana, educação e saúde." },
-      { front: "O que é a Reforma Tributária de 2023?", back: "EC 132/2023 que simplifica o sistema tributário, criando o IBS (estadual/municipal) e CBS (federal) em substituição a vários tributos." },
-      { front: "O que são os ODS?", back: "Objetivos de Desenvolvimento Sustentável da ONU - 17 metas globais para erradicar a pobreza, proteger o planeta e garantir paz e prosperidade até 2030." },
-      { front: "O que é o Marco Legal da IA no Brasil?", back: "PL 2338/2023 que regulamenta o uso da inteligência artificial no Brasil, estabelecendo direitos e deveres." },
-    ],
     summary: `
 ## Atualidades
 
@@ -228,26 +182,67 @@ Características: impessoalidade, uso do padrão culto, clareza, concisão e for
 - Transição energética
     `
   },
-];
+};
+
+interface DbFlashcard {
+  id: string;
+  subject: string;
+  front_content: string;
+  back_content: string;
+}
 
 export default function Estudo() {
-  const [selectedSubject, setSelectedSubject] = useState(subjects[0]);
+  const [selectedSubjectName, setSelectedSubjectName] = useState<string | null>(null);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [studiedCards, setStudiedCards] = useState<Set<number>>(new Set());
 
-  const currentFlashcards = selectedSubject.flashcards;
+  const { data: flashcards = [], isLoading } = useQuery({
+    queryKey: ["flashcards"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("flashcards")
+        .select("id, subject, front_content, back_content")
+        .order("subject", { ascending: true });
+      if (error) throw error;
+      return data as DbFlashcard[];
+    },
+  });
+
+  const subjects = useMemo(() => {
+    const subjectGroups = flashcards.reduce((acc, fc) => {
+      if (!acc[fc.subject]) acc[fc.subject] = [];
+      acc[fc.subject].push(fc);
+      return acc;
+    }, {} as Record<string, DbFlashcard[]>);
+
+    return Object.entries(subjectGroups).map(([name, cards]) => ({
+      id: name.toLowerCase().replace(/\s+/g, "-"),
+      name,
+      flashcards: cards,
+      config: subjectConfig[name] || { icon: BookOpen, color: "#6366f1", summary: "" },
+    }));
+  }, [flashcards]);
+
+  const selectedSubject = selectedSubjectName 
+    ? subjects.find(s => s.name === selectedSubjectName) 
+    : subjects[0];
+
+  const currentFlashcards = selectedSubject?.flashcards || [];
   const totalCards = currentFlashcards.length;
 
   const handleNext = () => {
+    if (totalCards === 0) return;
     setStudiedCards(prev => new Set([...prev, currentCardIndex]));
     setCurrentCardIndex((prev) => (prev + 1) % totalCards);
   };
 
   const handlePrev = () => {
+    if (totalCards === 0) return;
     setCurrentCardIndex((prev) => (prev - 1 + totalCards) % totalCards);
   };
 
   const handleShuffle = () => {
+    if (totalCards === 0) return;
     const randomIndex = Math.floor(Math.random() * totalCards);
     setCurrentCardIndex(randomIndex);
   };
@@ -257,11 +252,22 @@ export default function Estudo() {
     setStudiedCards(new Set());
   };
 
-  const handleSubjectChange = (subject: typeof subjects[0]) => {
-    setSelectedSubject(subject);
+  const handleSubjectChange = (subjectName: string) => {
+    setSelectedSubjectName(subjectName);
     setCurrentCardIndex(0);
     setStudiedCards(new Set());
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="flex items-center justify-center h-[60vh]">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -282,151 +288,164 @@ export default function Estudo() {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-12 gap-8">
-          {/* Sidebar - Subjects */}
-          <div className="lg:col-span-4 space-y-3">
-            <h2 className="text-lg font-semibold text-foreground mb-4">Matérias</h2>
-            {subjects.map((subject) => (
-              <SubjectCard
-                key={subject.id}
-                title={subject.title}
-                description={subject.description}
-                icon={subject.icon}
-                flashcardsCount={subject.flashcards.length}
-                color={subject.color}
-                onClick={() => handleSubjectChange(subject)}
-                isSelected={selectedSubject.id === subject.id}
-              />
-            ))}
+        {subjects.length === 0 ? (
+          <div className="text-center py-12">
+            <BookOpen className="w-16 h-16 mx-auto text-muted-foreground/50 mb-4" />
+            <p className="text-muted-foreground">Nenhum flashcard disponível ainda.</p>
           </div>
-
-          {/* Main Content */}
-          <div className="lg:col-span-8">
-            <Tabs defaultValue="flashcards" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="flashcards">Flashcards</TabsTrigger>
-                <TabsTrigger value="resumo">Resumo</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="flashcards" className="space-y-6">
-                {/* Progress */}
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">
-                    Card {currentCardIndex + 1} de {totalCards}
-                  </span>
-                  <span className="text-primary font-medium">
-                    {studiedCards.size} estudados
-                  </span>
-                </div>
-
-                {/* Progress bar */}
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-300"
-                    style={{ width: `${(studiedCards.size / totalCards) * 100}%` }}
-                  />
-                </div>
-
-                {/* Flashcard */}
-                <Flashcard
-                  front={currentFlashcards[currentCardIndex].front}
-                  back={currentFlashcards[currentCardIndex].back}
-                  category={selectedSubject.title}
+        ) : (
+          <div className="grid lg:grid-cols-12 gap-8">
+            {/* Sidebar - Subjects */}
+            <div className="lg:col-span-4 space-y-3">
+              <h2 className="text-lg font-semibold text-foreground mb-4">Matérias</h2>
+              {subjects.map((subject) => (
+                <SubjectCard
+                  key={subject.id}
+                  title={subject.name}
+                  description={`${subject.flashcards.length} flashcards`}
+                  icon={subject.config.icon}
+                  flashcardsCount={subject.flashcards.length}
+                  color={subject.config.color}
+                  onClick={() => handleSubjectChange(subject.name)}
+                  isSelected={selectedSubject?.name === subject.name}
                 />
+              ))}
+            </div>
 
-                {/* Controls */}
-                <div className="flex items-center justify-center gap-3">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={handlePrev}
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </Button>
-                  
-                  <Button
-                    variant="outline"
-                    onClick={handleShuffle}
-                    className="gap-2"
-                  >
-                    <Shuffle className="w-4 h-4" />
-                    Aleatório
-                  </Button>
+            {/* Main Content */}
+            <div className="lg:col-span-8">
+              {selectedSubject && totalCards > 0 && (
+                <Tabs defaultValue="flashcards" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 mb-6">
+                    <TabsTrigger value="flashcards">Flashcards</TabsTrigger>
+                    <TabsTrigger value="resumo">Resumo</TabsTrigger>
+                  </TabsList>
 
-                  <Button
-                    variant="outline"
-                    onClick={handleReset}
-                    className="gap-2"
-                  >
-                    <RotateCcw className="w-4 h-4" />
-                    Reiniciar
-                  </Button>
+                  <TabsContent value="flashcards" className="space-y-6">
+                    {/* Progress */}
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">
+                        Card {currentCardIndex + 1} de {totalCards}
+                      </span>
+                      <span className="text-primary font-medium">
+                        {studiedCards.size} estudados
+                      </span>
+                    </div>
 
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={handleNext}
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </Button>
-                </div>
+                    {/* Progress bar */}
+                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-300"
+                        style={{ width: `${(studiedCards.size / totalCards) * 100}%` }}
+                      />
+                    </div>
 
-                {/* Quick nav dots */}
-                <div className="flex items-center justify-center gap-2 flex-wrap">
-                  {currentFlashcards.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentCardIndex(index)}
-                      className={`w-3 h-3 rounded-full transition-all ${
-                        index === currentCardIndex
-                          ? "bg-primary scale-125"
-                          : studiedCards.has(index)
-                          ? "bg-accent"
-                          : "bg-muted hover:bg-muted-foreground/50"
-                      }`}
+                    {/* Flashcard */}
+                    <Flashcard
+                      front={currentFlashcards[currentCardIndex].front_content}
+                      back={currentFlashcards[currentCardIndex].back_content}
+                      category={selectedSubject.name}
                     />
-                  ))}
-                </div>
-              </TabsContent>
 
-              <TabsContent value="resumo">
-                <div className="bg-card border border-border rounded-2xl p-6 md:p-8">
-                  <div 
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium mb-6"
-                    style={{ 
-                      backgroundColor: `${selectedSubject.color}20`,
-                      color: selectedSubject.color 
-                    }}
-                  >
-                    <selectedSubject.icon className="w-4 h-4" />
-                    {selectedSubject.title}
-                  </div>
-                  
-                  <div className="prose prose-sm md:prose-base max-w-none dark:prose-invert prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-li:text-muted-foreground">
-                    {selectedSubject.summary.split('\n').map((line, i) => {
-                      if (line.startsWith('## ')) {
-                        return <h2 key={i} className="text-2xl font-bold mt-0 mb-4">{line.replace('## ', '')}</h2>;
-                      }
-                      if (line.startsWith('### ')) {
-                        return <h3 key={i} className="text-xl font-semibold mt-6 mb-3">{line.replace('### ', '')}</h3>;
-                      }
-                      if (line.startsWith('**') && line.endsWith('**')) {
-                        return <p key={i} className="font-semibold text-foreground mt-4 mb-2">{line.replace(/\*\*/g, '')}</p>;
-                      }
-                      if (line.startsWith('- ')) {
-                        return <li key={i} className="ml-4">{line.replace('- ', '')}</li>;
-                      }
-                      if (line.trim()) {
-                        return <p key={i}>{line}</p>;
-                      }
-                      return null;
-                    })}
-                  </div>
-                </div>
-              </TabsContent>
-            </Tabs>
+                    {/* Controls */}
+                    <div className="flex items-center justify-center gap-3">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={handlePrev}
+                      >
+                        <ChevronLeft className="w-5 h-5" />
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        onClick={handleShuffle}
+                        className="gap-2"
+                      >
+                        <Shuffle className="w-4 h-4" />
+                        Aleatório
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        onClick={handleReset}
+                        className="gap-2"
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                        Reiniciar
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={handleNext}
+                      >
+                        <ChevronRight className="w-5 h-5" />
+                      </Button>
+                    </div>
+
+                    {/* Quick nav dots */}
+                    <div className="flex items-center justify-center gap-2 flex-wrap">
+                      {currentFlashcards.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentCardIndex(index)}
+                          className={`w-3 h-3 rounded-full transition-all ${
+                            index === currentCardIndex
+                              ? "bg-primary scale-125"
+                              : studiedCards.has(index)
+                              ? "bg-accent"
+                              : "bg-muted hover:bg-muted-foreground/50"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="resumo">
+                    <div className="bg-card border border-border rounded-2xl p-6 md:p-8">
+                      <div 
+                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium mb-6"
+                        style={{ 
+                          backgroundColor: `${selectedSubject.config.color}20`,
+                          color: selectedSubject.config.color 
+                        }}
+                      >
+                        <selectedSubject.config.icon className="w-4 h-4" />
+                        {selectedSubject.name}
+                      </div>
+                      
+                      <div className="prose prose-sm md:prose-base max-w-none dark:prose-invert prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-li:text-muted-foreground">
+                        {selectedSubject.config.summary ? (
+                          selectedSubject.config.summary.split('\n').map((line, i) => {
+                            if (line.startsWith('## ')) {
+                              return <h2 key={i} className="text-2xl font-bold mt-0 mb-4">{line.replace('## ', '')}</h2>;
+                            }
+                            if (line.startsWith('### ')) {
+                              return <h3 key={i} className="text-xl font-semibold mt-6 mb-3">{line.replace('### ', '')}</h3>;
+                            }
+                            if (line.startsWith('**') && line.endsWith('**')) {
+                              return <p key={i} className="font-semibold text-foreground mt-4 mb-2">{line.replace(/\*\*/g, '')}</p>;
+                            }
+                            if (line.startsWith('- ')) {
+                              return <li key={i} className="ml-4">{line.replace('- ', '')}</li>;
+                            }
+                            if (line.trim()) {
+                              return <p key={i}>{line}</p>;
+                            }
+                            return null;
+                          })
+                        ) : (
+                          <p className="text-muted-foreground">Resumo não disponível para esta matéria.</p>
+                        )}
+                      </div>
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </main>
     </div>
   );
