@@ -60,6 +60,7 @@ export type Database = {
           inscricoes_ate: string
           nivel: string
           status: string
+          url_edital: string | null
           created_at: string
         }
         Insert: {
@@ -71,6 +72,7 @@ export type Database = {
           inscricoes_ate: string
           nivel: string
           status: string
+          url_edital?: string | null
           created_at?: string
         }
         Update: {
@@ -82,6 +84,7 @@ export type Database = {
           inscricoes_ate?: string
           nivel?: string
           status?: string
+          url_edital?: string | null
           created_at?: string
         }
         Relationships: []

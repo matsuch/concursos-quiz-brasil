@@ -15,6 +15,7 @@ interface Concurso {
   inscricoesAte: string;
   nivel: string;
   status: "aberto" | "breve" | "encerrado";
+  urlEdital?: string | null;
 }
 
 interface Estatisticas {
@@ -60,7 +61,8 @@ const Home = () => {
           local: c.local,
           inscricoesAte: c.inscricoes_ate,
           nivel: c.nivel,
-          status: c.status as "aberto" | "breve" | "encerrado"
+          status: c.status as "aberto" | "breve" | "encerrado",
+          urlEdital: c.url_edital
         }));
 
         setConcursos(concursosFormatados);
