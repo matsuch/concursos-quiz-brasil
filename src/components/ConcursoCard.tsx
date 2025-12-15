@@ -2,6 +2,33 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Users, ExternalLink } from "lucide-react";
 
+const normalizeUrl = (input: unknown): string | null => {
+  if (!input) return null;
+
+  if (Array.isArray(input)) {
+    return normalizeUrl(input[0]);
+  }
+
+  if (typeof input === "object") {
+    return normalizeUrl((input as any).value);
+  }
+
+  if (typeof input !== "string") return null;
+
+  const cleaned = input
+    .trim()
+    .replace(/^"+|"+$/g, "")
+    .replace(/[\u0000-\u001F\u007F]/g, "");
+
+  if (!cleaned.startsWith("http")) return null;
+
+  try {
+    return new URL(cleaned).href;
+  } catch {
+    return null;
+  }
+};
+
 interface ConcursoCardProps {
   titulo: string;
   orgao: string;
@@ -35,8 +62,8 @@ const ConcursoCard = ({
     encerrado: "Encerrado"
   };
 
-  const hasValidUrl = Boolean(url_edital?.trim());
-  const isDisabled = status === "encerrado" || !hasValidUrl;
+  const normalizedUrl = normalizeUrl(url_edital);
+  const isDisabled = status === "encerrado" || !normalizedUrl;
 
   return (
     <Card className="p-6 hover:shadow-lg transition-all duration-300 border-border hover:border-primary/20 relative">
@@ -81,9 +108,12 @@ const ConcursoCard = ({
         </div>
       ) : (
         <a
-          href={url_edital!}
+          href={normalizedUrl!}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={(e) => {
+            e.stopPropagation(); // 🔥 ESSENCIAL no Lovable
+          }}
           className="
             w-full flex items-center justify-center gap-2 px-4 py-2
             border rounded-md text-sm font-medium
@@ -96,6 +126,7 @@ const ConcursoCard = ({
           Ver Edital
         </a>
       )}
+
     </Card>
   );
 };
