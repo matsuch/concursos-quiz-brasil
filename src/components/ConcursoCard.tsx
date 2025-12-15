@@ -107,26 +107,27 @@ const ConcursoCard = ({
         </div>
       </div>
 
-    {isDisabled ? (
-      <div className="flex items-center justify-center gap-2 px-4 py-2 border rounded-md text-sm text-muted-foreground bg-muted cursor-not-allowed">
-        <ExternalLink className="w-4 h-4" />
-        Ver Edital
-      </div>
-    ) : (
-      <button
-        onClick={(e) => {
-          e.stopPropagation(); // Essencial para não ser capturado pelo Lovable
-          e.preventDefault();  // Por segurança
-          if (normalizedUrl) {
-            window.open(normalizedUrl, "_blank", "noopener,noreferrer");
-          }
-        }}
-        className="flex w-full items-center justify-center gap-2 px-4 py-2 border rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer relative z-[9999]"
-      >
-        <ExternalLink className="w-4 h-4" />
-        Ver Edital
-      </button>
-    )}
+      {isDisabled ? (
+        <div className="flex items-center justify-center gap-2 px-4 py-2 border rounded-md text-sm text-muted-foreground bg-muted cursor-not-allowed">
+          <ExternalLink className="w-4 h-4" />
+          Ver Edital
+        </div>
+      ) : (
+        <button
+          type="button" // importante: evita comportamento de submit
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            if (normalizedUrl) {
+              window.open(normalizedUrl, "_blank", "noopener,noreferrer");
+            }
+          }}
+          className="flex w-full items-center justify-center gap-2 px-4 py-2 border rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer relative z-50 pointer-events-auto"
+        >
+          <ExternalLink className="w-4 h-4" />
+          Ver Edital
+        </button>
+      )}
     </Card>
   );
 };
