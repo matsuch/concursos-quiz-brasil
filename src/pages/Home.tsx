@@ -1,50 +1,93 @@
+import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import ConcursoCard from "@/components/ConcursoCard";
 import { Button } from "@/components/ui/button";
-import { Brain, Swords, Trophy, TrendingUp } from "lucide-react";
+import { Brain, Swords, Trophy, TrendingUp, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
-const mockConcursos = [
-  {
-    titulo: "Auditor Fiscal da Receita Federal",
-    orgao: "Receita Federal do Brasil",
-    vagas: 699,
-    local: "Nacional",
-    inscricoesAte: "15/03/2025",
-    nivel: "Superior",
-    status: "aberto" as const
-  },
-  {
-    titulo: "Técnico Administrativo",
-    orgao: "Tribunal de Justiça de SP",
-    vagas: 450,
-    local: "São Paulo - SP",
-    inscricoesAte: "20/02/2025",
-    nivel: "Médio",
-    status: "aberto" as const
-  },
-  {
-    titulo: "Analista Judiciário",
-    orgao: "Tribunal Regional Federal",
-    vagas: 230,
-    local: "Rio de Janeiro - RJ",
-    inscricoesAte: "28/02/2025",
-    nivel: "Superior",
-    status: "aberto" as const
-  },
-  {
-    titulo: "Policial Rodoviário Federal",
-    orgao: "Polícia Rodoviária Federal",
-    vagas: 1500,
-    local: "Nacional",
-    inscricoesAte: "Em breve",
-    nivel: "Superior",
-    status: "breve" as const
-  }
-];
+interface Concurso {
+  id: string;
+  titulo: string;
+  orgao: string;
+  vagas: number;
+  local: string;
+  inscricoesAte: string;
+  nivel: string;
+  status: "aberto" | "breve" | "encerrado";
+}
+
+interface Estatisticas {
+  total_concursos: number;
+  total_questoes: number;
+  taxa_aprovacao: number;
+}
 
 const Home = () => {
   const navigate = useNavigate();
+  const [concursos, setConcursos] = useState<Concurso[]>([]);
+  const [estatisticas, setEstatisticas] = useState<Estatisticas>({
+    total_concursos: 0,
+    total_questoes: 0,
+    taxa_aprovacao: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+
+      // Buscar concursos
+      const { data: concursosData, error: concursosError } = await supabase
+        .from("concursos")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(4);
+
+      if (concursosError) {
+        console.error("Erro ao buscar concursos:", concursosError);
+      } else if (concursosData) {
+        // Transformar dados para o formato do componente
+        const concursosFormatados = concursosData.map((c) => ({
+          id: c.id,
+          titulo: c.titulo,
+          orgao: c.orgao,
+          vagas: c.vagas,
+          local: c.local,
+          inscricoesAte: c.inscricoes_ate,
+          nivel: c.nivel,
+          status: c.status as "aberto" | "breve" | "encerrado"
+        }));
+
+        setConcursos(concursosFormatados);
+      }
+
+      // Buscar estatísticas
+      const { data: statsData, error: statsError } = await supabase
+        .from("estatisticas")
+        .select("*")
+        .limit(1)
+        .single();
+
+      if (statsError) {
+        console.error("Erro ao buscar estatísticas:", statsError);
+      } else if (statsData) {
+        setEstatisticas({
+          total_concursos: statsData.total_concursos,
+          total_questoes: statsData.total_questoes,
+          taxa_aprovacao: statsData.taxa_aprovacao
+        });
+      }
+    } catch (error) {
+      console.error("Erro ao buscar dados:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -86,29 +129,41 @@ const Home = () => {
       {/* Stats Section */}
       <section className="py-8 sm:py-12 border-b border-border">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-3 gap-4 sm:gap-8">
-            <div className="text-center">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2 sm:mb-4">
-                <Trophy className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
-              </div>
-              <div className="text-xl sm:text-3xl font-bold text-foreground mb-1 sm:mb-2">2.879</div>
-              <div className="text-xs sm:text-sm text-muted-foreground">Concursos</div>
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
-            <div className="text-center">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-2 sm:mb-4">
-                <Brain className="w-6 h-6 sm:w-8 sm:h-8 text-secondary" />
+          ) : (
+            <div className="grid grid-cols-3 gap-4 sm:gap-8">
+              <div className="text-center">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2 sm:mb-4">
+                  <Trophy className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
+                </div>
+                <div className="text-xl sm:text-3xl font-bold text-foreground mb-1 sm:mb-2">
+                  {estatisticas.total_concursos.toLocaleString('pt-BR')}
+                </div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Concursos</div>
               </div>
-              <div className="text-xl sm:text-3xl font-bold text-foreground mb-1 sm:mb-2">15.420</div>
-              <div className="text-xs sm:text-sm text-muted-foreground">Questões</div>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-2 sm:mb-4">
-                <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-accent-foreground" />
+              <div className="text-center">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-2 sm:mb-4">
+                  <Brain className="w-6 h-6 sm:w-8 sm:h-8 text-secondary" />
+                </div>
+                <div className="text-xl sm:text-3xl font-bold text-foreground mb-1 sm:mb-2">
+                  {estatisticas.total_questoes.toLocaleString('pt-BR')}
+                </div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Questões</div>
               </div>
-              <div className="text-xl sm:text-3xl font-bold text-foreground mb-1 sm:mb-2">89%</div>
-              <div className="text-xs sm:text-sm text-muted-foreground">Aprovação</div>
+              <div className="text-center">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-2 sm:mb-4">
+                  <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-accent-foreground" />
+                </div>
+                <div className="text-xl sm:text-3xl font-bold text-foreground mb-1 sm:mb-2">
+                  {estatisticas.taxa_aprovacao}%
+                </div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Aprovação</div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -120,11 +175,21 @@ const Home = () => {
             <p className="text-sm sm:text-base text-muted-foreground">Fique por dentro das últimas oportunidades</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-            {mockConcursos.map((concurso, index) => (
-              <ConcursoCard key={index} {...concurso} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+          ) : concursos.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Nenhum concurso encontrado no momento.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              {concursos.map((concurso) => (
+                <ConcursoCard key={concurso.id} {...concurso} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </div>

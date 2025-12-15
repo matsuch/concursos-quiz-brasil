@@ -50,6 +50,42 @@ export type Database = {
         }
         Relationships: []
       }
+      concursos: {
+        Row: {
+          id: string
+          titulo: string
+          orgao: string
+          vagas: number
+          local: string
+          inscricoes_ate: string
+          nivel: string
+          status: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          titulo: string
+          orgao: string
+          vagas: number
+          local: string
+          inscricoes_ate: string
+          nivel: string
+          status: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          titulo?: string
+          orgao?: string
+          vagas?: number
+          local?: string
+          inscricoes_ate?: string
+          nivel?: string
+          status?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
       duel_questions: {
         Row: {
           duel_id: string
@@ -122,6 +158,30 @@ export type Database = {
           status?: string | null
           subject?: string
           winner_id?: string | null
+        }
+        Relationships: []
+      }
+      estatisticas: {
+        Row: {
+          id: string
+          total_concursos: number
+          total_questoes: number
+          taxa_aprovacao: number
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          total_concursos?: number
+          total_questoes?: number
+          taxa_aprovacao?: number
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          total_concursos?: number
+          total_questoes?: number
+          taxa_aprovacao?: number
+          updated_at?: string
         }
         Relationships: []
       }
