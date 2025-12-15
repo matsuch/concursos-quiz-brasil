@@ -11,9 +11,19 @@ interface ConcursoCardProps {
   inscricoesAte: string;
   nivel: string;
   status: "aberto" | "breve" | "encerrado";
+  url_edital?: string;
 }
 
-const ConcursoCard = ({ titulo, orgao, vagas, local, inscricoesAte, nivel, status }: ConcursoCardProps) => {
+const ConcursoCard = ({
+  titulo,
+  orgao,
+  vagas,
+  local,
+  inscricoesAte,
+  nivel,
+  status,
+  url_edital
+}: ConcursoCardProps) => {
   const statusColors = {
     aberto: "bg-success/10 text-success border-success/20",
     breve: "bg-accent/10 text-accent-foreground border-accent/20",
@@ -25,6 +35,8 @@ const ConcursoCard = ({ titulo, orgao, vagas, local, inscricoesAte, nivel, statu
     breve: "Em Breve",
     encerrado: "Encerrado"
   };
+
+  const isDisabled = status === "encerrado" || !url_edital;
 
   return (
     <Card className="p-6 hover:shadow-lg transition-all duration-300 border-border hover:border-primary/20">
@@ -54,7 +66,16 @@ const ConcursoCard = ({ titulo, orgao, vagas, local, inscricoesAte, nivel, statu
         </div>
       </div>
 
-      <Button variant="outline" className="w-full" disabled={status === "encerrado"}>
+      <Button
+        variant="outline"
+        className="w-full"
+        disabled={isDisabled}
+        onClick={() => {
+          if (url_edital) {
+            window.open(url_edital, "_blank", "noopener,noreferrer");
+          }
+        }}
+      >
         <ExternalLink className="w-4 h-4 mr-2" />
         Ver Edital
       </Button>
