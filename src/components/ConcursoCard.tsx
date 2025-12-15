@@ -2,35 +2,6 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Users, ExternalLink } from "lucide-react";
 
-const normalizeUrl = (input: unknown): string | null => {
-  if (!input) return null;
-
-  if (Array.isArray(input)) {
-    return normalizeUrl(input[0]);
-  }
-
-  if (typeof input === "object" && input !== null) {
-    return normalizeUrl((input as any).value ?? (input as any).url);
-  }
-
-  if (typeof input !== "string") return null;
-
-  const cleaned = input
-    .trim()
-    .replace(/^"+|"+$/g, "") // remove aspas no início e fim
-    .replace(/[\u001F\u007F]/g, ""); // remove caracteres de controle problemáticos
-
-  if (!cleaned.startsWith("http://") && !cleaned.startsWith("https://")) {
-    return null;
-  }
-
-  try {
-    return new URL(cleaned).href;
-  } catch {
-    return null;
-  }
-};
-
 interface ConcursoCardProps {
   titulo: string;
   orgao: string;
@@ -39,7 +10,7 @@ interface ConcursoCardProps {
   inscricoesAte: string;
   nivel: string;
   status: "aberto" | "breve" | "encerrado";
-  url_edital?: string | unknown | null;
+  urlEdital?: string | null;
 }
 
 const ConcursoCard = ({
@@ -50,7 +21,7 @@ const ConcursoCard = ({
   inscricoesAte,
   nivel,
   status,
-  url_edital,
+  urlEdital,
 }: ConcursoCardProps) => {
   const statusConfig = {
     aberto: {
@@ -68,8 +39,7 @@ const ConcursoCard = ({
   };
 
   const config = statusConfig[status];
-  const normalizedUrl = normalizeUrl(url_edital);
-  const isDisabled = status === "encerrado" || !normalizedUrl;
+  const isDisabled = status === "encerrado" || !urlEdital;
 
   return (
     <Card className="p-6 hover:shadow-lg transition-all duration-300 border-border hover:border-primary/20 relative">
@@ -107,22 +77,22 @@ const ConcursoCard = ({
         </div>
       </div>
 
+      {/* Botão Ver Edital */}
       {isDisabled ? (
-        <div className="flex items-center justify-center gap-2 px-4 py-2 border rounded-md text-sm text-muted-foreground bg-muted cursor-not-allowed">
+        <div className="flex w-full items-center justify-center gap-2 px-4 py-2 border rounded-md text-sm text-muted-foreground bg-muted cursor-not-allowed">
           <ExternalLink className="w-4 h-4" />
           Ver Edital
         </div>
       ) : (
         <button
-          type="button" // importante: evita comportamento de submit
+          type="button"
           onClick={(e) => {
             e.stopPropagation();
             e.preventDefault();
-            if (normalizedUrl) {
-              window.open(normalizedUrl, "_blank", "noopener,noreferrer");
-            }
+            window.open(urlEdital!, "_blank", "noopener,noreferrer");
           }}
-          className="flex w-full items-center justify-center gap-2 px-4 py-2 border rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer relative z-50 pointer-events-auto"
+          className="flex w-full items-center justify-center gap-2 px-4 py-2 border rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
+          aria-label="Abrir edital em nova aba"
         >
           <ExternalLink className="w-4 h-4" />
           Ver Edital
