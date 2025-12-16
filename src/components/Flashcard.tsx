@@ -6,15 +6,25 @@ interface FlashcardProps {
   front: string;
   back: string;
   category: string;
+  onFlip?: () => void;
 }
 
-export function Flashcard({ front, back, category }: FlashcardProps) {
+export function Flashcard({ front, back, category, onFlip }: FlashcardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
+
+  const handleFlip = () => {
+    const newFlipped = !isFlipped;
+    setIsFlipped(newFlipped);
+    // Only trigger onFlip when showing the back (answer)
+    if (newFlipped && onFlip) {
+      onFlip();
+    }
+  };
 
   return (
     <div 
       className="perspective-1000 w-full h-64 cursor-pointer"
-      onClick={() => setIsFlipped(!isFlipped)}
+      onClick={handleFlip}
     >
       <div
         className={cn(
