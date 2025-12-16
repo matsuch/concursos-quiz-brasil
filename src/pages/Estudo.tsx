@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/Navbar";
 import { Flashcard } from "@/components/Flashcard";
@@ -6,6 +6,8 @@ import { SubjectCard } from "@/components/SubjectCard";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useFlashcardProgress } from "@/hooks/useFlashcardProgress";
 import { 
   BookOpen, 
   Scale, 
@@ -18,7 +20,8 @@ import {
   Shuffle,
   RotateCcw,
   Loader2,
-  LucideIcon
+  LucideIcon,
+  CheckCircle
 } from "lucide-react";
 
 const subjectConfig: Record<string, { icon: LucideIcon; color: string; summary: string }> = {
@@ -194,7 +197,8 @@ interface DbFlashcard {
 export default function Estudo() {
   const [selectedSubjectName, setSelectedSubjectName] = useState<string | null>(null);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [studiedCards, setStudiedCards] = useState<Set<number>>(new Set());
+  const { user } = useAuth();
+  const { progress, fetchProgress, markAsStudied, getProgress } = useFlashcardProgress();
 
   const { data: flashcards = [], isLoading } = useQuery({
     queryKey: ["flashcards"],
@@ -207,6 +211,13 @@ export default function Estudo() {
       return data as DbFlashcard[];
     },
   });
+
+  // Fetch user progress when authenticated
+  useEffect(() => {
+    if (user?.id) {
+      fetchProgress(user.id);
+    }
+  }, [user?.id, fetchProgress]);
 
   const subjects = useMemo(() => {
     const subjectGroups = flashcards.reduce((acc, fc) => {
@@ -230,9 +241,25 @@ export default function Estudo() {
   const currentFlashcards = selectedSubject?.flashcards || [];
   const totalCards = currentFlashcards.length;
 
+  // Calculate studied cards based on actual progress from DB
+  const studiedCardsInSubject = useMemo(() => {
+    const studiedSet = new Set<number>();
+    currentFlashcards.forEach((fc, index) => {
+      if (progress.has(fc.id)) {
+        studiedSet.add(index);
+      }
+    });
+    return studiedSet;
+  }, [currentFlashcards, progress]);
+
+  const handleFlip = () => {
+    if (!user?.id || totalCards === 0) return;
+    const currentCard = currentFlashcards[currentCardIndex];
+    markAsStudied(currentCard.id, user.id);
+  };
+
   const handleNext = () => {
     if (totalCards === 0) return;
-    setStudiedCards(prev => new Set([...prev, currentCardIndex]));
     setCurrentCardIndex((prev) => (prev + 1) % totalCards);
   };
 
@@ -249,13 +276,11 @@ export default function Estudo() {
 
   const handleReset = () => {
     setCurrentCardIndex(0);
-    setStudiedCards(new Set());
   };
 
   const handleSubjectChange = (subjectName: string) => {
     setSelectedSubjectName(subjectName);
     setCurrentCardIndex(0);
-    setStudiedCards(new Set());
   };
 
   if (isLoading) {
@@ -327,8 +352,10 @@ export default function Estudo() {
                       <span className="text-muted-foreground">
                         Card {currentCardIndex + 1} de {totalCards}
                       </span>
-                      <span className="text-primary font-medium">
-                        {studiedCards.size} estudados
+                      <span className="text-primary font-medium flex items-center gap-1">
+                        {studiedCardsInSubject.size > 0 && <CheckCircle className="w-4 h-4" />}
+                        {studiedCardsInSubject.size} estudados
+                        {!user && <span className="text-muted-foreground text-xs ml-1">(faça login para salvar)</span>}
                       </span>
                     </div>
 
@@ -336,7 +363,7 @@ export default function Estudo() {
                     <div className="h-2 bg-muted rounded-full overflow-hidden">
                       <div 
                         className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-300"
-                        style={{ width: `${(studiedCards.size / totalCards) * 100}%` }}
+                        style={{ width: `${(studiedCardsInSubject.size / totalCards) * 100}%` }}
                       />
                     </div>
 
@@ -345,6 +372,7 @@ export default function Estudo() {
                       front={currentFlashcards[currentCardIndex].front_content}
                       back={currentFlashcards[currentCardIndex].back_content}
                       category={selectedSubject.name}
+                      onFlip={handleFlip}
                     />
 
                     {/* Controls */}
@@ -386,17 +414,18 @@ export default function Estudo() {
 
                     {/* Quick nav dots */}
                     <div className="flex items-center justify-center gap-2 flex-wrap">
-                      {currentFlashcards.map((_, index) => (
+                      {currentFlashcards.map((fc, index) => (
                         <button
-                          key={index}
+                          key={fc.id}
                           onClick={() => setCurrentCardIndex(index)}
                           className={`w-3 h-3 rounded-full transition-all ${
                             index === currentCardIndex
                               ? "bg-primary scale-125"
-                              : studiedCards.has(index)
+                              : studiedCardsInSubject.has(index)
                               ? "bg-accent"
                               : "bg-muted hover:bg-muted-foreground/50"
                           }`}
+                          title={progress.has(fc.id) ? `Estudado ${getProgress(fc.id)?.times_reviewed}x` : "Não estudado"}
                         />
                       ))}
                     </div>

@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      badge_audit: {
+        Row: {
+          action: string
+          badge_id: string
+          changed_at: string
+          id: string
+          reason: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          badge_id: string
+          changed_at?: string
+          id?: string
+          reason?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          badge_id?: string
+          changed_at?: string
+          id?: string
+          reason?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       badges: {
         Row: {
           category: string
@@ -52,40 +79,40 @@ export type Database = {
       }
       concursos: {
         Row: {
+          created_at: string | null
           id: string
-          titulo: string
-          orgao: string
-          vagas: number
-          local: string
           inscricoes_ate: string
+          local: string
           nivel: string
+          orgao: string
           status: string
-          url_edital: string
-          created_at: string
+          titulo: string
+          url_edital: string | null
+          vagas: number
         }
         Insert: {
+          created_at?: string | null
           id?: string
-          titulo: string
-          orgao: string
-          vagas: number
-          local: string
           inscricoes_ate: string
+          local: string
           nivel: string
+          orgao: string
           status: string
-          url_edital: string
-          created_at?: string
+          titulo: string
+          url_edital?: string | null
+          vagas: number
         }
         Update: {
+          created_at?: string | null
           id?: string
-          titulo?: string
-          orgao?: string
-          vagas?: number
-          local?: string
           inscricoes_ate?: string
+          local?: string
           nivel?: string
+          orgao?: string
           status?: string
-          url_edital: string
-          created_at?: string
+          titulo?: string
+          url_edital?: string | null
+          vagas?: number
         }
         Relationships: []
       }
@@ -167,24 +194,24 @@ export type Database = {
       estatisticas: {
         Row: {
           id: string
-          total_concursos: number
-          total_questoes: number
-          taxa_aprovacao: number
-          updated_at: string
+          taxa_aprovacao: number | null
+          total_concursos: number | null
+          total_questoes: number | null
+          updated_at: string | null
         }
         Insert: {
           id?: string
-          total_concursos?: number
-          total_questoes?: number
-          taxa_aprovacao?: number
-          updated_at?: string
+          taxa_aprovacao?: number | null
+          total_concursos?: number | null
+          total_questoes?: number | null
+          updated_at?: string | null
         }
         Update: {
           id?: string
-          total_concursos?: number
-          total_questoes?: number
-          taxa_aprovacao?: number
-          updated_at?: string
+          taxa_aprovacao?: number | null
+          total_concursos?: number | null
+          total_questoes?: number | null
+          updated_at?: string | null
         }
         Relationships: []
       }
