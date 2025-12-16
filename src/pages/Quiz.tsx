@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
 import Navbar from "@/components/Navbar";
 import QuizTimer from "@/components/QuizTimer";
 import { Button } from "@/components/ui/button";
@@ -372,9 +373,32 @@ const Quiz = () => {
                 </span>
               )}
             </div>
-            <h2 className="text-lg sm:text-2xl font-bold mb-6 sm:mb-8">
-              {question.question}
-            </h2>
+            <div className="prose prose-slate dark:prose-invert max-w-none mb-6 sm:mb-8 text-base sm:text-base font-normal">
+              <ReactMarkdown
+                components={{
+                  h1: ({node, ...props}) => <h1 className="text-2xl sm:text-3xl font-bold mb-4" {...props} />,
+                  h2: ({node, ...props}) => <h2 className="text-xl sm:text-2xl font-bold mb-3" {...props} />,
+                  h3: ({node, ...props}) => <h3 className="text-lg sm:text-xl font-bold mb-2" {...props} />,
+                  p: ({node, ...props}) => <p className="mb-3 leading-relaxed" {...props} />,
+                  strong: ({node, ...props}) => <strong className="font-bold text-primary" {...props} />,
+                  em: ({node, ...props}) => <em className="italic" {...props} />,
+                  ul: ({node, ...props}) => <ul className="list-disc list-inside mb-3 space-y-1" {...props} />,
+                  ol: ({node, ...props}) => <ol className="list-decimal list-inside mb-3 space-y-1" {...props} />,
+                  li: ({node, ...props}) => <li className="leading-relaxed" {...props} />,
+                  code: ({node, inline, ...props}: any) => 
+                    inline ? (
+                      <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono" {...props} />
+                    ) : (
+                      <code className="block bg-muted p-3 rounded-lg text-sm font-mono overflow-x-auto" {...props} />
+                    ),
+                  blockquote: ({node, ...props}) => (
+                    <blockquote className="border-l-4 border-primary pl-4 italic text-muted-foreground" {...props} />
+                  ),
+                }}
+              >
+                {question.question}
+              </ReactMarkdown>
+            </div>
             <div className="space-y-3">
               {question.options.map((option, index) => {
                 const isCorrect = index === question.correct_answer;
