@@ -1,13 +1,15 @@
 import { useState, useMemo, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Navbar from "@/components/Navbar";
 import { Flashcard } from "@/components/Flashcard";
 import { SubjectCard } from "@/components/SubjectCard";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useFlashcardProgress } from "@/hooks/useFlashcardProgress";
+import { CreateFlashcardDialog } from "@/components/CreateFlashcardDialog";
 import { 
   BookOpen, 
   Scale, 
@@ -21,7 +23,8 @@ import {
   RotateCcw,
   Loader2,
   LucideIcon,
-  CheckCircle
+  CheckCircle,
+  User
 } from "lucide-react";
 
 const subjectConfig: Record<string, { icon: LucideIcon; color: string; summary: string }> = {
@@ -192,6 +195,8 @@ interface DbFlashcard {
   subject: string;
   front_content: string;
   back_content: string;
+  is_official: boolean | null;
+  created_by: string | null;
 }
 
 export default function Estudo() {
@@ -199,18 +204,23 @@ export default function Estudo() {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const { user } = useAuth();
   const { progress, fetchProgress, markAsStudied, getProgress } = useFlashcardProgress();
+  const queryClient = useQueryClient();
 
   const { data: flashcards = [], isLoading } = useQuery({
     queryKey: ["flashcards"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("flashcards")
-        .select("id, subject, front_content, back_content")
+        .select("id, subject, front_content, back_content, is_official, created_by")
         .order("subject", { ascending: true });
       if (error) throw error;
       return data as DbFlashcard[];
     },
   });
+
+  const handleFlashcardCreated = () => {
+    queryClient.invalidateQueries({ queryKey: ["flashcards"] });
+  };
 
   // Fetch user progress when authenticated
   useEffect(() => {
@@ -308,9 +318,12 @@ export default function Estudo() {
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
             Flashcards e Resumos
           </h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-muted-foreground max-w-2xl mx-auto mb-4">
             Estude as principais matérias de concursos públicos com flashcards interativos e resumos objetivos
           </p>
+          {user && (
+            <CreateFlashcardDialog userId={user.id} onSuccess={handleFlashcardCreated} />
+          )}
         </div>
 
         {subjects.length === 0 ? (
@@ -368,12 +381,32 @@ export default function Estudo() {
                     </div>
 
                     {/* Flashcard */}
-                    <Flashcard
-                      front={currentFlashcards[currentCardIndex].front_content}
-                      back={currentFlashcards[currentCardIndex].back_content}
-                      category={selectedSubject.name}
-                      onFlip={handleFlip}
-                    />
+                    <div className="relative">
+                      <div className="absolute -top-2 right-2 z-10">
+                        <Badge 
+                          variant={currentFlashcards[currentCardIndex].is_official ? "default" : "secondary"}
+                          className="text-xs"
+                        >
+                          {currentFlashcards[currentCardIndex].is_official ? (
+                            <>
+                              <CheckCircle className="w-3 h-3 mr-1" />
+                              Oficial
+                            </>
+                          ) : (
+                            <>
+                              <User className="w-3 h-3 mr-1" />
+                              Usuário
+                            </>
+                          )}
+                        </Badge>
+                      </div>
+                      <Flashcard
+                        front={currentFlashcards[currentCardIndex].front_content}
+                        back={currentFlashcards[currentCardIndex].back_content}
+                        category={selectedSubject.name}
+                        onFlip={handleFlip}
+                      />
+                    </div>
 
                     {/* Controls */}
                     <div className="flex items-center justify-center gap-3">
