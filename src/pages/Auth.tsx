@@ -101,9 +101,6 @@ const Auth = () => {
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="text-center space-y-4">
           <div className="flex justify-center">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-              <Brain className="w-8 h-8 text-primary-foreground" />
-            </div>
           </div>
           <div>
             <CardTitle className="text-2xl font-bold">
