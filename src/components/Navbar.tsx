@@ -37,7 +37,7 @@ const Navbar = () => {
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
               <Trophy className="w-6 h-6 text-white" />
             </div>
-            <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <span className="text-lg sm:text-xl font-bold text-blue-600">
               Concursos Brasil
             </span>
           </div>

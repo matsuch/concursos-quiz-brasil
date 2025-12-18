@@ -175,9 +175,9 @@ const Conquistas = () => {
             <Award className="w-4 h-4" />
             Sistema de Conquistas
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold text-black mb-2">
             Suas{" "}
-            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <span className="text-black">
               Conquistas
             </span>
           </h1>
