@@ -6,10 +6,22 @@ import { SubjectCard } from "@/components/SubjectCard";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useFlashcardProgress } from "@/hooks/useFlashcardProgress";
 import { CreateFlashcardDialog } from "@/components/CreateFlashcardDialog";
+import { useToast } from "@/hooks/use-toast";
 import { 
   BookOpen, 
   Scale, 
@@ -24,7 +36,9 @@ import {
   Loader2,
   LucideIcon,
   CheckCircle,
-  User
+  User,
+  Pencil,
+  Trash2
 } from "lucide-react";
 
 const subjectConfig: Record<string, { icon: LucideIcon; color: string; summary: string }> = {
@@ -205,6 +219,7 @@ export default function Estudo() {
   const { user } = useAuth();
   const { progress, fetchProgress, markAsStudied, getProgress } = useFlashcardProgress();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: flashcards = [], isLoading } = useQuery({
     queryKey: ["flashcards"],
@@ -292,6 +307,39 @@ export default function Estudo() {
     setSelectedSubjectName(subjectName);
     setCurrentCardIndex(0);
   };
+
+  const handleDeleteFlashcard = async (flashcardId: string) => {
+    try {
+      const { error } = await supabase
+        .from("flashcards")
+        .delete()
+        .eq("id", flashcardId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Flashcard excluído",
+        description: "Seu flashcard foi removido com sucesso.",
+      });
+
+      // Adjust current index if needed
+      if (currentCardIndex >= totalCards - 1 && currentCardIndex > 0) {
+        setCurrentCardIndex(currentCardIndex - 1);
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["flashcards"] });
+    } catch (error) {
+      console.error("Error deleting flashcard:", error);
+      toast({
+        title: "Erro ao excluir",
+        description: "Não foi possível excluir o flashcard.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const currentFlashcard = currentFlashcards[currentCardIndex];
+  const isUserOwned = currentFlashcard && user?.id && currentFlashcard.created_by === user.id;
 
   if (isLoading) {
     return (
@@ -382,7 +430,42 @@ export default function Estudo() {
 
                     {/* Flashcard */}
                     <div className="relative">
-                      <div className="absolute -top-2 right-2 z-10">
+                      <div className="absolute -top-2 right-2 z-10 flex items-center gap-2">
+                        {isUserOwned && (
+                          <div className="flex gap-1">
+                            <CreateFlashcardDialog
+                              userId={user!.id}
+                              flashcard={currentFlashcard}
+                              onSuccess={() => queryClient.invalidateQueries({ queryKey: ["flashcards"] })}
+                              trigger={
+                                <Button variant="outline" size="icon" className="h-7 w-7">
+                                  <Pencil className="w-3 h-3" />
+                                </Button>
+                              }
+                            />
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="outline" size="icon" className="h-7 w-7 text-destructive hover:text-destructive">
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Excluir flashcard?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Esta ação não pode ser desfeita. O flashcard será permanentemente removido.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => handleDeleteFlashcard(currentFlashcard.id)}>
+                                    Excluir
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        )}
                         <Badge 
                           variant={currentFlashcards[currentCardIndex].is_official ? "default" : "secondary"}
                           className="text-xs"
