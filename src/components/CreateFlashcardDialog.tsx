@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,7 +10,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Form,
@@ -29,7 +28,7 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, Pencil } from "lucide-react";
 
 const SUBJECTS = [
   "Direito Constitucional",
@@ -55,50 +54,88 @@ const flashcardSchema = z.object({
 
 type FlashcardFormData = z.infer<typeof flashcardSchema>;
 
+interface FlashcardData {
+  id: string;
+  subject: string;
+  front_content: string;
+  back_content: string;
+}
+
 interface CreateFlashcardDialogProps {
   userId: string;
   onSuccess?: () => void;
+  flashcard?: FlashcardData;
+  trigger?: React.ReactNode;
 }
 
-export function CreateFlashcardDialog({ userId, onSuccess }: CreateFlashcardDialogProps) {
+export function CreateFlashcardDialog({ userId, onSuccess, flashcard, trigger }: CreateFlashcardDialogProps) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const isEditing = !!flashcard;
 
   const form = useForm<FlashcardFormData>({
     resolver: zodResolver(flashcardSchema),
     defaultValues: {
-      subject: "",
-      front_content: "",
-      back_content: "",
+      subject: flashcard?.subject || "",
+      front_content: flashcard?.front_content || "",
+      back_content: flashcard?.back_content || "",
     },
   });
+
+  useEffect(() => {
+    if (flashcard) {
+      form.reset({
+        subject: flashcard.subject,
+        front_content: flashcard.front_content,
+        back_content: flashcard.back_content,
+      });
+    }
+  }, [flashcard, form]);
 
   const onSubmit = async (data: FlashcardFormData) => {
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.from("flashcards").insert({
-        subject: data.subject,
-        front_content: data.front_content,
-        back_content: data.back_content,
-        created_by: userId,
-        is_official: false,
-      });
+      if (isEditing) {
+        const { error } = await supabase
+          .from("flashcards")
+          .update({
+            subject: data.subject,
+            front_content: data.front_content,
+            back_content: data.back_content,
+          })
+          .eq("id", flashcard.id);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      toast({
-        title: "Flashcard criado!",
-        description: "Seu flashcard foi adicionado com sucesso.",
-      });
+        toast({
+          title: "Flashcard atualizado!",
+          description: "Seu flashcard foi editado com sucesso.",
+        });
+      } else {
+        const { error } = await supabase.from("flashcards").insert({
+          subject: data.subject,
+          front_content: data.front_content,
+          back_content: data.back_content,
+          created_by: userId,
+          is_official: false,
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Flashcard criado!",
+          description: "Seu flashcard foi adicionado com sucesso.",
+        });
+      }
 
       form.reset();
       setOpen(false);
       onSuccess?.();
     } catch (error) {
-      console.error("Error creating flashcard:", error);
+      console.error("Error saving flashcard:", error);
       toast({
-        title: "Erro ao criar flashcard",
+        title: isEditing ? "Erro ao atualizar flashcard" : "Erro ao criar flashcard",
         description: "Ocorreu um erro. Tente novamente.",
         variant: "destructive",
       });
@@ -110,14 +147,16 @@ export function CreateFlashcardDialog({ userId, onSuccess }: CreateFlashcardDial
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="gap-2">
-          <Plus className="w-4 h-4" />
-          Criar Flashcard
-        </Button>
+        {trigger || (
+          <Button className="gap-2">
+            <Plus className="w-4 h-4" />
+            Criar Flashcard
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Criar Novo Flashcard</DialogTitle>
+          <DialogTitle>{isEditing ? "Editar Flashcard" : "Criar Novo Flashcard"}</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -128,7 +167,7 @@ export function CreateFlashcardDialog({ userId, onSuccess }: CreateFlashcardDial
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Matéria</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione a matéria" />
@@ -185,9 +224,11 @@ export function CreateFlashcardDialog({ userId, onSuccess }: CreateFlashcardDial
               )}
             />
 
-            <p className="text-xs text-muted-foreground">
-              Flashcards criados por usuários são marcados como não oficiais.
-            </p>
+            {!isEditing && (
+              <p className="text-xs text-muted-foreground">
+                Flashcards criados por usuários são marcados como não oficiais.
+              </p>
+            )}
 
             <div className="flex justify-end gap-2">
               <Button
@@ -202,10 +243,10 @@ export function CreateFlashcardDialog({ userId, onSuccess }: CreateFlashcardDial
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Criando...
+                    {isEditing ? "Salvando..." : "Criando..."}
                   </>
                 ) : (
-                  "Criar Flashcard"
+                  isEditing ? "Salvar" : "Criar Flashcard"
                 )}
               </Button>
             </div>

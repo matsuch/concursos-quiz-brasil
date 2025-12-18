@@ -14,120 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      // Adicione estas tabelas dentro de public: { Tables: { ... } }
-    simulado_attempts: {
-      Row: {
-        correct_answers: number
-        created_at: string
-        id: string
-        points_earned: number
-        simulado_id: string
-        time_spent_seconds: number | null
-        total_questions: number
-        user_id: string
-      }
-      Insert: {
-        correct_answers: number
-        created_at?: string
-        id?: string
-        points_earned: number
-        simulado_id: string
-        time_spent_seconds?: number | null
-        total_questions: number
-        user_id: string
-      }
-      Update: {
-        correct_answers?: number
-        created_at?: string
-        id?: string
-        points_earned?: number
-        simulado_id?: string
-        time_spent_seconds?: number | null
-        total_questions?: number
-        user_id?: string
-      }
-      Relationships: [
-        {
-          foreignKeyName: "simulado_attempts_simulado_id_fkey"
-          columns: ["simulado_id"]
-          isOneToOne: false
-          referencedRelation: "simulados"
-          referencedColumns: ["id"]
-        },
-      ]
-    }
-    simulado_questions: {
-      Row: {
-        correct_answer: number
-        created_at: string
-        id: string
-        options: Json
-        order: number
-        question: string
-        simulado_id: string
-        subject: string
-      }
-      Insert: {
-        correct_answer: number
-        created_at?: string
-        id?: string
-        options: Json
-        order: number
-        question: string
-        simulado_id: string
-        subject: string
-      }
-      Update: {
-        correct_answer?: number
-        created_at?: string
-        id?: string
-        options?: Json
-        order?: number
-        question?: string
-        simulado_id?: string
-        subject?: string
-      }
-      Relationships: [
-        {
-          foreignKeyName: "simulado_questions_simulado_id_fkey"
-          columns: ["simulado_id"]
-          isOneToOne: false
-          referencedRelation: "simulados"
-          referencedColumns: ["id"]
-        },
-      ]
-    }
-    simulados: {
-      Row: {
-        created_at: string
-        description: string | null
-        duration_minutes: number
-        id: string
-        title: string
-        total_questions: number
-      }
-      Insert: {
-        created_at?: string
-        description?: string | null
-        duration_minutes: number
-        id?: string
-        title: string
-        total_questions: number
-      }
-      Update: {
-        created_at?: string
-        description?: string | null
-        duration_minutes?: number
-        id?: string
-        title?: string
-        total_questions?: number
-      }
-      Relationships: []
-    }
-
-
-
-      
       badge_audit: {
         Row: {
           action: string
@@ -502,6 +388,115 @@ export type Database = {
           time_spent_seconds?: number | null
           total_questions?: number
           user_id?: string
+        }
+        Relationships: []
+      }
+      simulado_attempts: {
+        Row: {
+          correct_answers: number
+          created_at: string | null
+          id: string
+          points_earned: number
+          simulado_id: string | null
+          time_spent_seconds: number
+          total_questions: number
+          user_id: string | null
+        }
+        Insert: {
+          correct_answers: number
+          created_at?: string | null
+          id?: string
+          points_earned: number
+          simulado_id?: string | null
+          time_spent_seconds: number
+          total_questions: number
+          user_id?: string | null
+        }
+        Update: {
+          correct_answers?: number
+          created_at?: string | null
+          id?: string
+          points_earned?: number
+          simulado_id?: string | null
+          time_spent_seconds?: number
+          total_questions?: number
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "simulado_attempts_simulado_id_fkey"
+            columns: ["simulado_id"]
+            isOneToOne: false
+            referencedRelation: "simulados"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      simulado_questions: {
+        Row: {
+          correct_answer: number
+          created_at: string | null
+          id: string
+          options: Json
+          order: number
+          question: string
+          simulado_id: string | null
+          subject: string
+        }
+        Insert: {
+          correct_answer: number
+          created_at?: string | null
+          id?: string
+          options: Json
+          order: number
+          question: string
+          simulado_id?: string | null
+          subject: string
+        }
+        Update: {
+          correct_answer?: number
+          created_at?: string | null
+          id?: string
+          options?: Json
+          order?: number
+          question?: string
+          simulado_id?: string | null
+          subject?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "simulado_questions_simulado_id_fkey"
+            columns: ["simulado_id"]
+            isOneToOne: false
+            referencedRelation: "simulados"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      simulados: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          duration_minutes: number
+          id: string
+          title: string
+          total_questions: number
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          duration_minutes: number
+          id?: string
+          title: string
+          total_questions: number
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          title?: string
+          total_questions?: number
         }
         Relationships: []
       }
