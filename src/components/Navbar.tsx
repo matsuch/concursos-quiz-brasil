@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/hooks/useAuth";
-import { Trophy, Brain, Swords, Home, BookOpen, Award, Menu, LogIn, LogOut, User } from "lucide-react";
+import { Trophy, Brain, Swords, Home, BookOpen, Award, Menu, LogIn, LogOut, User, Landmark, FileText, Scale } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useNavigate } from "react-router-dom";
@@ -34,8 +34,8 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-              <Trophy className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 rounded-lg bg-[#2563eb] flex items-center justify-center">
+              <Scale className="w-6 h-6 text-white" />
             </div>
             <span className="text-lg sm:text-xl font-bold text-blue-600">
               Concursos Brasil
@@ -60,7 +60,10 @@ const Navbar = () => {
               variant={user ? "ghost" : "default"}
               size="sm"
               onClick={handleAuthClick}
-              className="ml-2"
+              className={user 
+                ? "ml-2 text-blue-600 hover:bg-blue-50" 
+                : "ml-2 bg-[#2563eb] hover:bg-[#1d4ed8]"
+              }
             >
               {user ? (
                 <>
@@ -78,18 +81,18 @@ const Navbar = () => {
 
           {/* Mobile Navigation */}
           <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon">
+          <SheetTrigger asChild className="md:hidden">
+              <Button variant="ghost" size="icon" className="hover:text-green-600 hover:bg-green-50">
                 <Menu className="w-6 h-6" />
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[280px] p-0">
               <div className="flex flex-col h-full">
                 <div className="flex items-center gap-2 p-4 border-b border-border">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                    <Trophy className="w-6 h-6 text-white" />
+                  <div className="w-10 h-10 rounded-lg bg-[#2563eb] flex items-center justify-center">
+                    <Scale className="w-6 h-6 text-white" />
                   </div>
-                  <span className="text-lg font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  <span className="text-lg sm:text-xl font-bold text-blue-600">
                     Concursos Brasil
                   </span>
                 </div>
@@ -110,7 +113,7 @@ const Navbar = () => {
                       to={item.to}
                       onClick={() => setOpen(false)}
                       className="flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-                      activeClassName="!text-primary !bg-primary/10"
+                      activeClassName="!text-green-600 !bg-green-600/10"
                     >
                       <item.icon className="w-5 h-5" />
                       {item.label}
@@ -121,7 +124,10 @@ const Navbar = () => {
                 <div className="p-4 border-t border-border">
                   <Button 
                     variant={user ? "outline" : "default"}
-                    className="w-full"
+                    className={user 
+                      ? "w-full border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white" 
+                      : "w-full bg-[#2563eb] hover:bg-[#1d4ed8]"
+                    }
                     onClick={() => {
                       setOpen(false);
                       handleAuthClick();

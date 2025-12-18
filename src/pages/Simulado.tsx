@@ -194,12 +194,9 @@ const SimuladoPage = () => {
         <div className="container mx-auto px-4 py-10 sm:py-20">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-8">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                <BookOpen className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
-              </div>
               <h1 className="text-2xl sm:text-4xl font-bold mb-3 sm:mb-4">Simulados</h1>
               <p className="text-base sm:text-xl text-muted-foreground mb-6 sm:mb-8 px-2">
-                Pratique com simulados completos e teste sua preparação!
+                Pratique com simulados completos e teste seus conhecimentos!
               </p>
             </div>
 

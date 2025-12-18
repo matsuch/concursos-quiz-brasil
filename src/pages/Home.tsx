@@ -109,7 +109,7 @@ const Home = () => {
               <Button 
                 size="lg" 
                 onClick={() => navigate("/quiz")}
-                className="w-full sm:w-auto bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg"
+                className="w-full sm:w-auto bg-[#2563eb] hover:bg-[#1d4ed8] transition-colors"
               >
                 <Brain className="w-5 h-5 mr-2" />
                 Começar Quiz

@@ -21,7 +21,7 @@ const Ranking = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('display_name, total_points, quizzes_completed, avatar_url')
+        .select('total_points, quizzes_completed')
         .order('total_points', { ascending: false })
         .limit(50);
 
@@ -29,7 +29,7 @@ const Ranking = () => {
 
       return data.map((profile, index) => ({
         position: index + 1,
-        name: profile.display_name || 'Jogador Anônimo',
+        name: 'Jogador Anônimo',
         points: profile.total_points || 0,
         quizzes: profile.quizzes_completed || 0,
         accuracy: profile.quizzes_completed && profile.quizzes_completed > 0 ? 85 : 0, // Placeholder - would need quiz_attempts aggregation
@@ -61,9 +61,6 @@ const Ranking = () => {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8 sm:mb-12">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center mx-auto mb-3 sm:mb-4">
-              <Trophy className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
-            </div>
             <h1 className="text-2xl sm:text-4xl font-bold mb-2">Ranking Global</h1>
             <p className="text-base sm:text-xl text-muted-foreground">
               Os melhores candidatos do Brasil

@@ -171,15 +171,8 @@ const Conquistas = () => {
       <main className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 text-amber-500 text-sm font-medium mb-4">
-            <Award className="w-4 h-4" />
-            Sistema de Conquistas
-          </div>
           <h1 className="text-3xl md:text-4xl font-bold text-black mb-2">
-            Suas{" "}
-            <span className="text-black">
-              Conquistas
-            </span>
+            Suas Conquistas
           </h1>
           <p className="text-muted-foreground max-w-lg mx-auto">
             Desbloqueie badges completando quizzes, vencendo duelos e estudando!

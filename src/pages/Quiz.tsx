@@ -179,9 +179,6 @@ const Quiz = () => {
         <Navbar />
         <div className="container mx-auto px-4 py-10 sm:py-20">
           <div className="max-w-2xl mx-auto text-center">
-            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center mx-auto mb-4 sm:mb-6">
-              <Play className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
-            </div>
             <h1 className="text-2xl sm:text-4xl font-bold mb-3 sm:mb-4">Quiz de Concursos</h1>
             <p className="text-base sm:text-xl text-muted-foreground mb-6 sm:mb-8 px-2">
               Escolha uma matéria e teste seus conhecimentos!
@@ -211,30 +208,11 @@ const Quiz = () => {
               </div>
             </Card>
 
-            {selectedSubject && (
-              <Card className="p-5 sm:p-6 mb-6 sm:mb-8 bg-muted/50">
-                <div className="space-y-3 text-left text-sm">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-success" />
-                    <span>5 questões por quiz</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-success" />
-                    <span>15 segundos por questão</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-success" />
-                    <span>10 pontos por acerto</span>
-                  </div>
-                </div>
-              </Card>
-            )}
-
             <Button
               size="lg"
               onClick={startQuiz}
               disabled={!selectedSubject || loading || questions.length === 0}
-              className="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary"
+              className="w-full sm:w-auto bg-[#2563eb]" // exatamente o blue-600
             >
               {loading ? (
                 <>
