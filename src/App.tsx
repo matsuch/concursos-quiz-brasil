@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import Home from "./pages/Home";
 import Quiz from "./pages/Quiz";
+import Aulas from "./pages/Aulas";
 import Duelo from "./pages/Duelo";
 import Ranking from "./pages/Ranking";
 import Estudo from "./pages/Estudo";
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/conquistas" element={<Conquistas />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/simulado" element={<SimuladoPage />} />
+            <Route path="/aulas" element={<Aulas />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

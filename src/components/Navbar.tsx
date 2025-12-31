@@ -14,6 +14,7 @@ const navItems = [
   { to: "/conquistas", icon: Award, label: "Conquistas" },
   { to: "/ranking", icon: Trophy, label: "Ranking" },
   { to: "/simulado", icon: BookOpen, label: "Simulado" },
+  { to: "/aulas", icon: BookOpen, label: "Aulas" },
 ];
 
 const Navbar = () => {

@@ -529,6 +529,120 @@ export type Database = {
           },
         ]
       }
+      videos: {
+        Row: {
+          id: string
+          module_id: string | null
+          title: string | null
+          duration: string | null
+          url: string | null
+          order_index: number | null
+        }
+        Insert: {
+          id?: string
+          module_id?: string | null
+          title?: string | null
+          duration?: string | null
+          url?: string | null
+          order_index?: number | null
+        }
+        Update: {
+          id?: string
+          module_id?: string | null
+          title?: string | null
+          duration?: string | null
+          url?: string | null
+          order_index?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "videos_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "modules"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      user_progress: {
+      Row: {
+        user_id: string
+        video_id: string
+        completed: boolean | null
+        completed_at: string | null
+      }
+      Insert: {
+        user_id: string
+        video_id: string
+        completed?: boolean | null
+        completed_at?: string | null
+      }
+      Update: {
+        user_id?: string
+        video_id?: string
+        completed?: boolean | null
+        completed_at?: string | null
+      }
+      Relationships: [
+        {
+          foreignKeyName: "user_progress_video_id_fkey"
+          columns: ["video_id"]
+          isOneToOne: false
+          referencedRelation: "videos"
+          referencedColumns: ["id"]
+        }
+      ]
+    }
+    modules: {
+      Row: {
+        id: string
+        course_id: string | null
+        title: string | null
+        order_index: number | null
+      }
+      Insert: {
+        id?: string
+        course_id?: string | null
+        title?: string | null
+        order_index?: number | null
+      }
+      Update: {
+        id?: string
+        course_id?: string | null
+        title?: string | null
+        order_index?: number | null
+      }
+      Relationships: [
+        {
+          foreignKeyName: "modules_course_id_fkey"
+          columns: ["course_id"]
+          isOneToOne: false
+          referencedRelation: "courses"
+          referencedColumns: ["id"]
+        }
+      ]
+    }
+    courses: {
+      Row: {
+        id: string
+        title: string | null
+        description: string | null
+        created_at: string | null
+      }
+      Insert: {
+        id?: string
+        title?: string | null
+        description?: string | null
+        created_at?: string | null
+      }
+      Update: {
+        id?: string
+        title?: string | null
+        description?: string | null
+        created_at?: string | null
+      }
+      Relationships: []
+    }
     }
     Views: {
       [_ in never]: never
