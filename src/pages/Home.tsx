@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import ConcursoCard from "@/components/ConcursoCard";
 import { Button } from "@/components/ui/button";
-import { Brain, Swords, Trophy, TrendingUp, Loader2 } from "lucide-react";
+import { Brain, Swords, Book, TrendingUp, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -24,6 +24,14 @@ interface Estatisticas {
   taxa_aprovacao: number;
 }
 
+interface Curso {
+  id: string;
+  titulo: string;
+  imagem: string; // ATUALIZAR: Trocar pela URL real da imagem do curso
+  valorAnterior: number;
+  valorPromocional: number;
+}
+
 const Home = () => {
   const navigate = useNavigate();
   const [concursos, setConcursos] = useState<Concurso[]>([]);
@@ -33,6 +41,80 @@ const Home = () => {
     taxa_aprovacao: 0
   });
   const [loading, setLoading] = useState(true);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // ATUALIZAR: Substituir por dados reais do banco de dados
+  const cursosMock: Curso[] = [
+    {
+      id: "1",
+      titulo: "Preparatório Completo para Tribunais",
+      imagem: "/placeholder-course-1.jpg", // ATUALIZAR: URL da imagem
+      valorAnterior: 997.00,
+      valorPromocional: 497.00
+    },
+    {
+      id: "2",
+      titulo: "Direito Administrativo para Concursos",
+      imagem: "/placeholder-course-2.jpg", // ATUALIZAR: URL da imagem
+      valorAnterior: 697.00,
+      valorPromocional: 297.00
+    },
+    {
+      id: "3",
+      titulo: "Português Descomplicado",
+      imagem: "/placeholder-course-3.jpg", // ATUALIZAR: URL da imagem
+      valorAnterior: 497.00,
+      valorPromocional: 197.00
+    },
+    {
+      id: "4",
+      titulo: "Raciocínio Lógico Matemático",
+      imagem: "/placeholder-course-4.jpg", // ATUALIZAR: URL da imagem
+      valorAnterior: 597.00,
+      valorPromocional: 247.00
+    },
+    {
+      id: "5",
+      titulo: "Informática para Concursos",
+      imagem: "/placeholder-course-5.jpg", // ATUALIZAR: URL da imagem
+      valorAnterior: 397.00,
+      valorPromocional: 147.00
+    }
+  ];
+
+  const slidesPerView = {
+    mobile: 1,
+    tablet: 2,
+    desktop: 3
+  };
+
+  const [itemsPerSlide, setItemsPerSlide] = useState(slidesPerView.desktop);
+
+  useEffect(() => {
+    const updateItemsPerSlide = () => {
+      if (window.innerWidth < 640) {
+        setItemsPerSlide(slidesPerView.mobile);
+      } else if (window.innerWidth < 1024) {
+        setItemsPerSlide(slidesPerView.tablet);
+      } else {
+        setItemsPerSlide(slidesPerView.desktop);
+      }
+    };
+
+    updateItemsPerSlide();
+    window.addEventListener('resize', updateItemsPerSlide);
+    return () => window.removeEventListener('resize', updateItemsPerSlide);
+  }, []);
+
+  const maxSlides = Math.ceil(cursosMock.length / itemsPerSlide);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % maxSlides);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + maxSlides) % maxSlides);
+  };
 
   useEffect(() => {
     fetchData();
@@ -91,6 +173,11 @@ const Home = () => {
     }
   };
 
+  const getCurrentSlideItems = () => {
+    const start = currentSlide * itemsPerSlide;
+    return cursosMock.slice(start, start + itemsPerSlide);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -139,12 +226,12 @@ const Home = () => {
             <div className="grid grid-cols-3 gap-4 sm:gap-8">
               <div className="text-center">
                 <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2 sm:mb-4">
-                  <Trophy className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
+                  <Book className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                 </div>
                 <div className="text-xl sm:text-3xl font-bold text-foreground mb-1 sm:mb-2">
                   {estatisticas.total_concursos.toLocaleString('pt-BR')}
                 </div>
-                <div className="text-xs sm:text-sm text-muted-foreground">Concursos</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Aulas</div>
               </div>
               <div className="text-center">
                 <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-2 sm:mb-4">
@@ -166,6 +253,110 @@ const Home = () => {
               </div>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Cursos Section - NOVA SEÇÃO */}
+      <section className="py-10 sm:py-16 bg-gradient-to-br from-blue-50/50 to-background">
+        <div className="container mx-auto px-4">
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Cursos em Promoção</h2>
+            <p className="text-sm sm:text-base text-muted-foreground">Aproveite as melhores ofertas para sua aprovação</p>
+          </div>
+
+          <div className="relative">
+            {/* Carousel Container */}
+            <div className="overflow-hidden">
+              <div 
+                className="flex transition-transform duration-500 ease-in-out gap-4 sm:gap-6"
+                style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+              >
+                {cursosMock.map((curso) => (
+                  <div 
+                    key={curso.id} 
+                    className="flex-shrink-0 w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
+                  >
+                    <div className="bg-card rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-border">
+                      {/* ATUALIZAR: Substituir src pela URL real da imagem */}
+                      <div className="relative h-48 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                        <Book className="w-16 h-16 text-white opacity-50" />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-white/80 text-sm font-medium">Imagem do Curso</span>
+                        </div>
+                      </div>
+                      
+                      <div className="p-4 sm:p-6">
+                        <h3 className="text-lg font-bold text-foreground mb-4 line-clamp-2 min-h-[3.5rem]">
+                          {curso.titulo}
+                        </h3>
+                        
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-red-500 line-through">
+                              R$ {curso.valorAnterior.toFixed(2).replace('.', ',')}
+                            </span>
+                          </div>
+                          
+                          <div className="text-2xl font-bold text-green-600">
+                            R$ {curso.valorPromocional.toFixed(2).replace('.', ',')}
+                          </div>
+                          
+                          <div className="pt-2">
+                            <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">
+                              {Math.round((1 - curso.valorPromocional / curso.valorAnterior) * 100)}% OFF
+                            </span>
+                          </div>
+                        </div>
+                        
+                        <Button className="w-full mt-4 bg-blue-600 hover:bg-blue-700">
+                          Ver Curso
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Navigation Buttons */}
+            {maxSlides > 1 && (
+              <>
+                <button
+                  onClick={prevSlide}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors z-10 hidden sm:block"
+                  aria-label="Slide anterior"
+                >
+                  <ChevronLeft className="w-6 h-6 text-gray-700" />
+                </button>
+                
+                <button
+                  onClick={nextSlide}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors z-10 hidden sm:block"
+                  aria-label="Próximo slide"
+                >
+                  <ChevronRight className="w-6 h-6 text-gray-700" />
+                </button>
+              </>
+            )}
+
+            {/* Dots Indicator */}
+            {maxSlides > 1 && (
+              <div className="flex justify-center gap-2 mt-6">
+                {Array.from({ length: maxSlides }).map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentSlide(index)}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      currentSlide === index 
+                        ? 'bg-blue-600 w-8' 
+                        : 'bg-gray-300 hover:bg-gray-400'
+                    }`}
+                    aria-label={`Ir para slide ${index + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
