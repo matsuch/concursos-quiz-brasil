@@ -256,10 +256,10 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Cursos Section - NOVA SEÇÃO */}
+      {/* Cursos Section - COM ESPAÇAMENTO MELHORADO */}
       <section className="py-10 sm:py-16 bg-gradient-to-br from-blue-50/50 to-background">
         <div className="container mx-auto px-4">
-          <div className="mb-6 sm:mb-8">
+          <div className="mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Cursos em Promoção</h2>
             <p className="text-sm sm:text-base text-muted-foreground">Aproveite as melhores ofertas para sua aprovação</p>
           </div>
@@ -268,47 +268,39 @@ const Home = () => {
             {/* Carousel Container */}
             <div className="overflow-hidden">
               <div 
-                className="flex transition-transform duration-500 ease-in-out gap-4 sm:gap-6"
+                className="flex transition-transform duration-700 ease-in-out"
                 style={{ transform: `translateX(-${currentSlide * 100}%)` }}
               >
-                {cursosMock.map((curso) => (
+                {cursosMock.map((curso, index) => (
                   <div 
-                    key={curso.id} 
-                    className="flex-shrink-0 w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
+                    key={curso.id}
+                    className="flex-shrink-0 px-3"
+                    style={{ width: `calc(${100 / (window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1)}% - 24px)` }}
                   >
-                    <div className="bg-card rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-border">
-                      {/* ATUALIZAR: Substituir src pela URL real da imagem */}
+                    <div className="bg-card rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 border border-border">
                       <div className="relative h-48 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
-                        <Book className="w-16 h-16 text-white opacity-50" />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-white/80 text-sm font-medium">Imagem do Curso</span>
-                        </div>
+                        <Book className="w-20 h-20 text-white opacity-50" />
+                        <span className="absolute text-white/80 text-sm font-medium">Imagem do Curso</span>
                       </div>
-                      
-                      <div className="p-4 sm:p-6">
+
+                      <div className="p-6">
                         <h3 className="text-lg font-bold text-foreground mb-4 line-clamp-2 min-h-[3.5rem]">
                           {curso.titulo}
                         </h3>
-                        
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm text-red-500 line-through">
-                              R$ {curso.valorAnterior.toFixed(2).replace('.', ',')}
-                            </span>
-                          </div>
-                          
+
+                        <div className="space-y-3">
+                          <span className="text-sm text-red-500 line-through">
+                            R$ {curso.valorAnterior.toFixed(2).replace('.', ',')}
+                          </span>
                           <div className="text-2xl font-bold text-green-600">
                             R$ {curso.valorPromocional.toFixed(2).replace('.', ',')}
                           </div>
-                          
-                          <div className="pt-2">
-                            <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">
-                              {Math.round((1 - curso.valorPromocional / curso.valorAnterior) * 100)}% OFF
-                            </span>
-                          </div>
+                          <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">
+                            {Math.round((1 - curso.valorPromocional / curso.valorAnterior) * 100)}% OFF
+                          </span>
                         </div>
-                        
-                        <Button className="w-full mt-4 bg-blue-600 hover:bg-blue-700">
+
+                        <Button className="w-full mt-6 bg-blue-600 hover:bg-blue-700">
                           Ver Curso
                         </Button>
                       </div>
@@ -317,45 +309,6 @@ const Home = () => {
                 ))}
               </div>
             </div>
-
-            {/* Navigation Buttons */}
-            {maxSlides > 1 && (
-              <>
-                <button
-                  onClick={prevSlide}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors z-10 hidden sm:block"
-                  aria-label="Slide anterior"
-                >
-                  <ChevronLeft className="w-6 h-6 text-gray-700" />
-                </button>
-                
-                <button
-                  onClick={nextSlide}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors z-10 hidden sm:block"
-                  aria-label="Próximo slide"
-                >
-                  <ChevronRight className="w-6 h-6 text-gray-700" />
-                </button>
-              </>
-            )}
-
-            {/* Dots Indicator */}
-            {maxSlides > 1 && (
-              <div className="flex justify-center gap-2 mt-6">
-                {Array.from({ length: maxSlides }).map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentSlide(index)}
-                    className={`w-2 h-2 rounded-full transition-all ${
-                      currentSlide === index 
-                        ? 'bg-blue-600 w-8' 
-                        : 'bg-gray-300 hover:bg-gray-400'
-                    }`}
-                    aria-label={`Ir para slide ${index + 1}`}
-                  />
-                ))}
-              </div>
-            )}
           </div>
         </div>
       </section>
