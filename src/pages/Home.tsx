@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import ConcursoCard from "@/components/ConcursoCard";
 import { Button } from "@/components/ui/button";
-import { Brain, Swords, Book, TrendingUp, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Brain, Book, TrendingUp, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -27,7 +27,7 @@ interface Estatisticas {
 interface Curso {
   id: string;
   titulo: string;
-  imagem: string; // ATUALIZAR: Trocar pela URL real da imagem do curso
+  imagem: string;
   valorAnterior: number;
   valorPromocional: number;
 }
@@ -48,35 +48,35 @@ const Home = () => {
     {
       id: "1",
       titulo: "Preparatório Completo para Tribunais",
-      imagem: "/placeholder-course-1.jpg", // ATUALIZAR: URL da imagem
+      imagem: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800", // ATUALIZAR: URL da imagem
       valorAnterior: 997.00,
       valorPromocional: 497.00
     },
     {
       id: "2",
       titulo: "Direito Administrativo para Concursos",
-      imagem: "/placeholder-course-2.jpg", // ATUALIZAR: URL da imagem
+      imagem: "https://images.unsplash.com/photo-1668092548064-730e05fd0324/", // ATUALIZAR: URL da imagem
       valorAnterior: 697.00,
       valorPromocional: 297.00
     },
     {
       id: "3",
       titulo: "Português Descomplicado",
-      imagem: "/placeholder-course-3.jpg", // ATUALIZAR: URL da imagem
+      imagem: "https://images.unsplash.com/photo-1564846824172-dee7b0a26785", // ATUALIZAR: URL da imagem
       valorAnterior: 497.00,
       valorPromocional: 197.00
     },
     {
       id: "4",
       titulo: "Raciocínio Lógico Matemático",
-      imagem: "/placeholder-course-4.jpg", // ATUALIZAR: URL da imagem
+      imagem: "https://plus.unsplash.com/premium_photo-1724800663657-3e57bf4f622c?w=500", // ATUALIZAR: URL da imagem
       valorAnterior: 597.00,
       valorPromocional: 247.00
     },
     {
       id: "5",
       titulo: "Informática para Concursos",
-      imagem: "/placeholder-course-5.jpg", // ATUALIZAR: URL da imagem
+      imagem: "https://images.unsplash.com/photo-1650600538903-ec09f670c391?w=500", // ATUALIZAR: URL da imagem
       valorAnterior: 397.00,
       valorPromocional: 147.00
     }
@@ -201,14 +201,15 @@ const Home = () => {
                 <Brain className="w-5 h-5 mr-2" />
                 Começar Quiz
               </Button>
+              
               <Button 
                 size="lg" 
                 variant="outline"
-                onClick={() => navigate("/duelo")}
-                className="w-full sm:w-auto"
+                onClick={() => navigate("/aulas")}
+                className="w-full sm:w-auto bg-[#FACC15] hover:bg-[#EAB308] transition-colors"
               >
-                <Swords className="w-5 h-5 mr-2" />
-                Modo Duelo
+                <Book className="w-5 h-5 mr-2" />
+                Minhas Aulas
               </Button>
             </div>
           </div>
@@ -256,10 +257,10 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Cursos Section - COM ESPAÇAMENTO MELHORADO */}
+      {/* Cursos Section */}
       <section className="py-10 sm:py-16 bg-gradient-to-br from-blue-50/50 to-background">
         <div className="container mx-auto px-4">
-          <div className="mb-8 sm:mb-12">
+          <div className="mb-6 sm:mb-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Cursos em Promoção</h2>
             <p className="text-sm sm:text-base text-muted-foreground">Aproveite as melhores ofertas para sua aprovação</p>
           </div>
@@ -268,39 +269,47 @@ const Home = () => {
             {/* Carousel Container */}
             <div className="overflow-hidden">
               <div 
-                className="flex transition-transform duration-700 ease-in-out"
+                className="flex transition-transform duration-500 ease-in-out gap-4 sm:gap-6"
                 style={{ transform: `translateX(-${currentSlide * 100}%)` }}
               >
-                {cursosMock.map((curso, index) => (
+                {cursosMock.map((curso) => (
                   <div 
-                    key={curso.id}
-                    className="flex-shrink-0 px-3"
-                    style={{ width: `calc(${100 / (window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1)}% - 24px)` }}
+                    key={curso.id} 
+                    className="flex-shrink-0 w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
                   >
-                    <div className="bg-card rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 border border-border">
-                      <div className="relative h-48 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
-                        <Book className="w-20 h-20 text-white opacity-50" />
-                        <span className="absolute text-white/80 text-sm font-medium">Imagem do Curso</span>
+                    <div className="bg-card rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-border">
+                      <div className="relative h-48 overflow-hidden">
+                        <img 
+                          src={curso.imagem} 
+                          alt={curso.titulo}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
-
-                      <div className="p-6">
-                        <h3 className="text-lg font-bold text-foreground mb-4 line-clamp-2 min-h-[3.5rem]">
+                      
+                      <div className="p-4 sm:p-4">
+                        <h3 className="text-lg font-bold text-foreground line-clamp-2 min-h-[3.5rem]">
                           {curso.titulo}
                         </h3>
-
-                        <div className="space-y-3">
-                          <span className="text-sm text-red-500 line-through">
-                            R$ {curso.valorAnterior.toFixed(2).replace('.', ',')}
-                          </span>
+                        
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-red-500 line-through">
+                              R$ {curso.valorAnterior.toFixed(2).replace('.', ',')}
+                            </span>
+                          </div>
+                          
                           <div className="text-2xl font-bold text-green-600">
                             R$ {curso.valorPromocional.toFixed(2).replace('.', ',')}
                           </div>
-                          <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">
-                            {Math.round((1 - curso.valorPromocional / curso.valorAnterior) * 100)}% OFF
-                          </span>
+                          
+                          <div className="pt-2">
+                            <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">
+                              {Math.round((1 - curso.valorPromocional / curso.valorAnterior) * 100)}% OFF
+                            </span>
+                          </div>
                         </div>
-
-                        <Button className="w-full mt-6 bg-blue-600 hover:bg-blue-700">
+                        
+                        <Button className="w-full mt-4 bg-blue-600 hover:bg-blue-700">
                           Ver Curso
                         </Button>
                       </div>
@@ -309,6 +318,45 @@ const Home = () => {
                 ))}
               </div>
             </div>
+
+            {/* Navigation Buttons */}
+            {maxSlides > 1 && (
+              <>
+                <button
+                  onClick={prevSlide}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors z-10 hidden sm:block"
+                  aria-label="Slide anterior"
+                >
+                  <ChevronLeft className="w-6 h-6 text-gray-700" />
+                </button>
+                
+                <button
+                  onClick={nextSlide}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors z-10 hidden sm:block"
+                  aria-label="Próximo slide"
+                >
+                  <ChevronRight className="w-6 h-6 text-gray-700" />
+                </button>
+              </>
+            )}
+
+            {/* Dots Indicator */}
+            {maxSlides > 1 && (
+              <div className="flex justify-center gap-2 mt-6">
+                {Array.from({ length: maxSlides }).map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentSlide(index)}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      currentSlide === index 
+                        ? 'bg-blue-600 w-8' 
+                        : 'bg-gray-300 hover:bg-gray-400'
+                    }`}
+                    aria-label={`Ir para slide ${index + 1}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>
