@@ -116,6 +116,27 @@ export type Database = {
         }
         Relationships: []
       }
+      courses: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          title: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          title?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          title?: string | null
+        }
+        Relationships: []
+      }
       duel_questions: {
         Row: {
           duel_id: string
@@ -276,6 +297,35 @@ export type Database = {
           subject?: string
         }
         Relationships: []
+      }
+      modules: {
+        Row: {
+          course_id: string | null
+          id: string
+          order_index: number | null
+          title: string | null
+        }
+        Insert: {
+          course_id?: string | null
+          id?: string
+          order_index?: number | null
+          title?: string | null
+        }
+        Update: {
+          course_id?: string | null
+          id?: string
+          order_index?: number | null
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "modules_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -529,30 +579,59 @@ export type Database = {
           },
         ]
       }
-      videos: {
+      user_progress: {
         Row: {
-          id: string
-          module_id: string | null
-          title: string | null
-          duration: string | null
-          url: string | null
-          order_index: number | null
+          completed: boolean | null
+          completed_at: string | null
+          user_id: string
+          video_id: string
         }
         Insert: {
-          id?: string
-          module_id?: string | null
-          title?: string | null
-          duration?: string | null
-          url?: string | null
-          order_index?: number | null
+          completed?: boolean | null
+          completed_at?: string | null
+          user_id: string
+          video_id: string
         }
         Update: {
+          completed?: boolean | null
+          completed_at?: string | null
+          user_id?: string
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_progress_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      videos: {
+        Row: {
+          duration: string | null
+          id: string
+          module_id: string | null
+          order_index: number | null
+          title: string | null
+          url: string | null
+        }
+        Insert: {
+          duration?: string | null
           id?: string
           module_id?: string | null
-          title?: string | null
-          duration?: string | null
-          url?: string | null
           order_index?: number | null
+          title?: string | null
+          url?: string | null
+        }
+        Update: {
+          duration?: string | null
+          id?: string
+          module_id?: string | null
+          order_index?: number | null
+          title?: string | null
+          url?: string | null
         }
         Relationships: [
           {
@@ -561,88 +640,9 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "modules"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
-      user_progress: {
-      Row: {
-        user_id: string
-        video_id: string
-        completed: boolean | null
-        completed_at: string | null
-      }
-      Insert: {
-        user_id: string
-        video_id: string
-        completed?: boolean | null
-        completed_at?: string | null
-      }
-      Update: {
-        user_id?: string
-        video_id?: string
-        completed?: boolean | null
-        completed_at?: string | null
-      }
-      Relationships: [
-        {
-          foreignKeyName: "user_progress_video_id_fkey"
-          columns: ["video_id"]
-          isOneToOne: false
-          referencedRelation: "videos"
-          referencedColumns: ["id"]
-        }
-      ]
-    }
-    modules: {
-      Row: {
-        id: string
-        course_id: string | null
-        title: string | null
-        order_index: number | null
-      }
-      Insert: {
-        id?: string
-        course_id?: string | null
-        title?: string | null
-        order_index?: number | null
-      }
-      Update: {
-        id?: string
-        course_id?: string | null
-        title?: string | null
-        order_index?: number | null
-      }
-      Relationships: [
-        {
-          foreignKeyName: "modules_course_id_fkey"
-          columns: ["course_id"]
-          isOneToOne: false
-          referencedRelation: "courses"
-          referencedColumns: ["id"]
-        }
-      ]
-    }
-    courses: {
-      Row: {
-        id: string
-        title: string | null
-        description: string | null
-        created_at: string | null
-      }
-      Insert: {
-        id?: string
-        title?: string | null
-        description?: string | null
-        created_at?: string | null
-      }
-      Update: {
-        id?: string
-        title?: string | null
-        description?: string | null
-        created_at?: string | null
-      }
-      Relationships: []
-    }
     }
     Views: {
       [_ in never]: never
