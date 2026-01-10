@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import ConcursoCard from "@/components/ConcursoCard";
+import PricingSection from "@/components/PricingSection";
 import { Button } from "@/components/ui/button";
 import { Brain, Book, TrendingUp, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -360,6 +361,9 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Pricing Section */}
+      <PricingSection />
 
       {/* Concursos Section */}
       <section className="py-10 sm:py-16">
