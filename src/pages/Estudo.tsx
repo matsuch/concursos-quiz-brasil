@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
 import { useFlashcardProgress } from "@/hooks/useFlashcardProgress";
 import { CreateFlashcardDialog } from "@/components/CreateFlashcardDialog";
 import { useToast } from "@/hooks/use-toast";
@@ -217,6 +218,7 @@ export default function Estudo() {
   const [selectedSubjectName, setSelectedSubjectName] = useState<string | null>(null);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const { user } = useAuth();
+  const { hasFeature, subscribed } = useSubscription();
   const { progress, fetchProgress, markAsStudied, getProgress } = useFlashcardProgress();
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -365,8 +367,13 @@ export default function Estudo() {
           <p className="text-muted-foreground max-w-2xl mx-auto mb-4">
             Estude as principais matérias de concursos públicos com flashcards interativos e resumos objetivos
           </p>
-          {user && (
+          {user && subscribed && hasFeature("flashcardsCustom") && (
             <CreateFlashcardDialog userId={user.id} onSuccess={handleFlashcardCreated} />
+          )}
+          {user && (!subscribed || !hasFeature("flashcardsCustom")) && (
+            <p className="text-sm text-muted-foreground">
+              Faça upgrade para o plano Padrão para criar flashcards personalizados
+            </p>
           )}
         </div>
 
