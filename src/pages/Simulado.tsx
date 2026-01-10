@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { PremiumGate } from "@/components/PremiumGate";
 
 interface SimuladoQuestion {
   id: string;
@@ -191,84 +192,90 @@ const SimuladoPage = () => {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="container mx-auto px-4 py-10 sm:py-20">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-8">
-              <h1 className="text-2xl sm:text-4xl font-bold mb-3 sm:mb-4">Simulados</h1>
-              <p className="text-base sm:text-xl text-muted-foreground mb-6 sm:mb-8 px-2">
-                Pratique com simulados completos e teste seus conhecimentos!
-              </p>
-            </div>
-
-            {loading ? (
-              <div className="text-center py-12">
-                <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-primary" />
-                <p className="text-muted-foreground">Carregando simulados...</p>
+        <PremiumGate 
+          feature="simulado"
+          title="Simulados Completos"
+          description="Os simulados estão disponíveis no plano Premium. Pratique com provas completas e tenha suas respostas corrigidas!"
+        >
+          <div className="container mx-auto px-4 py-10 sm:py-20">
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-8">
+                <h1 className="text-2xl sm:text-4xl font-bold mb-3 sm:mb-4">Simulados</h1>
+                <p className="text-base sm:text-xl text-muted-foreground mb-6 sm:mb-8 px-2">
+                  Pratique com simulados completos e teste seus conhecimentos!
+                </p>
               </div>
-            ) : (
-              <div className="grid gap-4">
-                {simulados.map((simulado) => (
-                  <Card
-                    key={simulado.id}
-                    className={cn(
-                      "p-6 cursor-pointer transition-all duration-200 hover:shadow-lg",
-                      selectedSimulado?.id === simulado.id
-                        ? "border-primary border-2 bg-primary/5"
-                        : "border-border hover:border-primary/50"
-                    )}
-                    onClick={() => {
-                      setSelectedSimulado(simulado);
-                      fetchQuestions(simulado.id);
-                    }}
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                      <div className="flex-1">
-                        <h3 className="text-lg sm:text-xl font-bold mb-2">
-                          {simulado.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground mb-3">
-                          {simulado.description}
-                        </p>
-                        <div className="flex flex-wrap gap-3 text-sm">
-                          <div className="flex items-center gap-1 text-muted-foreground">
-                            <BookOpen className="w-4 h-4" />
-                            <span>{simulado.total_questions} questões</span>
-                          </div>
-                          <div className="flex items-center gap-1 text-muted-foreground">
-                            <Clock className="w-4 h-4" />
-                            <span>{simulado.duration_minutes} minutos</span>
+
+              {loading ? (
+                <div className="text-center py-12">
+                  <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-primary" />
+                  <p className="text-muted-foreground">Carregando simulados...</p>
+                </div>
+              ) : (
+                <div className="grid gap-4">
+                  {simulados.map((simulado) => (
+                    <Card
+                      key={simulado.id}
+                      className={cn(
+                        "p-6 cursor-pointer transition-all duration-200 hover:shadow-lg",
+                        selectedSimulado?.id === simulado.id
+                          ? "border-primary border-2 bg-primary/5"
+                          : "border-border hover:border-primary/50"
+                      )}
+                      onClick={() => {
+                        setSelectedSimulado(simulado);
+                        fetchQuestions(simulado.id);
+                      }}
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div className="flex-1">
+                          <h3 className="text-lg sm:text-xl font-bold mb-2">
+                            {simulado.title}
+                          </h3>
+                          <p className="text-sm text-muted-foreground mb-3">
+                            {simulado.description}
+                          </p>
+                          <div className="flex flex-wrap gap-3 text-sm">
+                            <div className="flex items-center gap-1 text-muted-foreground">
+                              <BookOpen className="w-4 h-4" />
+                              <span>{simulado.total_questions} questões</span>
+                            </div>
+                            <div className="flex items-center gap-1 text-muted-foreground">
+                              <Clock className="w-4 h-4" />
+                              <span>{simulado.duration_minutes} minutos</span>
+                            </div>
                           </div>
                         </div>
+                        {selectedSimulado?.id === simulado.id && (
+                          <CheckCircle2 className="w-8 h-8 text-primary flex-shrink-0" />
+                        )}
                       </div>
-                      {selectedSimulado?.id === simulado.id && (
-                        <CheckCircle2 className="w-8 h-8 text-primary flex-shrink-0" />
-                      )}
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            )}
+                    </Card>
+                  ))}
+                </div>
+              )}
 
-            {selectedSimulado && questions.length > 0 && (
-              <div className="mt-8 text-center">
-                <Button
-                  size="lg"
-                  onClick={startSimulado}
-                  disabled={loading}
-                  className="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary"
-                >
-                  <Play className="w-5 h-5 mr-2" />
-                  Iniciar Simulado
-                </Button>
-                {!user && (
-                  <p className="text-sm text-muted-foreground mt-4">
-                    Faça login para salvar seu desempenho e ganhar pontos!
-                  </p>
-                )}
-              </div>
-            )}
+              {selectedSimulado && questions.length > 0 && (
+                <div className="mt-8 text-center">
+                  <Button
+                    size="lg"
+                    onClick={startSimulado}
+                    disabled={loading}
+                    className="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary"
+                  >
+                    <Play className="w-5 h-5 mr-2" />
+                    Iniciar Simulado
+                  </Button>
+                  {!user && (
+                    <p className="text-sm text-muted-foreground mt-4">
+                      Faça login para salvar seu desempenho e ganhar pontos!
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        </PremiumGate>
       </div>
     );
   }
