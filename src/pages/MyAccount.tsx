@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { AlertCircle, CreditCard, Calendar, CheckCircle, XCircle, Loader2, LogIn } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
+import Navbar from "@/components/Navbar";
 
 type Subscription = {
   id: string;
@@ -213,120 +214,123 @@ export default function MyAccount() {
   const isCanceling = subscription.cancel_at_period_end;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-3xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Minha Conta</h1>
-          <p className="text-gray-600">Gerencie sua assinatura e informações de pagamento</p>
-        </div>
-
-        {/* Alertas */}
-        {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <p className="text-red-800">{error}</p>
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gray-50 py-8 px-4">
+        <div className="max-w-3xl mx-auto">
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Minha Conta</h1>
+            <p className="text-gray-600">Gerencie sua assinatura e informações de pagamento</p>
           </div>
-        )}
 
-        {success && (
-          <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3">
-            <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-            <p className="text-green-800">{success}</p>
-          </div>
-        )}
-
-        {isCanceling && (
-          <div className="mb-6 bg-orange-50 border border-orange-200 rounded-lg p-4 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="text-orange-800 font-medium">Assinatura será cancelada</p>
-              <p className="text-orange-700 text-sm mt-1">
-                Você terá acesso até {formatDate(subscription.current_period_end)}
-              </p>
+          {/* Alertas */}
+          {error && (
+            <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <p className="text-red-800">{error}</p>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Card de Assinatura */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-blue-100 text-sm mb-1">Plano Atual</p>
-                <h2 className="text-2xl font-bold">{subscription.plan_name}</h2>
-              </div>
-              <CreditCard className="w-12 h-12 text-blue-200" />
+          {success && (
+            <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3">
+              <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <p className="text-green-800">{success}</p>
             </div>
-          </div>
+          )}
 
-          <div className="p-6">
-            {/* Status */}
-            <div className="flex items-center justify-between mb-6 pb-6 border-b">
+          {isCanceling && (
+            <div className="mb-6 bg-orange-50 border border-orange-200 rounded-lg p-4 flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm text-gray-600 mb-1">Status da Assinatura</p>
-                <div className="flex items-center gap-2">
-                  <StatusIcon className="w-5 h-5" />
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusInfo.color}`}>
-                    {statusInfo.label}
-                  </span>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-sm text-gray-600 mb-1">Valor</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  R$ {subscription.plan_amount.toFixed(2)}
-                  <span className="text-sm text-gray-600 font-normal">/mês</span>
+                <p className="text-orange-800 font-medium">Assinatura será cancelada</p>
+                <p className="text-orange-700 text-sm mt-1">
+                  Você terá acesso até {formatDate(subscription.current_period_end)}
                 </p>
               </div>
             </div>
+          )}
 
-            {/* Próxima Cobrança */}
-            {subscription.status === 'active' && (
-              <div className="flex items-center gap-3 mb-6 p-4 bg-gray-50 rounded-lg">
-                <Calendar className="w-5 h-5 text-gray-600" />
+          {/* Card de Assinatura */}
+          <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white">
+              <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">
-                    {isCanceling ? 'Acesso até' : 'Próxima cobrança'}
-                  </p>
-                  <p className="font-medium text-gray-900">
-                    {formatDate(subscription.current_period_end)}
+                  <p className="text-blue-100 text-sm mb-1">Plano Atual</p>
+                  <h2 className="text-2xl font-bold">{subscription.plan_name}</h2>
+                </div>
+                <CreditCard className="w-12 h-12 text-blue-200" />
+              </div>
+            </div>
+
+            <div className="p-6">
+              {/* Status */}
+              <div className="flex items-center justify-between mb-6 pb-6 border-b">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Status da Assinatura</p>
+                  <div className="flex items-center gap-2">
+                    <StatusIcon className="w-5 h-5" />
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusInfo.color}`}>
+                      {statusInfo.label}
+                    </span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-600 mb-1">Valor</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    R$ {subscription.plan_amount.toFixed(2)}
+                    <span className="text-sm text-gray-600 font-normal">/mês</span>
                   </p>
                 </div>
               </div>
-            )}
 
-            {/* Ações */}
-            <div className="space-y-3">
-              {subscription.status === 'active' && !isCanceling && (
-                <button
-                  onClick={handleCancelSubscription}
-                  disabled={canceling}
-                  className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed font-medium flex items-center justify-center gap-2"
-                >
-                  {canceling && <Loader2 className="w-5 h-5 animate-spin" />}
-                  {canceling ? 'Cancelando...' : 'Cancelar Assinatura'}
-                </button>
+              {/* Próxima Cobrança */}
+              {subscription.status === 'active' && (
+                <div className="flex items-center gap-3 mb-6 p-4 bg-gray-50 rounded-lg">
+                  <Calendar className="w-5 h-5 text-gray-600" />
+                  <div>
+                    <p className="text-sm text-gray-600">
+                      {isCanceling ? 'Acesso até' : 'Próxima cobrança'}
+                    </p>
+                    <p className="font-medium text-gray-900">
+                      {formatDate(subscription.current_period_end)}
+                    </p>
+                  </div>
+                </div>
               )}
-              
-              <button 
-                onClick={() => window.open('https://billing.stripe.com/p/login/test_6oU00lfo9e9G9kIaod24000', '_blank')}
-                className="w-full border-2 border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition font-medium"
-              >
-                Gerenciar Pagamento no Stripe
-              </button>
+
+              {/* Ações */}
+              <div className="space-y-3">
+                {subscription.status === 'active' && !isCanceling && (
+                  <button
+                    onClick={handleCancelSubscription}
+                    disabled={canceling}
+                    className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed font-medium flex items-center justify-center gap-2"
+                  >
+                    {canceling && <Loader2 className="w-5 h-5 animate-spin" />}
+                    {canceling ? 'Cancelando...' : 'Cancelar Assinatura'}
+                  </button>
+                )}
+                
+                <button 
+                  onClick={() => window.open('https://billing.stripe.com/p/login/test_6oU00lfo9e9G9kIaod24000', '_blank')}
+                  className="w-full border-2 border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition font-medium"
+                >
+                  Gerenciar Pagamento no Stripe
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Informações Adicionais */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="font-semibold text-blue-900 mb-2">Informação Importante</h3>
-          <p className="text-sm text-blue-800">
-            Ao cancelar sua assinatura, você continuará tendo acesso a todos os recursos até o final do período já pago. Após esta data, sua conta será convertida para o plano gratuito.
-          </p>
+          {/* Informações Adicionais */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h3 className="font-semibold text-blue-900 mb-2">Informação Importante</h3>
+            <p className="text-sm text-blue-800">
+              Ao cancelar sua assinatura, você continuará tendo acesso a todos os recursos até o final do período já pago. Após esta data, sua conta será convertida para o plano gratuito.
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
