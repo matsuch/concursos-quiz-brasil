@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { PremiumGate } from "@/components/PremiumGate";
 
 interface SimuladoQuestion {
   id: string;
@@ -192,11 +191,9 @@ const SimuladoPage = () => {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <PremiumGate 
           feature="simulado"
           title="Simulados Completos"
           description="Os simulados estão disponíveis no plano Premium. Pratique com provas completas e tenha suas respostas corrigidas!"
-        >
           <div className="container mx-auto px-4 py-10 sm:py-20">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-8">
@@ -275,7 +272,6 @@ const SimuladoPage = () => {
               )}
             </div>
           </div>
-        </PremiumGate>
       </div>
     );
   }
