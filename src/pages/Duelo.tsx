@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Swords, User, Users, Zap } from "lucide-react";
 import SoloChallenge from "@/components/duelo/SoloChallenge";
 import OnlineDuel from "@/components/duelo/OnlineDuel";
-import { PremiumGate } from "@/components/PremiumGate";
 
 type GameMode = 'select' | 'solo' | 'duel';
 
@@ -23,11 +22,9 @@ const Duelo = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <PremiumGate 
         feature="duelo"
         title="Modo Duelo"
         description="O modo duelo está disponível a partir do plano Padrão. Enfrente outros jogadores e suba no ranking!"
-      >
         <div className="container mx-auto px-4 py-10 sm:py-20">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-2xl sm:text-4xl font-bold mb-3 sm:mb-4">Duelo de conhecimento</h1>
@@ -74,7 +71,6 @@ const Duelo = () => {
             </div>
           </div>
         </div>
-      </PremiumGate>
     </div>
   );
 };
