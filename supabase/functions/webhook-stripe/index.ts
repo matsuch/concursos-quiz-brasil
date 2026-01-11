@@ -61,8 +61,9 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Erro no webhook:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: errorMessage }),
       { status: 400, headers: { 'Content-Type': 'application/json' } }
     )
   }
