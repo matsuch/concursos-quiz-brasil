@@ -15,6 +15,7 @@ import Conquistas from "./pages/Conquistas";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import SimuladoPage from "./pages/Simulado";
+import MyAccount from "./pages/MyAccount";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
               <Route path="/simulado" element={<SimuladoPage />} />
               <Route path="/aulas" element={<Aulas />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="/minha-conta" element={<MyAccount />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </SubscriptionProvider>

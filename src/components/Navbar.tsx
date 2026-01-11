@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/hooks/useAuth";
-import { Trophy, Brain, Swords, Home, BookOpen, Award, Menu, LogIn, LogOut, User, Landmark, FileText, Scale } from "lucide-react";
+import { Trophy, Brain, Swords, Home, BookOpen, Award, Menu, LogIn, LogOut, User, Landmark, Scale } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useNavigate } from "react-router-dom";
 
-const navItems = [
+const publicNavItems = [
   { to: "/", icon: Home, label: "Início" },
   { to: "/estudo", icon: BookOpen, label: "Estudo" },
   { to: "/aulas", icon: BookOpen, label: "Aulas" },
@@ -17,10 +17,19 @@ const navItems = [
   { to: "/conquistas", icon: Award, label: "Conquistas" },
 ];
 
+const authOnlyNavItems = [
+  { to: "/minha-conta", icon: Landmark, label: "Minha Conta" },
+];
+
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+
+  // Combina itens públicos + itens que aparecem apenas para usuários logados
+  const navItems = user 
+    ? [...publicNavItems, ...authOnlyNavItems]
+    : publicNavItems;
 
   const handleAuthClick = async () => {
     if (user) {
@@ -82,7 +91,7 @@ const Navbar = () => {
 
           {/* Mobile Navigation */}
           <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger asChild className="md:hidden">
+            <SheetTrigger asChild className="md:hidden">
               <Button variant="ghost" size="icon" className="hover:text-green-600 hover:bg-green-50">
                 <Menu className="w-6 h-6" />
               </Button>
