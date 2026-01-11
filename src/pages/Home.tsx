@@ -204,9 +204,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <PricingSection />
-
       {/* Concursos Section */}
       <section className="py-10 sm:py-16">
         <div className="container mx-auto px-4 max-w-7xl">
@@ -238,6 +235,10 @@ const Home = () => {
           )}
         </div>
       </section>
+
+      {/* Pricing Section */}
+      <PricingSection />
+      
     </div>
   );
 };
