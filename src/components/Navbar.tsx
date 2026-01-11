@@ -8,13 +8,13 @@ import { useNavigate } from "react-router-dom";
 
 const navItems = [
   { to: "/", icon: Home, label: "Início" },
-  { to: "/quiz", icon: Brain, label: "Quiz" },
-  { to: "/duelo", icon: Swords, label: "Duelo" },
   { to: "/estudo", icon: BookOpen, label: "Estudo" },
-  { to: "/conquistas", icon: Award, label: "Conquistas" },
-  { to: "/ranking", icon: Trophy, label: "Ranking" },
-  { to: "/simulado", icon: BookOpen, label: "Simulado" },
   { to: "/aulas", icon: BookOpen, label: "Aulas" },
+  { to: "/quiz", icon: Brain, label: "Quiz" },
+  { to: "/simulado", icon: BookOpen, label: "Simulado" },
+  { to: "/duelo", icon: Swords, label: "Duelo" },
+  { to: "/ranking", icon: Trophy, label: "Ranking" },
+  { to: "/conquistas", icon: Award, label: "Conquistas" },
 ];
 
 const Navbar = () => {

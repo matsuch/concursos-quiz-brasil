@@ -44,45 +44,6 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  // ATUALIZAR: Substituir por dados reais do banco de dados
-  const cursosMock: Curso[] = [
-    {
-      id: "1",
-      titulo: "Preparatório Completo para Tribunais",
-      imagem: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800", // ATUALIZAR: URL da imagem
-      valorAnterior: 997.00,
-      valorPromocional: 497.00
-    },
-    {
-      id: "2",
-      titulo: "Direito Administrativo para Concursos",
-      imagem: "https://images.unsplash.com/photo-1668092548064-730e05fd0324/", // ATUALIZAR: URL da imagem
-      valorAnterior: 697.00,
-      valorPromocional: 297.00
-    },
-    {
-      id: "3",
-      titulo: "Português Descomplicado",
-      imagem: "https://images.unsplash.com/photo-1564846824172-dee7b0a26785", // ATUALIZAR: URL da imagem
-      valorAnterior: 497.00,
-      valorPromocional: 197.00
-    },
-    {
-      id: "4",
-      titulo: "Raciocínio Lógico Matemático",
-      imagem: "https://plus.unsplash.com/premium_photo-1724800663657-3e57bf4f622c?w=500", // ATUALIZAR: URL da imagem
-      valorAnterior: 597.00,
-      valorPromocional: 247.00
-    },
-    {
-      id: "5",
-      titulo: "Informática para Concursos",
-      imagem: "https://images.unsplash.com/photo-1650600538903-ec09f670c391?w=500", // ATUALIZAR: URL da imagem
-      valorAnterior: 397.00,
-      valorPromocional: 147.00
-    }
-  ];
-
   const slidesPerView = {
     mobile: 1,
     tablet: 2,
@@ -106,16 +67,6 @@ const Home = () => {
     window.addEventListener('resize', updateItemsPerSlide);
     return () => window.removeEventListener('resize', updateItemsPerSlide);
   }, []);
-
-  const maxSlides = Math.ceil(cursosMock.length / itemsPerSlide);
-
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % maxSlides);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + maxSlides) % maxSlides);
-  };
 
   useEffect(() => {
     fetchData();
@@ -172,11 +123,6 @@ const Home = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const getCurrentSlideItems = () => {
-    const start = currentSlide * itemsPerSlide;
-    return cursosMock.slice(start, start + itemsPerSlide);
   };
 
   return (
@@ -258,119 +204,19 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Cursos Section */}
-      <section className="py-10 sm:py-16 bg-gradient-to-br from-blue-50/50 to-background">
-        <div className="container mx-auto px-4">
-          <div className="mb-6 sm:mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Cursos em Promoção</h2>
-            <p className="text-sm sm:text-base text-muted-foreground">Aproveite as melhores ofertas para sua aprovação</p>
-          </div>
-
-          <div className="relative">
-            {/* Carousel Container */}
-            <div className="overflow-hidden">
-              <div 
-                className="flex transition-transform duration-500 ease-in-out gap-4 sm:gap-6"
-                style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-              >
-                {cursosMock.map((curso) => (
-                  <div 
-                    key={curso.id} 
-                    className="flex-shrink-0 w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
-                  >
-                    <div className="bg-card rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-border">
-                      <div className="relative h-48 overflow-hidden">
-                        <img 
-                          src={curso.imagem} 
-                          alt={curso.titulo}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      
-                      <div className="p-4 sm:p-4">
-                        <h3 className="text-lg font-bold text-foreground line-clamp-2 min-h-[3.5rem]">
-                          {curso.titulo}
-                        </h3>
-                        
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm text-red-500 line-through">
-                              R$ {curso.valorAnterior.toFixed(2).replace('.', ',')}
-                            </span>
-                          </div>
-                          
-                          <div className="text-2xl font-bold text-green-600">
-                            R$ {curso.valorPromocional.toFixed(2).replace('.', ',')}
-                          </div>
-                          
-                          <div className="pt-2">
-                            <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">
-                              {Math.round((1 - curso.valorPromocional / curso.valorAnterior) * 100)}% OFF
-                            </span>
-                          </div>
-                        </div>
-                        
-                        <Button className="w-full mt-4 bg-blue-600 hover:bg-blue-700">
-                          Ver Curso
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Navigation Buttons */}
-            {maxSlides > 1 && (
-              <>
-                <button
-                  onClick={prevSlide}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors z-10 hidden sm:block"
-                  aria-label="Slide anterior"
-                >
-                  <ChevronLeft className="w-6 h-6 text-gray-700" />
-                </button>
-                
-                <button
-                  onClick={nextSlide}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors z-10 hidden sm:block"
-                  aria-label="Próximo slide"
-                >
-                  <ChevronRight className="w-6 h-6 text-gray-700" />
-                </button>
-              </>
-            )}
-
-            {/* Dots Indicator */}
-            {maxSlides > 1 && (
-              <div className="flex justify-center gap-2 mt-6">
-                {Array.from({ length: maxSlides }).map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentSlide(index)}
-                    className={`w-2 h-2 rounded-full transition-all ${
-                      currentSlide === index 
-                        ? 'bg-blue-600 w-8' 
-                        : 'bg-gray-300 hover:bg-gray-400'
-                    }`}
-                    aria-label={`Ir para slide ${index + 1}`}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
       {/* Pricing Section */}
       <PricingSection />
 
       {/* Concursos Section */}
       <section className="py-10 sm:py-16">
-        <div className="container mx-auto px-4">
-          <div className="mb-6 sm:mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Novos Concursos</h2>
-            <p className="text-sm sm:text-base text-muted-foreground">Fique por dentro das últimas oportunidades</p>
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
+              Novos Concursos
+            </h2>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              Fique por dentro das últimas oportunidades
+            </p>
           </div>
 
           {loading ? (
@@ -378,13 +224,15 @@ const Home = () => {
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
           ) : concursos.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">Nenhum concurso encontrado no momento.</p>
-            </div>
+            <p className="text-center py-12 text-muted-foreground">
+              Nenhum concurso encontrado no momento.
+            </p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-fr">
               {concursos.map((concurso) => (
-                <ConcursoCard key={concurso.id} {...concurso} />
+                <div key={concurso.id} className="min-w-0">
+                  <ConcursoCard {...concurso} />
+                </div>
               ))}
             </div>
           )}

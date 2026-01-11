@@ -43,16 +43,19 @@ const ConcursoCard = ({
 
   return (
     <Card className="p-6 hover:shadow-lg transition-all duration-300 border-border hover:border-primary/20 relative">
-      <div className="flex justify-between items-start mb-4 gap-4">
-        <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-foreground mb-1 truncate">
-            {titulo}
-          </h3>
-          <p className="text-sm text-muted-foreground truncate">{orgao}</p>
-        </div>
+      <div className="flex flex-col items-start mb-4 gap-3">
         <Badge variant="outline" className={config.className}>
           {config.label}
         </Badge>
+
+        <div className="min-w-0">
+          <h3 className="text-lg font-semibold leading-tight">
+            {titulo}
+          </h3>
+          <p className="text-sm text-muted-foreground mt-1">
+            {orgao}
+          </p>
+        </div>
       </div>
 
       <div className="space-y-2 mb-4">
