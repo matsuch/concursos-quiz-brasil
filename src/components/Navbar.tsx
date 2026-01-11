@@ -12,12 +12,12 @@ const publicNavItems = [
   { to: "/aulas", icon: BookOpen, label: "Aulas" },
   { to: "/quiz", icon: Brain, label: "Quiz" },
   { to: "/simulado", icon: BookOpen, label: "Simulado" },
-  { to: "/duelo", icon: Swords, label: "Duelo" },
-  { to: "/ranking", icon: Trophy, label: "Ranking" },
-  { to: "/conquistas", icon: Award, label: "Conquistas" },
 ];
 
 const authOnlyNavItems = [
+  { to: "/duelo", icon: Swords, label: "Duelo" },
+  { to: "/conquistas", icon: Award, label: "Conquistas" },
+  { to: "/ranking", icon: Trophy, label: "Ranking" },
   { to: "/minha-conta", icon: Landmark, label: "Minha Conta" },
 ];
 

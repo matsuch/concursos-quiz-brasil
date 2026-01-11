@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 
 interface ProtectedRouteProps {
   children: ReactNode;
-  requiresPremium?: boolean; // Se true, exige assinatura ativa
+  requiresPremium?: boolean;
   fallbackPath?: string;
 }
 
