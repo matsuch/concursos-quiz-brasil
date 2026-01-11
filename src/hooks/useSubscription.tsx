@@ -4,6 +4,18 @@ import { useAuth } from '@/hooks/useAuth';
 
 type SubscriptionStatus = 'active' | 'canceled' | 'trialing' | 'past_due' | 'incomplete' | 'unpaid' | null;
 
+// Defina os planos disponíveis e suas features
+export type PlanName = 'Basic' | 'Standard' | 'Premium' | null;
+
+export const PLAN_FEATURES: Record<Exclude<PlanName, null>, string[]> = {
+  Basic: ['flashcards', 'quiz'],
+  Standard: ['flashcards', 'quiz', 'flashcardsCustom', 'duelo'],
+  Premium: ['flashcards', 'quiz', 'flashcardsCustom', 'duelo', 'simulado', 'ranking'],
+};
+
+// Hierarquia de planos (índice maior = plano superior)
+export const PLAN_HIERARCHY: Exclude<PlanName, null>[] = ['Basic', 'Standard', 'Premium'];
+
 interface Subscription {
   id: string;
   status: SubscriptionStatus;
@@ -17,10 +29,23 @@ interface SubscriptionContextType {
   subscription: Subscription | null;
   loading: boolean;
   error: string | null;
+  // Verifica se tem qualquer assinatura ativa
   hasActiveSubscription: () => boolean;
+  // Verifica se a assinatura está válida (ativa + dentro do período)
   isSubscriptionValid: () => boolean;
+  // Verifica se é premium (qualquer plano ativo)
   isPremium: () => boolean;
+  // Retorna o nome do plano atual
+  getCurrentPlan: () => PlanName;
+  // Verifica se o plano atual tem acesso a uma feature específica
+  hasFeature: (feature: string) => boolean;
+  // Verifica se o plano atual é igual ou superior ao plano requerido
+  hasPlanOrHigher: (requiredPlan: Exclude<PlanName, null>) => boolean;
+  // Retorna o plano mínimo necessário para uma feature
+  getRequiredPlan: (feature: string) => Exclude<PlanName, null> | null;
+  // Dias até expirar
   daysUntilExpiration: () => number | null;
+  // Atualizar dados
   refetch: () => Promise<void>;
 }
 
@@ -41,6 +66,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
 
     fetchSubscription();
     
+    // Real-time subscription updates
     const channel = supabase
       .channel('subscription-changes')
       .on(
@@ -83,6 +109,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
 
       if (subError) {
         if (subError.code === 'PGRST116') {
+          // Nenhuma assinatura encontrada
           setSubscription(null);
         } else {
           console.error('Erro ao buscar assinatura:', subError);
@@ -121,6 +148,46 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     return isSubscriptionValid();
   };
 
+  const getCurrentPlan = (): PlanName => {
+    if (!isSubscriptionValid() || !subscription) return null;
+    
+    // Normaliza o nome do plano
+    const planName = subscription.plan_name?.toLowerCase();
+    if (planName?.includes('premium')) return 'Premium';
+    if (planName?.includes('standard')) return 'Standard';
+    if (planName?.includes('basic')) return 'Basic';
+    
+    // Fallback baseado no valor
+    if (subscription.plan_amount >= 49) return 'Premium';
+    if (subscription.plan_amount >= 29) return 'Standard';
+    return 'Basic';
+  };
+
+  const hasFeature = (feature: string): boolean => {
+    const plan = getCurrentPlan();
+    if (!plan) return false;
+    return PLAN_FEATURES[plan]?.includes(feature) ?? false;
+  };
+
+  const hasPlanOrHigher = (requiredPlan: Exclude<PlanName, null>): boolean => {
+    const currentPlan = getCurrentPlan();
+    if (!currentPlan) return false;
+    
+    const currentIndex = PLAN_HIERARCHY.indexOf(currentPlan);
+    const requiredIndex = PLAN_HIERARCHY.indexOf(requiredPlan);
+    
+    return currentIndex >= requiredIndex;
+  };
+
+  const getRequiredPlan = (feature: string): Exclude<PlanName, null> | null => {
+    for (const plan of PLAN_HIERARCHY) {
+      if (PLAN_FEATURES[plan]?.includes(feature)) {
+        return plan;
+      }
+    }
+    return null;
+  };
+
   const daysUntilExpiration = (): number | null => {
     if (!subscription) return null;
     
@@ -132,13 +199,17 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     return diffDays > 0 ? diffDays : 0;
   };
 
-  const value = {
+  const value: SubscriptionContextType = {
     subscription,
     loading,
     error,
     hasActiveSubscription,
     isSubscriptionValid,
     isPremium,
+    getCurrentPlan,
+    hasFeature,
+    hasPlanOrHigher,
+    getRequiredPlan,
     daysUntilExpiration,
     refetch: fetchSubscription,
   };
