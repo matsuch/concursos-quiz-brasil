@@ -310,7 +310,7 @@ export default function MyAccount() {
               )}
               
               <button 
-                onClick={() => window.open('https://billing.stripe.com/p/login/acct_1So7cPQ8CcFgqvaD', '_blank')}
+                onClick={() => window.open('https://billing.stripe.com/p/login/test_6oU00lfo9e9G9kIaod24000', '_blank')}
                 className="w-full border-2 border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition font-medium"
               >
                 Gerenciar Pagamento no Stripe
