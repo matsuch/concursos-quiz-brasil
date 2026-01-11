@@ -191,9 +191,6 @@ const SimuladoPage = () => {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-          feature="simulado"
-          title="Simulados Completos"
-          description="Os simulados estão disponíveis no plano Premium. Pratique com provas completas e tenha suas respostas corrigidas!"
           <div className="container mx-auto px-4 py-10 sm:py-20">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-8">

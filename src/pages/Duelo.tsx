@@ -22,9 +22,6 @@ const Duelo = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-        feature="duelo"
-        title="Modo Duelo"
-        description="O modo duelo está disponível a partir do plano Padrão. Enfrente outros jogadores e suba no ranking!"
         <div className="container mx-auto px-4 py-10 sm:py-20">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-2xl sm:text-4xl font-bold mb-3 sm:mb-4">Duelo de conhecimento</h1>
