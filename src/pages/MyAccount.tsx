@@ -33,7 +33,6 @@ export default function MyAccount() {
       setLoading(true);
       setError(null);
 
-      // Verificar se usuário está autenticado
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       
       if (authError || !user) {
@@ -44,7 +43,6 @@ export default function MyAccount() {
 
       setIsAuthenticated(true);
 
-      // Buscar assinatura do usuário
       const { data, error: subError } = await supabase
         .from('subscriptions')
         .select('*')
@@ -53,7 +51,6 @@ export default function MyAccount() {
 
       if (subError) {
         if (subError.code === 'PGRST116') {
-          // Nenhuma assinatura encontrada
           setSubscription(null);
         } else {
           console.error('Erro ao buscar assinatura:', subError);
@@ -80,7 +77,6 @@ export default function MyAccount() {
       setError(null);
       setSuccess(null);
 
-      // Chamar a Edge Function de cancelamento
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
@@ -108,8 +104,6 @@ export default function MyAccount() {
       }
 
       setSuccess('Assinatura cancelada com sucesso! Você terá acesso até o final do período pago.');
-      
-      // Atualizar os dados
       await checkAuthAndFetchSubscription();
     } catch (err) {
       console.error('Erro ao cancelar:', err);
@@ -153,62 +147,74 @@ export default function MyAccount() {
     });
   };
 
+  // Tela de Loading
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="animate-spin h-12 w-12 text-blue-600 mx-auto" />
-          <p className="mt-4 text-gray-600">Carregando...</p>
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <Loader2 className="animate-spin h-12 w-12 text-blue-600 mx-auto" />
+            <p className="mt-4 text-gray-600">Carregando...</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
-  // Tela de login se não estiver autenticado
+  // Tela de Não Autenticado
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-md p-8 max-w-md w-full text-center">
-          <LogIn className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Acesso Restrito</h2>
-          <p className="text-gray-600 mb-6">Você precisa estar logado para acessar esta página.</p>
-          <div className="space-y-3">
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-md p-8 max-w-md w-full text-center">
+            <LogIn className="w-16 h-16 text-blue-600 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Acesso Restrito</h2>
+            <p className="text-gray-600 mb-6">Você precisa estar logado para acessar esta página.</p>
+            <div className="space-y-3">
+              <button 
+                onClick={() => navigate('/auth')}
+                className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium"
+              >
+                Fazer Login
+              </button>
+              <button 
+                onClick={() => navigate('/')}
+                className="w-full border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition font-medium"
+              >
+                Voltar ao Início
+              </button>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // Tela Sem Assinatura
+  if (!subscription) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-md p-8 max-w-md w-full text-center">
+            <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Sem Assinatura</h2>
+            <p className="text-gray-600 mb-6">Você ainda não possui uma assinatura ativa.</p>
             <button 
-              onClick={() => navigate('/login')}
-              className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium"
+              onClick={() => navigate('/pricing')}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
             >
-              Fazer Login
-            </button>
-            <button 
-              onClick={() => navigate('/')}
-              className="w-full border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition font-medium"
-            >
-              Voltar ao Início
+              Ver Planos
             </button>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
-  if (!subscription) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-md p-8 max-w-md w-full text-center">
-          <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Sem Assinatura</h2>
-          <p className="text-gray-600 mb-6">Você ainda não possui uma assinatura ativa.</p>
-          <button 
-            onClick={() => window.location.href = '/pricing'}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-          >
-            Ver Planos
-          </button>
-        </div>
-      </div>
-    );
-  }
-
+  // Tela Principal (Com Assinatura)
   const statusInfo = getStatusInfo(subscription.status);
   const StatusIcon = statusInfo.icon;
   const isCanceling = subscription.cancel_at_period_end;
