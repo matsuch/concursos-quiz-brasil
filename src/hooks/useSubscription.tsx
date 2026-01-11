@@ -1,6 +1,4 @@
-// src/hooks/useSubscription.ts
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -15,7 +13,20 @@ interface Subscription {
   cancel_at_period_end: boolean;
 }
 
-export function useSubscription() {
+interface SubscriptionContextType {
+  subscription: Subscription | null;
+  loading: boolean;
+  error: string | null;
+  hasActiveSubscription: () => boolean;
+  isSubscriptionValid: () => boolean;
+  isPremium: () => boolean;
+  daysUntilExpiration: () => number | null;
+  refetch: () => Promise<void>;
+}
+
+const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
+
+export function SubscriptionProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
@@ -30,7 +41,6 @@ export function useSubscription() {
 
     fetchSubscription();
     
-    // Subscription em tempo real (quando webhook atualizar)
     const channel = supabase
       .channel('subscription-changes')
       .on(
@@ -41,7 +51,7 @@ export function useSubscription() {
           table: 'subscriptions',
           filter: `user_id=eq.${user.id}`,
         },
-        (payload) => {
+        (payload: any) => {
           console.log('Assinatura atualizada em tempo real:', payload);
           if (payload.new) {
             setSubscription(payload.new as Subscription);
@@ -73,7 +83,6 @@ export function useSubscription() {
 
       if (subError) {
         if (subError.code === 'PGRST116') {
-          // Sem assinatura
           setSubscription(null);
         } else {
           console.error('Erro ao buscar assinatura:', subError);
@@ -90,7 +99,6 @@ export function useSubscription() {
     }
   };
 
-  // Funções auxiliares
   const hasActiveSubscription = (): boolean => {
     if (!subscription) return false;
     return subscription.status === 'active' || subscription.status === 'trialing';
@@ -102,7 +110,6 @@ export function useSubscription() {
     const validStatuses: SubscriptionStatus[] = ['active', 'trialing'];
     const isStatusValid = validStatuses.includes(subscription.status);
     
-    // Verifica se não expirou (mesmo cancelada, ainda tem acesso até o fim do período)
     const periodEnd = new Date(subscription.current_period_end);
     const now = new Date();
     const hasAccess = periodEnd > now;
@@ -125,7 +132,7 @@ export function useSubscription() {
     return diffDays > 0 ? diffDays : 0;
   };
 
-  return {
+  const value = {
     subscription,
     loading,
     error,
@@ -135,4 +142,18 @@ export function useSubscription() {
     daysUntilExpiration,
     refetch: fetchSubscription,
   };
+
+  return (
+    <SubscriptionContext.Provider value={value}>
+      {children}
+    </SubscriptionContext.Provider>
+  );
+}
+
+export function useSubscription() {
+  const context = useContext(SubscriptionContext);
+  if (context === undefined) {
+    throw new Error('useSubscription must be used within a SubscriptionProvider');
+  }
+  return context;
 }
