@@ -59,7 +59,7 @@ serve(async (req) => {
       headers: { 'Content-Type': 'application/json' },
     })
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Erro no webhook:', error)
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     return new Response(
@@ -103,6 +103,28 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
     
     // Buscar preço para pegar o valor
     const price = await stripe.prices.retrieve(priceId)
+    
+    // Buscar o produto para pegar o nome fantasia
+    let planName = 'Plano Premium' // fallback padrão
+    
+    if (typeof price.product === 'string') {
+      try {
+        const product = await stripe.products.retrieve(price.product)
+        // Prioridade: nome do produto > nickname do preço > fallback
+        planName = product.name || price.nickname || 'Plano Premium'
+        console.log('Nome do plano obtido:', planName)
+      } catch (err: unknown) {
+        console.error('Erro ao buscar produto:', err)
+        const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido'
+        console.error('Detalhes:', errorMessage)
+        planName = price.nickname || 'Plano Premium'
+      }
+    } else if (price.product && typeof price.product === 'object' && 'name' in price.product) {
+      // Se o produto já veio expandido
+      planName = price.product.name || price.nickname || 'Plano Premium'
+    } else {
+      planName = price.nickname || 'Plano Premium'
+    }
 
     // Preparar dados da assinatura
     const subscriptionData = {
@@ -111,7 +133,7 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
       stripe_subscription_id: subscription.id,
       stripe_price_id: priceId,
       status: subscription.status,
-      plan_name: price.nickname || price.product?.toString() || 'Plano Premium',
+      plan_name: planName,
       plan_amount: (price.unit_amount || 0) / 100,
       currency: price.currency,
       current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
@@ -154,8 +176,10 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
       }
     }
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Erro em handleSubscriptionUpdate:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido'
+    console.error('Detalhes do erro:', errorMessage)
   }
 }
 
