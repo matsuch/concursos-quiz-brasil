@@ -16,37 +16,33 @@ interface RankingPlayer {
 }
 
 const Ranking = () => {
-  const { data: players = [], isLoading } = useQuery({
+  const { data: players = [], isLoading } = useQuery<RankingPlayer[]>({
     queryKey: ['ranking'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('profiles')
-        .select('total_points, quizzes_completed')
+        .from('profiles_ranking')
+        .select('display_name, total_points, quizzes_completed')
         .order('total_points', { ascending: false })
         .limit(50);
 
       if (error) throw error;
 
-      return data.map((profile, index) => ({
+      return (data as { display_name: string | null; total_points: number | null; quizzes_completed: number | null }[]).map((profile, index) => ({
         position: index + 1,
-        name: 'Jogador Anônimo',
+        name: profile.display_name || 'Jogador Anônimo',
         points: profile.total_points || 0,
         quizzes: profile.quizzes_completed || 0,
-        accuracy: profile.quizzes_completed && profile.quizzes_completed > 0 ? 85 : 0, // Placeholder - would need quiz_attempts aggregation
-      })) as RankingPlayer[];
+        accuracy: profile.quizzes_completed && profile.quizzes_completed > 0 ? 85 : 0,
+      }));
     },
   });
 
   const getPositionIcon = (position: number) => {
     switch (position) {
-      case 1:
-        return <Trophy className="w-6 h-6 text-accent" />;
-      case 2:
-        return <Medal className="w-6 h-6 text-muted-foreground" />;
-      case 3:
-        return <Award className="w-6 h-6 text-amber-600" />;
-      default:
-        return null;
+      case 1: return <Trophy className="w-6 h-6 text-accent" />;
+      case 2: return <Medal className="w-6 h-6 text-muted-foreground" />;
+      case 3: return <Award className="w-6 h-6 text-amber-600" />;
+      default: return null;
     }
   };
 
@@ -59,7 +55,6 @@ const Ranking = () => {
       
       <div className="container mx-auto px-4 py-8 sm:py-12">
         <div className="max-w-4xl mx-auto">
-          {/* Header */}
           <div className="text-center mb-8 sm:mb-12">
             <h1 className="text-2xl sm:text-4xl font-bold mb-2">Ranking Global</h1>
             <p className="text-base sm:text-xl text-muted-foreground">
@@ -81,15 +76,11 @@ const Ranking = () => {
             </Card>
           ) : (
             <>
-              {/* Top 3 Podium */}
               {hasTopThree && (
                 <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-8 sm:mb-12">
-                  {/* 2nd Place */}
                   <div className="pt-6 sm:pt-8">
                     <Card className="p-3 sm:p-6 text-center border-2 border-border">
-                      <div className="flex justify-center mb-2 sm:mb-3">
-                        {getPositionIcon(2)}
-                      </div>
+                      <div className="flex justify-center mb-2 sm:mb-3">{getPositionIcon(2)}</div>
                       <Avatar className="w-10 h-10 sm:w-16 sm:h-16 mx-auto mb-2 sm:mb-3 bg-secondary/10">
                         <AvatarFallback className="text-secondary font-bold text-xs sm:text-base">
                           {topThree[1].name.split(' ').map(n => n[0]).join('')}
@@ -101,12 +92,9 @@ const Ranking = () => {
                     </Card>
                   </div>
 
-                  {/* 1st Place */}
                   <div className="pt-0">
                     <Card className="p-3 sm:p-6 text-center border-2 border-primary bg-gradient-to-br from-primary/5 to-transparent">
-                      <div className="flex justify-center mb-2 sm:mb-3">
-                        {getPositionIcon(1)}
-                      </div>
+                      <div className="flex justify-center mb-2 sm:mb-3">{getPositionIcon(1)}</div>
                       <Avatar className="w-12 h-12 sm:w-20 sm:h-20 mx-auto mb-2 sm:mb-3 bg-primary/10 border-2 sm:border-4 border-primary">
                         <AvatarFallback className="text-primary font-bold text-sm sm:text-xl">
                           {topThree[0].name.split(' ').map(n => n[0]).join('')}
@@ -118,12 +106,9 @@ const Ranking = () => {
                     </Card>
                   </div>
 
-                  {/* 3rd Place */}
                   <div className="pt-6 sm:pt-8">
                     <Card className="p-3 sm:p-6 text-center border-2 border-border">
-                      <div className="flex justify-center mb-2 sm:mb-3">
-                        {getPositionIcon(3)}
-                      </div>
+                      <div className="flex justify-center mb-2 sm:mb-3">{getPositionIcon(3)}</div>
                       <Avatar className="w-10 h-10 sm:w-16 sm:h-16 mx-auto mb-2 sm:mb-3 bg-accent/10">
                         <AvatarFallback className="text-accent-foreground font-bold text-xs sm:text-base">
                           {topThree[2].name.split(' ').map(n => n[0]).join('')}
@@ -137,7 +122,6 @@ const Ranking = () => {
                 </div>
               )}
 
-              {/* Full Ranking List */}
               <Card className="overflow-hidden">
                 <div className="divide-y divide-border">
                   {players.map((player) => (
