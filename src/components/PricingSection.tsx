@@ -149,9 +149,16 @@ export default function PricingSection() {
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
             Escolha seu Plano
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-4">
             Invista no seu futuro com nossos planos de estudo. Escolha o melhor para você e comece hoje!
           </p>
+          <Button 
+            variant="link" 
+            onClick={() => navigate("/planos")}
+            className="text-primary hover:text-primary/80"
+          >
+            Ver comparação detalhada dos planos →
+          </Button>
         </div>
 
         {checkingSubscription ? (
