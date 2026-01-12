@@ -42,6 +42,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
+
 // Mapeamento de strings para componentes de ícones Lucide
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   // Ícones de estudo
@@ -155,42 +156,39 @@ const MyAccount = () => {
   const [canceling, setCanceling] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [openingPortal, setOpeningPortal] = useState(false);
 
   const handleOpenPortal = async () => {
     try {
+      setOpeningPortal(true);
       setError(null);
-      
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        setError('Sessão expirada. Faça login novamente.');
-        return;
+
+      const { data, error } = await supabase.functions.invoke('create-portal-session');
+
+      if (error) {
+        throw error;
       }
 
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      
-      const response = await fetch(
-        `${supabaseUrl}/functions/v1/create-portal-session`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Erro ao abrir portal');
+      if (data?.error) {
+        throw new Error(data.error);
       }
 
-      window.open(result.url, '_blank');
-      
+      if (data?.url) {
+        // Mostrar mensagem antes de redirecionar
+        setSuccess('Abrindo portal de pagamento...');
+        
+        // Pequeno delay para o usuário ver a mensagem
+        setTimeout(() => {
+          window.open(data.url, '_blank');
+          setOpeningPortal(false);
+        }, 500);
+      } else {
+        throw new Error('URL do portal não encontrada');
+      }
     } catch (err) {
-      console.error('Erro:', err);
-      setError(err instanceof Error ? err.message : 'Erro ao abrir portal');
+      console.error('Erro ao abrir portal:', err);
+      setError(err instanceof Error ? err.message : 'Erro ao abrir portal de pagamento');
+      setOpeningPortal(false);
     }
   };
 
@@ -585,21 +583,38 @@ const MyAccount = () => {
                       <Button
                         variant="destructive"
                         onClick={handleCancelSubscription}
-                        disabled={canceling}
+                        disabled={canceling || openingPortal}
                         className="w-full"
                       >
                         {canceling && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                         {canceling ? 'Cancelando...' : 'Cancelar Assinatura'}
                       </Button>
                     )}
+                    
                     <Button 
                       variant="outline"
                       onClick={handleOpenPortal}
+                      disabled={openingPortal || canceling}
                       className="w-full"
                     >
-                      <Settings className="w-4 h-4 mr-2" />
-                      Gerenciar Pagamento no Stripe
+                      {openingPortal ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Abrindo portal...
+                        </>
+                      ) : (
+                        <>
+                          <Settings className="w-4 h-4 mr-2" />
+                          Gerenciar Pagamento no Stripe
+                        </>
+                      )}
                     </Button>
+                    
+                    {openingPortal && (
+                      <p className="text-sm text-muted-foreground text-center">
+                        Uma nova aba será aberta com o portal de pagamento
+                      </p>
+                    )}
                   </div>
                 </>
               ) : (
