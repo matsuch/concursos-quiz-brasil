@@ -12,6 +12,7 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 }
 
 serve(async (req) => {
@@ -20,27 +21,50 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders })
   }
 
-  try {
-    // Criar cliente Supabase com o token do usuário
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
-        },
+  if (req.method !== 'POST') {
+    return new Response(
+      JSON.stringify({ error: 'Método não permitido' }),
+      { 
+        status: 405, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
     )
+  }
 
-    // Verificar autenticação
-    const {
-      data: { user },
-      error: authError,
-    } = await supabaseClient.auth.getUser()
+  try {
+    const authHeader = req.headers.get('Authorization')
+    
+    console.log('Authorization header:', authHeader ? 'presente' : 'ausente')
+
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Authorization header ausente' }),
+        { 
+          status: 401, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
+
+    // Criar cliente Supabase com SERVICE_ROLE_KEY para operações admin
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    )
+
+    // Verificar o usuário usando o token JWT
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
+
+    console.log('User ID:', user?.id, 'Email:', user?.email)
 
     if (authError || !user) {
+      console.error('Erro de autenticação:', authError?.message)
       return new Response(
-        JSON.stringify({ error: 'Não autorizado' }),
+        JSON.stringify({ 
+          error: 'Não autorizado',
+          details: authError?.message 
+        }),
         { 
           status: 401, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -51,16 +75,20 @@ serve(async (req) => {
     console.log('Portal solicitado por:', user.email)
 
     // Buscar customer_id do Stripe
-    const { data: subscription, error: subError } = await supabaseClient
+    const { data: subscription, error: subError } = await supabaseAdmin
       .from('subscriptions')
       .select('stripe_customer_id, stripe_subscription_id')
       .eq('user_id', user.id)
       .single()
 
+    console.log('Subscription encontrada:', subscription?.stripe_customer_id)
+
     if (subError || !subscription?.stripe_customer_id) {
+      console.error('Erro ao buscar subscription:', subError?.message)
       return new Response(
         JSON.stringify({ 
-          error: 'Assinatura não encontrada. Você precisa ter uma assinatura ativa para acessar o portal.' 
+          error: 'Assinatura não encontrada. Você precisa ter uma assinatura ativa para acessar o portal.',
+          details: subError?.message
         }),
         { 
           status: 404, 
@@ -72,8 +100,12 @@ serve(async (req) => {
     console.log('Criando sessão do portal para customer:', subscription.stripe_customer_id)
 
     // Obter a URL de retorno
-    const origin = req.headers.get('origin') || req.headers.get('referer')?.split('/').slice(0, 3).join('/') || 'http://localhost:8080'
+    const origin = req.headers.get('origin') || 
+                   req.headers.get('referer')?.split('/').slice(0, 3).join('/') || 
+                   'http://localhost:8080'
     const returnUrl = `${origin}/minha-conta`
+
+    console.log('Return URL:', returnUrl)
 
     // Criar sessão do Customer Portal
     const session = await stripe.billingPortal.sessions.create({
