@@ -9,17 +9,17 @@ import { useNavigate } from "react-router-dom";
 const publicNavItems = [
   { to: "/", icon: Home, label: "Início" },
   { to: "/estudo", icon: BookOpen, label: "Estudo" },
-  { to: "/aulas", icon: BookOpen, label: "Aulas" },
   { to: "/quiz", icon: Brain, label: "Quiz" },
-  { to: "/simulado", icon: BookOpen, label: "Simulado" },
   { to: "/planos", icon: CreditCard, label: "Planos" },
 ];
 
 const authOnlyNavItems = [
+  { to: "/aulas", icon: BookOpen, label: "Aulas" },
   { to: "/duelo", icon: Swords, label: "Duelo" },
   { to: "/conquistas", icon: Award, label: "Conquistas" },
   { to: "/ranking", icon: Trophy, label: "Ranking" },
   { to: "/minha-conta", icon: Landmark, label: "Minha Conta" },
+  { to: "/simulado", icon: BookOpen, label: "Simulado" },
 ];
 
 const Navbar = () => {
