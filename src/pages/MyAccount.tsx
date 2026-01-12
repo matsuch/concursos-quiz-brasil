@@ -246,7 +246,10 @@ const MyAccount = () => {
   };
 
   const handleCancelSubscription = async () => {
-    if (!window.confirm('Tem certeza que deseja cancelar sua assinatura? Você continuará tendo acesso até o final do período pago.')) {
+    if (!window.confirm(
+      'Tem certeza que deseja cancelar sua assinatura? ' +
+      'Você continuará tendo acesso até o final do período pago.'
+    )) {
       return;
     }
 
@@ -255,6 +258,7 @@ const MyAccount = () => {
       setError(null);
       setSuccess(null);
 
+      // Verificar se há sessão ativa
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
@@ -262,21 +266,48 @@ const MyAccount = () => {
         return;
       }
 
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      
+      console.log('Chamando edge function cancel-subscription...');
+
+      // Invocar a edge function
       const { data, error } = await supabase.functions.invoke(
-        'cancel-subscription'
+        'cancel-subscription',
+        {
+          method: 'POST',
+        }
       );
 
+      console.log('Resposta da edge function:', { data, error });
+
       if (error) {
-        throw error;
+        console.error('Erro da edge function:', error);
+        throw new Error(error.message || 'Erro ao cancelar assinatura');
       }
 
-      setSuccess('Assinatura cancelada com sucesso! Você terá acesso até o final do período pago.');
+      // Verificar se houve erro na resposta da função
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      setSuccess(
+        data?.message || 
+        'Assinatura cancelada com sucesso! Você terá acesso até o final do período pago.'
+      );
+      
+      // Atualizar os dados após cancelamento
       await checkAuthAndFetchData();
+
     } catch (err) {
-      console.error('Erro ao cancelar:', err);
-      setError(err instanceof Error ? err.message : 'Erro ao cancelar assinatura. Tente novamente.');
+      console.error('Erro ao cancelar assinatura:', err);
+      
+      let errorMessage = 'Erro ao cancelar assinatura. Tente novamente.';
+      
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (typeof err === 'object' && err !== null && 'message' in err) {
+        errorMessage = String(err.message);
+      }
+      
+      setError(errorMessage);
     } finally {
       setCanceling(false);
     }
