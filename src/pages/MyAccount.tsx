@@ -574,7 +574,10 @@ const MyAccount = () => {
                     
                     <Button 
                       variant="outline"
-                      onClick={handleOpenPortal}
+                      onClick={() => {
+                        const url = `https://billing.stripe.com/p/login/test_6oU00lfo9e9G9kIaod24000${userEmail ? `?prefilled_email=${encodeURIComponent(userEmail)}` : ''}`;
+                        window.open(url, '_blank');
+                      }}
                       className="w-full"
                     >
                       <Settings className="w-4 h-4 mr-2" />
