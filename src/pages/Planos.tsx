@@ -235,15 +235,6 @@ export default function Planos() {
       {/* Header */}
       <div className="bg-gradient-to-b from-primary/10 to-background py-12 md:py-20">
         <div className="container mx-auto px-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(-1)}
-            className="mb-6"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Voltar
-          </Button>
-
           <div className="text-center max-w-3xl mx-auto">
             <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
               <Target className="w-3 h-3 mr-1" />
