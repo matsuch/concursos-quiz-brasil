@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/hooks/useAuth";
-import { Trophy, Brain, Swords, Home, BookOpen, Award, Menu, LogIn, LogOut, User, Landmark, Scale } from "lucide-react";
+import { Trophy, Brain, Swords, Home, BookOpen, Award, Menu, LogIn, LogOut, User, Landmark, Scale, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +12,7 @@ const publicNavItems = [
   { to: "/aulas", icon: BookOpen, label: "Aulas" },
   { to: "/quiz", icon: Brain, label: "Quiz" },
   { to: "/simulado", icon: BookOpen, label: "Simulado" },
+  { to: "/planos", icon: CreditCard, label: "Planos" },
 ];
 
 const authOnlyNavItems = [
