@@ -159,41 +159,40 @@ const MyAccount = () => {
   const handleOpenPortal = async () => {
     try {
       setError(null);
-    
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
-      setError('Sessão expirada. Faça login novamente.');
-      return;
-    }
-
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    
-    const response = await fetch(
-      `${supabaseUrl}/functions/v1/create-portal-session`,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'Content-Type': 'application/json',
-        },
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        setError('Sessão expirada. Faça login novamente.');
+        return;
       }
-    );
 
-    const result = await response.json();
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      
+      const response = await fetch(
+        `${supabaseUrl}/functions/v1/create-portal-session`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
-    if (!response.ok) {
-      throw new Error(result.error || 'Erro ao abrir portal');
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erro ao abrir portal');
+      }
+
+      window.open(result.url, '_blank');
+      
+    } catch (err) {
+      console.error('Erro:', err);
+      setError(err instanceof Error ? err.message : 'Erro ao abrir portal');
     }
-
-    // Abre o portal em nova aba
-    window.open(result.url, '_blank');
-    
-  } catch (err) {
-    console.error('Erro:', err);
-    setError(err instanceof Error ? err.message : 'Erro ao abrir portal de pagamento');
-  }
-};
+  };
 
   useEffect(() => {
     checkAuthAndFetchData();
@@ -571,13 +570,9 @@ const MyAccount = () => {
                         {canceling ? 'Cancelando...' : 'Cancelar Assinatura'}
                       </Button>
                     )}
-                    
                     <Button 
                       variant="outline"
-                      onClick={() => {
-                        const url = `https://billing.stripe.com/p/login/test_6oU00lfo9e9G9kIaod24000${userEmail ? `?prefilled_email=${encodeURIComponent(userEmail)}` : ''}`;
-                        window.open(url, '_blank');
-                      }}
+                      onClick={handleOpenPortal}
                       className="w-full"
                     >
                       <Settings className="w-4 h-4 mr-2" />
