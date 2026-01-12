@@ -23,47 +23,59 @@ serve(async (req) => {
   if (req.method !== 'POST') {
     return new Response(
       JSON.stringify({ error: 'Método não permitido' }),
-      { status: 405, headers: corsHeaders }
+      { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }
 
   try {
     const authHeader = req.headers.get('Authorization')
+    
+    console.log('Authorization header:', authHeader ? 'presente' : 'ausente')
 
     if (!authHeader) {
       return new Response(
         JSON.stringify({ error: 'Authorization header ausente' }),
-        { status: 401, headers: corsHeaders }
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    // Criar cliente Supabase com SERVICE_ROLE_KEY para operações admin
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     )
 
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
+    // Verificar o usuário usando o token JWT
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
+
+    console.log('User ID:', user?.id, 'Auth error:', authError?.message)
 
     if (authError || !user) {
       return new Response(
-        JSON.stringify({ error: 'Não autorizado' }),
-        { status: 401, headers: corsHeaders }
+        JSON.stringify({ 
+          error: 'Não autorizado',
+          details: authError?.message 
+        }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    const { data: subscription, error: subError } = await supabase
+    const { data: subscription, error: subError } = await supabaseAdmin
       .from('subscriptions')
       .select('*')
       .eq('user_id', user.id)
       .single()
 
+    console.log('Subscription:', subscription?.id, 'Error:', subError?.message)
+
     if (subError || !subscription) {
       return new Response(
-        JSON.stringify({ error: 'Assinatura não encontrada' }),
-        { status: 404, headers: corsHeaders }
+        JSON.stringify({ 
+          error: 'Assinatura não encontrada',
+          details: subError?.message 
+        }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
@@ -76,7 +88,7 @@ serve(async (req) => {
             current_period_end: subscription.current_period_end,
           },
         }),
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
@@ -89,16 +101,18 @@ serve(async (req) => {
             current_period_end: subscription.current_period_end,
           },
         }),
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
+
+    console.log('Cancelando subscription no Stripe:', subscription.stripe_subscription_id)
 
     const updatedSubscription = await stripe.subscriptions.update(
       subscription.stripe_subscription_id,
       { cancel_at_period_end: true }
     )
 
-    await supabase
+    const { error: updateError } = await supabaseAdmin
       .from('subscriptions')
       .update({
         cancel_at_period_end: true,
@@ -106,6 +120,10 @@ serve(async (req) => {
         updated_at: new Date().toISOString(),
       })
       .eq('user_id', user.id)
+
+    if (updateError) {
+      console.error('Erro ao atualizar subscription no banco:', updateError)
+    }
 
     return new Response(
       JSON.stringify({
@@ -120,15 +138,16 @@ serve(async (req) => {
           ).toISOString(),
         },
       }),
-      { status: 200, headers: corsHeaders }
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
+    console.error('Erro no cancelamento:', error)
     return new Response(
       JSON.stringify({
         error: 'Erro interno ao cancelar assinatura',
         details: error instanceof Error ? error.message : 'Erro desconhecido',
       }),
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }
 })
