@@ -17,6 +17,7 @@ import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import SimuladoPage from "./pages/Simulado";
 import MyAccount from "./pages/MyAccount";
+import Planos from "./pages/Planos";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
               <Route path="/quiz" element={<Quiz />} />
               <Route path="/aulas" element={<Aulas />} />
               <Route path="/estudo" element={<Estudo />} />
+              <Route path="/planos" element={<Planos />} />
               <Route path="/auth" element={<Auth />} />
               
               {/* Rotas protegidas por plano */}
