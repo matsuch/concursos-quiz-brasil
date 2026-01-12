@@ -144,7 +144,7 @@ const renderBadgeIcon = (iconName: string) => {
   return <span className="text-xl">{iconName}</span>;
 };
 
-export default function MyAccount() {
+const MyAccount = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -155,6 +155,45 @@ export default function MyAccount() {
   const [canceling, setCanceling] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  const handleOpenPortal = async () => {
+    try {
+      setError(null);
+    
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+      setError('Sessão expirada. Faça login novamente.');
+      return;
+    }
+
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    
+    const response = await fetch(
+      `${supabaseUrl}/functions/v1/create-portal-session`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Erro ao abrir portal');
+    }
+
+    // Abre o portal em nova aba
+    window.open(result.url, '_blank');
+    
+  } catch (err) {
+    console.error('Erro:', err);
+    setError(err instanceof Error ? err.message : 'Erro ao abrir portal de pagamento');
+  }
+};
 
   useEffect(() => {
     checkAuthAndFetchData();
@@ -535,7 +574,7 @@ export default function MyAccount() {
                     
                     <Button 
                       variant="outline"
-                      onClick={() => window.open('https://billing.stripe.com/p/login/test_6oU00lfo9e9G9kIaod24000', '_blank')}
+                      onClick={handleOpenPortal}
                       className="w-full"
                     >
                       <Settings className="w-4 h-4 mr-2" />
