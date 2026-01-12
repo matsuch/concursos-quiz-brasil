@@ -20,16 +20,16 @@ const Ranking = () => {
     queryKey: ['ranking'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('profiles_ranking')
-        .select('total_points, quizzes_completed')
+        .from('profiles')
+        .select('display_name, total_points, quizzes_completed')
         .order('total_points', { ascending: false })
         .limit(50);
 
       if (error) throw error;
 
-      return (data as {total_points: number | null; quizzes_completed: number | null }[]).map((profile, index) => ({
+      return (data as { display_name: string | null; total_points: number | null; quizzes_completed: number | null }[]).map((profile, index) => ({
         position: index + 1,
-        name: 'Jogador Anônimo',
+        name: profile.display_name || 'Jogador Anônimo',
         points: profile.total_points || 0,
         quizzes: profile.quizzes_completed || 0,
         accuracy: profile.quizzes_completed && profile.quizzes_completed > 0 ? 85 : 0,
