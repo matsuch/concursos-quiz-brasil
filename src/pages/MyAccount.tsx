@@ -15,7 +15,23 @@ import {
   BookOpen,
   Award,
   Crown,
-  Settings
+  Settings,
+  Target,
+  Zap,
+  Star,
+  Shield,
+  Flame,
+  Clock,
+  BookMarked,
+  GraduationCap,
+  Medal,
+  Sparkles,
+  TrendingUp,
+  Users,
+  CheckCircle2,
+  Heart,
+  Coffee,
+  Rocket
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -25,6 +41,58 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
+// Mapeamento de strings para componentes de ícones Lucide
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  // Ícones de estudo
+  'brain': Brain,
+  'bookopen': BookOpen,
+  'book': BookOpen,
+  'bookmarked': BookMarked,
+  'graduationcap': GraduationCap,
+  
+  // Ícones de conquista/gamificação
+  'trophy': Trophy,
+  'award': Award,
+  'medal': Medal,
+  'crown': Crown,
+  'star': Star,
+  'sparkles': Sparkles,
+  
+  // Ícones de ação/progresso
+  'target': Target,
+  'zap': Zap,
+  'flame': Flame,
+  'rocket': Rocket,
+  'trendingup': TrendingUp,
+  
+  // Ícones de batalha/duelo
+  'swords': Swords,
+  'shield': Shield,
+  
+  // Ícones de tempo/dedicação
+  'clock': Clock,
+  'calendar': Calendar,
+  
+  // Ícones sociais
+  'users': Users,
+  'heart': Heart,
+  
+  // Ícones de status
+  'checkcircle': CheckCircle,
+  'checkcircle2': CheckCircle2,
+  'xcircle': XCircle,
+  'alertcircle': AlertCircle,
+  
+  // Extras
+  'coffee': Coffee,
+  'mail': Mail,
+  'user': User,
+  'settings': Settings,
+  'loader': Loader2,
+  'login': LogIn,
+  'creditcard': CreditCard,
+};
 
 type Subscription = {
   id: string;
@@ -58,6 +126,23 @@ type UserBadge = {
     rarity: string | null;
   };
 }
+
+// Função auxiliar para renderizar ícone
+const renderBadgeIcon = (iconName: string) => {
+  // Se for emoji (não tem letras), retorna direto
+  if (!/[a-zA-Z]/.test(iconName)) {
+    return <span className="text-xl">{iconName}</span>;
+  }
+  
+  // Se for nome de componente, busca no mapa
+  const IconComponent = iconMap[iconName.toLowerCase()];
+  if (IconComponent) {
+    return <IconComponent className="w-5 h-5" />;
+  }
+  
+  // Fallback: tenta renderizar como emoji/texto
+  return <span className="text-xl">{iconName}</span>;
+};
 
 export default function MyAccount() {
   const navigate = useNavigate();
@@ -377,7 +462,7 @@ export default function MyAccount() {
                       className="flex items-center gap-2 px-3 py-2 bg-muted rounded-lg"
                       title={`Conquistado em ${formatDate(ub.unlocked_at)}`}
                     >
-                      <span className="text-xl">{ub.badges.icon}</span>
+                      {renderBadgeIcon(ub.badges.icon)}
                       <span className="text-sm font-medium">{ub.badges.name}</span>
                     </div>
                   ))}
