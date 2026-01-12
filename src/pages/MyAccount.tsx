@@ -162,6 +162,7 @@ const MyAccount = () => {
     try {
       setOpeningPortal(true);
       setError(null);
+      setSuccess(null); // Limpar mensagens anteriores
 
       const { data, error } = await supabase.functions.invoke('create-portal-session');
 
@@ -177,10 +178,15 @@ const MyAccount = () => {
         // Mostrar mensagem antes de redirecionar
         setSuccess('Abrindo portal de pagamento...');
         
-        // Pequeno delay para o usuário ver a mensagem
+        // Abrir portal e limpar estados
         setTimeout(() => {
           window.open(data.url, '_blank');
           setOpeningPortal(false);
+          
+          // Limpar mensagem de sucesso após 3 segundos
+          setTimeout(() => {
+            setSuccess(null);
+          }, 3000);
         }, 500);
       } else {
         throw new Error('URL do portal não encontrada');
@@ -531,7 +537,7 @@ const MyAccount = () => {
 
           {/* Card de Assinatura */}
           <Card className="overflow-hidden">
-            <div className="bg-gradient-to-r from-primary to-secondary p-6 text-primary-foreground">
+            <div className="bg-primary p-6 text-primary-foreground">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-primary-foreground/80 text-sm mb-1">Plano Atual</p>
