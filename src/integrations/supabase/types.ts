@@ -702,6 +702,24 @@ export type Database = {
       }
     }
     Views: {
+      profiles_ranking: {
+        Row: {
+          quizzes_completed: number | null
+          total_points: number | null
+          user_id: string | null
+        }
+        Insert: {
+          quizzes_completed?: number | null
+          total_points?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          quizzes_completed?: number | null
+          total_points?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_subscription_details: {
         Row: {
           cancel_at_period_end: boolean | null
