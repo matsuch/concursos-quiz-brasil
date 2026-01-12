@@ -264,21 +264,12 @@ const MyAccount = () => {
 
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       
-      const response = await fetch(
-        `${supabaseUrl}/functions/v1/cancel-subscription`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-            'Content-Type': 'application/json',
-          },
-        }
+      const { data, error } = await supabase.functions.invoke(
+        'cancel-subscription'
       );
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Erro ao cancelar assinatura');
+      if (error) {
+        throw error;
       }
 
       setSuccess('Assinatura cancelada com sucesso! Você terá acesso até o final do período pago.');
