@@ -236,10 +236,6 @@ export default function Planos() {
       <div className="bg-gradient-to-b from-primary/10 to-background py-12 md:py-20">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto">
-            <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
-              <Target className="w-3 h-3 mr-1" />
-              Compare os Planos
-            </Badge>
             <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
               Escolha o plano ideal para você
             </h1>
