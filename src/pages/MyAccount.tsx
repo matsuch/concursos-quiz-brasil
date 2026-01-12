@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   AlertCircle, 
   CreditCard, 
@@ -58,25 +58,6 @@ type UserBadge = {
     rarity: string | null;
   };
 }
-
-const iconMap: Record<string, React.ComponentType<any>> = {
-  alertcircle: AlertCircle,
-  creditcard: CreditCard,
-  calendar: Calendar,
-  checkcircle: CheckCircle,
-  xcircle: XCircle,
-  loader2: Loader2,
-  login: LogIn,
-  user: User,
-  mail: Mail,
-  trophy: Trophy,
-  brain: Brain,
-  swords: Swords,
-  bookopen: BookOpen,
-  award: Award,
-  crown: Crown,
-  settings: Settings
-};
 
 export default function MyAccount() {
   const navigate = useNavigate();
@@ -396,13 +377,7 @@ export default function MyAccount() {
                       className="flex items-center gap-2 px-3 py-2 bg-muted rounded-lg"
                       title={`Conquistado em ${formatDate(ub.unlocked_at)}`}
                     >
-                      <span className="text-xl">
-                        {iconMap[ub.badges.icon] ? (
-                          React.createElement(iconMap[ub.badges.icon], { size: 20})
-                        ) : (
-                          "?"
-                        )}
-                        </span>
+                      <span className="text-xl">{ub.badges.icon}</span>
                       <span className="text-sm font-medium">{ub.badges.name}</span>
                     </div>
                   ))}
