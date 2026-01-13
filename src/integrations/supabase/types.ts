@@ -744,46 +744,6 @@ export type Database = {
           updated_at: string | null
           user_id: string | null
         }
-        Insert: {
-          cancel_at_period_end?: boolean | null
-          canceled_at?: string | null
-          created_at?: string | null
-          currency?: string | null
-          current_period_end?: string | null
-          current_period_start?: string | null
-          email?: never
-          id?: string | null
-          plan_amount?: number | null
-          plan_name?: string | null
-          status?: string | null
-          status_display?: never
-          stripe_customer_id?: string | null
-          stripe_price_id?: string | null
-          stripe_subscription_id?: string | null
-          trial_end?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          cancel_at_period_end?: boolean | null
-          canceled_at?: string | null
-          created_at?: string | null
-          currency?: string | null
-          current_period_end?: string | null
-          current_period_start?: string | null
-          email?: never
-          id?: string | null
-          plan_amount?: number | null
-          plan_name?: string | null
-          status?: string | null
-          status_display?: never
-          stripe_customer_id?: string | null
-          stripe_price_id?: string | null
-          stripe_subscription_id?: string | null
-          trial_end?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
         Relationships: []
       }
     }
