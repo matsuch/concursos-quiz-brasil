@@ -788,7 +788,15 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      get_profiles_ranking: {
+        Args: never
+        Returns: {
+          display_name: string
+          id: string
+          total_points: number
+          user_id: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
