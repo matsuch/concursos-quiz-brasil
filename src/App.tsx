@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { SubscriptionProvider } from "@/hooks/useSubscription";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import Home from "./pages/Home";
 import Quiz from "./pages/Quiz";
 import Aulas from "./pages/Aulas";
@@ -23,68 +24,70 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <SubscriptionProvider>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/quiz" element={<Quiz />} />
-              <Route path="/aulas" element={<Aulas />} />
-              <Route path="/estudo" element={<Estudo />} />
-              <Route path="/planos" element={<Planos />} />
-              <Route path="/auth" element={<Auth />} />
-              
-              {/* Rotas protegidas por plano */}
-              <Route 
-                path="/simulado" 
-                element={
-                  <ProtectedRoute requiredPlan="Premium">
-                    <SimuladoPage />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/duelo" 
-                element={
-                  <ProtectedRoute requiredPlan="Standard">
-                    <Duelo />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/ranking" 
-                element={
-                  <ProtectedRoute requiresPremium>
-                    <Ranking />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/conquistas" 
-                element={
-                  <ProtectedRoute requiresPremium>
-                    <Conquistas />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/minha-conta" 
-                element={
-                  <ProtectedRoute>
-                    <MyAccount />
-                  </ProtectedRoute>
-                } 
-              />
-              
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </SubscriptionProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <SubscriptionProvider>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/quiz" element={<Quiz />} />
+                <Route path="/aulas" element={<Aulas />} />
+                <Route path="/estudo" element={<Estudo />} />
+                <Route path="/planos" element={<Planos />} />
+                <Route path="/auth" element={<Auth />} />
+                
+                {/* Rotas protegidas por plano */}
+                <Route 
+                  path="/simulado" 
+                  element={
+                    <ProtectedRoute requiredPlan="Premium">
+                      <SimuladoPage />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/duelo" 
+                  element={
+                    <ProtectedRoute requiredPlan="Standard">
+                      <Duelo />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/ranking" 
+                  element={
+                    <ProtectedRoute requiresPremium>
+                      <Ranking />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/conquistas" 
+                  element={
+                    <ProtectedRoute requiresPremium>
+                      <Conquistas />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/minha-conta" 
+                  element={
+                    <ProtectedRoute>
+                      <MyAccount />
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </SubscriptionProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
