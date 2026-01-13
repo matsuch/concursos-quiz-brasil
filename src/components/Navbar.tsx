@@ -5,7 +5,7 @@ import { Trophy, Brain, Swords, Home, BookOpen, Award, Menu, LogIn, LogOut, User
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useNavigate } from "react-router-dom";
-
+import { ThemeToggle } from "@/components/ThemeToggle";
 const publicNavItems = [
   { to: "/", icon: Home, label: "Início" },
   { to: "/estudo", icon: BookOpen, label: "Estudo" },
@@ -69,6 +69,8 @@ const Navbar = () => {
                 <span className="hidden lg:inline">{item.label}</span>
               </NavLink>
             ))}
+            
+            <ThemeToggle />
             
             <Button 
               variant={user ? "ghost" : "default"}
