@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
 const publicNavItems = [
   { to: "/", icon: Home, label: "Início" },
-  { to: "/estudo", icon: BookOpen, label: "Estudo" },
   { to: "/quiz", icon: Brain, label: "Quiz" },
 ];
 
@@ -17,6 +16,7 @@ const guestOnlyNavItems = [
 ];
 
 const authOnlyNavItems = [
+  { to: "/estudo", icon: BookOpen, label: "Estudo" },
   { to: "/aulas", icon: BookOpen, label: "Aulas" },
   { to: "/duelo", icon: Swords, label: "Duelo" },
   { to: "/conquistas", icon: Award, label: "Conquistas" },
