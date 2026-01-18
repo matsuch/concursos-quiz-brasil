@@ -383,6 +383,10 @@ export type Database = {
           options: Json
           question: string
           subject: string
+          assunto: string | null
+          banca: string | null
+          prova: string | null
+          ai_explanation: string | null
         }
         Insert: {
           correct_answer: number
@@ -394,6 +398,10 @@ export type Database = {
           options: Json
           question: string
           subject: string
+          assunto: string | null
+          banca: string | null
+          prova: string | null
+          ai_explanation: string | null
         }
         Update: {
           correct_answer?: number
@@ -405,6 +413,10 @@ export type Database = {
           options?: Json
           question?: string
           subject?: string
+          assunto: string | null
+          banca: string | null
+          prova: string | null
+          ai_explanation: string | null
         }
         Relationships: []
       }
