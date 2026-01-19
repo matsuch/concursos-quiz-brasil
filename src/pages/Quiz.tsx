@@ -76,9 +76,9 @@ const Quiz = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-safe">
+    <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container mx-auto px-4 py-4 sm:py-8">
+      <div className="container mx-auto px-4 py-6 sm:py-8 pb-20 sm:pb-8">
         <div className="max-w-5xl mx-auto">
           <QuizFilters
             filters={filters}
@@ -106,8 +106,8 @@ const Quiz = () => {
               </AlertDescription>
             </Alert>
           ) : (
-            <div className="mt-4 sm:mt-6 mb-safe">
-              <div className="mb-3 sm:mb-4 text-sm text-muted-foreground px-1">
+            <div className="mt-6">
+              <div className="mb-4 text-sm text-muted-foreground">
                 Mostrando {currentQuestionIndex + 1} de {questions.length} questões
               </div>
               
