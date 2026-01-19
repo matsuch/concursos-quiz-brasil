@@ -51,19 +51,12 @@ All colors MUST be HSL.
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -119,11 +112,175 @@ All colors MUST be HSL.
 @layer base {
   * {
     @apply border-border;
+    /* Remove scrollbar visível em todos os elementos */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+  }
+
+  /* Remove scrollbar do WebKit (Chrome, Safari, Opera) */
+  *::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  /* Configurações globais para HTML */
+  html {
+    overflow-x: hidden;
+    height: 100%;
+    -webkit-tap-highlight-color: transparent;
   }
 
   body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* Scroll suave no iOS */
+    overscroll-behavior-y: contain; /* Previne bounce effect */
+    height: 100%;
+    position: relative;
+    min-height: 100vh;
   }
+
+  /* Container principal do React */
+  #root {
+    overflow-x: hidden;
+    min-height: 100vh;
+    position: relative;
+  }
+
+  /* Otimização para imagens */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* ========================================
+   OTIMIZAÇÕES ESPECÍFICAS PARA MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+  /* Previne zoom acidental em inputs no iOS */
+  input,
+  select,
+  textarea,
+  button {
+    font-size: 16px !important;
+  }
+
+  /* Remove delay de tap (300ms) no mobile */
+  a, 
+  button, 
+  input, 
+  select, 
+  textarea,
+  [role="button"] {
+    touch-action: manipulation;
+  }
+
+  /* Otimiza performance de scroll com aceleração de hardware */
+  body {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+
+  /* Previne seleção de texto durante scroll */
+  * {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Permite seleção em elementos apropriados */
+  input,
+  textarea,
+  [contenteditable="true"],
+  .selectable-text {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  /* Remove highlight azul ao tocar */
+  * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  }
+
+  /* Otimiza animações para mobile */
+  * {
+    will-change: auto;
+  }
+
+  /* Respeita preferências de movimento reduzido */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ========================================
+   OTIMIZAÇÕES ESPECÍFICAS PARA WEBVIEW
+   ======================================== */
+
+/* Detecta suporte a scroll nativo iOS */
+@supports (-webkit-overflow-scrolling: touch) {
+  body {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: scroll;
+  }
+}
+
+/* ========================================
+   SCROLL HORIZONTAL (se necessário)
+   ======================================== */
+
+.horizontal-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.horizontal-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* ========================================
+   CORREÇÕES PARA ELEMENTOS FIXED
+   ======================================== */
+
+/* Se você tem navbar fixo ou elementos sticky */
+.fixed-element,
+[class*="fixed"],
+[class*="sticky"] {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+/* ========================================
+   PREVENÇÃO DE PROBLEMAS COMUNS
+   ======================================== */
+
+/* Previne scroll horizontal indesejado */
+.container,
+.section,
+[class*="container"],
+[class*="section"] {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Previne overflow em flex containers */
+.flex,
+[class*="flex"] {
+  min-width: 0;
+  min-height: 0;
 }
 
 /* 3D Flip Card Styles */
@@ -141,4 +298,39 @@ All colors MUST be HSL.
 
 .rotate-y-180 {
   transform: rotateY(180deg);
+}
+
+/* ========================================
+   UTILITIES ADICIONAIS PARA MOBILE
+   ======================================== */
+
+/* Classe para forçar hardware acceleration */
+@layer utilities {
+  .gpu-accelerated {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+
+  /* Classe para permitir seleção de texto */
+  .text-selectable {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  /* Classe para prevenir seleção de texto */
+  .text-unselectable {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Classe para scroll customizado se necessário */
+  .custom-scroll {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Classe para desabilitar bounce effect */
+  .no-overscroll {
+    overscroll-behavior: contain;
+  }
 }
