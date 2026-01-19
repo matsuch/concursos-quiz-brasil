@@ -233,7 +233,7 @@ export default function Planos() {
       <Navbar />
       
       {/* Header */}
-      <div className="bg-gradient-to-b from-primary/10 to-background py-12 md:py-20">
+      <div className="bg-gradient-to-b from-primary/10 to-background py-12 md:py-10">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
@@ -247,7 +247,7 @@ export default function Planos() {
       </div>
 
       {/* Plan Cards */}
-      <div className="container mx-auto px-4 -mt-6">
+      <div className="container mx-auto px-4">
         {checkingSubscription ? (
           <div className="flex justify-center py-8">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -263,8 +263,8 @@ export default function Planos() {
                   key={plan.id}
                   className={`relative flex flex-col transition-all duration-300 hover:shadow-xl ${
                     plan.popular 
-                      ? "border-primary shadow-lg md:scale-105 z-10" 
-                      : "border-border hover:border-primary/50"
+                      ? "border-primary shadow-lg md:scale-105 z-10 mt-5" 
+                      : "border-border hover:border-primary/50 mt-3"
                   } ${isCurrent ? "ring-2 ring-green-500" : ""}`}
                 >
                   {plan.popular && (

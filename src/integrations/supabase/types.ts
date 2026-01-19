@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      mind_maps: {
+        Row: {
+          created_at: string | null
+          updated_at: string | null
+          id: string
+          title: string
+          subject: string
+          nodes: Json
+      }
+        Insert: {
+          created_at?: string | null
+          updated_at?: string | null
+          id?: string
+          title: string
+          subject: string
+          nodes: Json
+        }
+        Update: {
+          created_at?: string | null
+          updated_at?: string | null
+          id?: string
+          title?: string
+          subject?: string
+          nodes?: Json
+        }
+        Relationships: []
+      }
       badge_audit: {
         Row: {
           action: string

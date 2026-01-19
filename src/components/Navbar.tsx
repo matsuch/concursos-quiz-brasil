@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/hooks/useAuth";
-import { Trophy, Brain, Swords, Home, BookOpen, Award, Menu, LogIn, LogOut, User, Landmark, Scale, CreditCard } from "lucide-react";
+import { Trophy, Notebook, Swords, Home, BookOpen, Award, Menu, LogIn, LogOut, User, Landmark, Scale, CreditCard, Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useNavigate } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
 const publicNavItems = [
   { to: "/", icon: Home, label: "Início" },
-  { to: "/quiz", icon: Brain, label: "Quiz" },
+  { to: "/quiz", icon: Notebook, label: "Questões" },
+  { to: "/mindmaps", icon: Map, label: "Mapas Mentais" },
 ];
 
 const guestOnlyNavItems = [

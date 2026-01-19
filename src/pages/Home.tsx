@@ -3,7 +3,7 @@ import Navbar from "@/components/Navbar";
 import ConcursoCard from "@/components/ConcursoCard";
 import PricingSection from "@/components/PricingSection";
 import { Button } from "@/components/ui/button";
-import { Brain, Book, TrendingUp, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Book, Notebook, Loader2} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -145,62 +145,21 @@ const Home = () => {
                 onClick={() => navigate("/quiz")}
                 className="w-full sm:w-auto bg-[#2563eb] hover:bg-[#1d4ed8] transition-colors"
               >
-                <Brain className="w-5 h-5 mr-2" />
-                Começar Quiz
+                <Notebook className="w-5 h-5 mr-2" />
+                Questões Oficiais
               </Button>
               
               <Button 
                 size="lg" 
                 variant="outline"
-                onClick={() => navigate("/aulas")}
+                onClick={() => navigate("/mindmaps")}
                 className="w-full sm:w-auto bg-[#FACC15] hover:bg-[#EAB308] transition-colors"
               >
                 <Book className="w-5 h-5 mr-2" />
-                Minhas Aulas
+                Mapas Mentais
               </Button>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-8 sm:py-12 border-b border-border">
-        <div className="container mx-auto px-4">
-          {loading ? (
-            <div className="flex justify-center items-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            </div>
-          ) : (
-            <div className="grid grid-cols-3 gap-4 sm:gap-8">
-              <div className="text-center">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2 sm:mb-4">
-                  <Book className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
-                </div>
-                <div className="text-xl sm:text-3xl font-bold text-foreground mb-1 sm:mb-2">
-                  {estatisticas.total_concursos.toLocaleString('pt-BR')}
-                </div>
-                <div className="text-xs sm:text-sm text-muted-foreground">Aulas</div>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-2 sm:mb-4">
-                  <Brain className="w-6 h-6 sm:w-8 sm:h-8 text-secondary" />
-                </div>
-                <div className="text-xl sm:text-3xl font-bold text-foreground mb-1 sm:mb-2">
-                  {estatisticas.total_questoes.toLocaleString('pt-BR')}
-                </div>
-                <div className="text-xs sm:text-sm text-muted-foreground">Questões</div>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-2 sm:mb-4">
-                  <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-accent-foreground" />
-                </div>
-                <div className="text-xl sm:text-3xl font-bold text-foreground mb-1 sm:mb-2">
-                  {estatisticas.taxa_aprovacao}%
-                </div>
-                <div className="text-xs sm:text-sm text-muted-foreground">Aprovação</div>
-              </div>
-            </div>
-          )}
         </div>
       </section>
 
@@ -209,7 +168,7 @@ const Home = () => {
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="text-center mb-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
-              Novos Concursos
+              Editais lançados recentemente
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground">
               Fique por dentro das últimas oportunidades

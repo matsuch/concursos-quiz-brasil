@@ -19,6 +19,7 @@ import NotFound from "./pages/NotFound";
 import SimuladoPage from "./pages/Simulado";
 import MyAccount from "./pages/MyAccount";
 import Planos from "./pages/Planos";
+import MindMaps from "./pages/MindMaps";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,8 @@ const App = () => (
                 <Route path="/estudo" element={<Estudo />} />
                 <Route path="/planos" element={<Planos />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/mindmaps" element={<MindMaps />} />
+                
                 
                 {/* Rotas protegidas por plano */}
                 <Route 
