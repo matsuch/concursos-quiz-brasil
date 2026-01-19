@@ -76,56 +76,59 @@ const Quiz = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-background">
       <Navbar />
-      <div className="container mx-auto px-4 py-6 sm:py-8 pb-20 sm:pb-8">
-        <div className="max-w-5xl mx-auto">
-          <QuizFilters
-            filters={filters}
-            onFilterChange={setFilters}
-            loading={loading}
-          />
-          
-          {error && (
-            <Alert variant="destructive" className="mt-4">
-              <AlertTitle>Erro</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+      
+      <main className="flex-1 overflow-y-auto">
+        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8 pb-24 sm:pb-8">
+          <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
+            <QuizFilters
+              filters={filters}
+              onFilterChange={setFilters}
+              loading={loading}
+            />
+            
+            {error && (
+              <Alert variant="destructive">
+                <AlertTitle>Erro</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
 
-          {loading ? (
-            <div className="text-center py-12">
-              <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-primary" />
-              <p className="text-muted-foreground">Carregando questões...</p>
-            </div>
-          ) : questions.length === 0 ? (
-            <Alert className="mt-4">
-              <AlertTitle>Nenhuma questão encontrada</AlertTitle>
-              <AlertDescription>
-                Tente ajustar os filtros ou aguarde enquanto carregamos o conteúdo.
-              </AlertDescription>
-            </Alert>
-          ) : (
-            <div className="mt-6">
-              <div className="mb-4 text-sm text-muted-foreground">
-                Mostrando {currentQuestionIndex + 1} de {questions.length} questões
+            {loading ? (
+              <div className="text-center py-8 sm:py-12">
+                <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 animate-spin mx-auto mb-4 text-primary" />
+                <p className="text-sm sm:text-base text-muted-foreground">Carregando questões...</p>
               </div>
-              
-              <QuizQuestion
-                question={questions[currentQuestionIndex]}
-                selectedAnswer={selectedAnswer}
-                answered={answered}
-                onSelectOption={handleSelectOption}
-                onSubmitAnswer={handleSubmitAnswer}
-                onNext={handleNext}
-                onPrevious={handlePrevious}
-                hasPrevious={currentQuestionIndex > 0}
-                hasNext={currentQuestionIndex < questions.length - 1}
-              />
-            </div>
-          )}
+            ) : questions.length === 0 ? (
+              <Alert>
+                <AlertTitle>Nenhuma questão encontrada</AlertTitle>
+                <AlertDescription>
+                  Tente ajustar os filtros ou aguarde enquanto carregamos o conteúdo.
+                </AlertDescription>
+              </Alert>
+            ) : (
+              <div className="space-y-3 sm:space-y-4">
+                <div className="text-xs sm:text-sm text-muted-foreground px-1">
+                  Mostrando {currentQuestionIndex + 1} de {questions.length} questões
+                </div>
+                
+                <QuizQuestion
+                  question={questions[currentQuestionIndex]}
+                  selectedAnswer={selectedAnswer}
+                  answered={answered}
+                  onSelectOption={handleSelectOption}
+                  onSubmitAnswer={handleSubmitAnswer}
+                  onNext={handleNext}
+                  onPrevious={handlePrevious}
+                  hasPrevious={currentQuestionIndex > 0}
+                  hasNext={currentQuestionIndex < questions.length - 1}
+                />
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };
