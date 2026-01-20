@@ -78,7 +78,7 @@ export function QuizQuestion({
   };
 
   return (
-    <div className="space-y-3 sm:space-y-4">
+    <div className="space-y-3 sm:space-y-4 pb-8 sm:pb-4">
       {/* Question Header */}
       <Card className="p-3 sm:p-4">
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
