@@ -78,34 +78,34 @@ export function QuizQuestion({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       {/* Question Header */}
-      <Card className="p-4">
-        <div className="flex items-center gap-3 flex-wrap">
-          <Badge variant="secondary">{question.subject}</Badge>
+      <Card className="p-3 sm:p-4">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+          <Badge variant="secondary" className="text-xs sm:text-sm">{question.subject}</Badge>
           {question.banca && (
-            <span className="text-sm">
+            <span className="text-xs sm:text-sm">
               <span className="text-muted-foreground">Banca:</span>{" "}
               <span className="text-primary font-medium">{question.banca}</span>
             </span>
           )}
           {question.assunto && (
-            <span className="text-sm">
+            <span className="text-xs sm:text-sm">
               <span className="text-muted-foreground">Assunto:</span>{" "}
               <span className="text-muted-foreground">{question.assunto}</span>
             </span>
           )}
           {question.prova && (
-            <span className="text-sm">
+            <span className="text-xs sm:text-sm">
               <span className="text-muted-foreground">Prova:</span>{" "}
               <span className="text-primary font-medium">{question.prova}</span>
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-2 mt-3 flex-wrap">
+        <div className="flex items-center gap-2 mt-2 sm:mt-3 flex-wrap">
           {!question.is_official && (
-            <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/30">
+            <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/30 text-xs sm:text-sm">
               Questão de usuário
             </Badge>
           )}
@@ -113,6 +113,7 @@ export function QuizQuestion({
             <Badge
               variant="outline"
               className={cn(
+                "text-xs sm:text-sm",
                 question.difficulty === "easy" && "bg-success/10 text-success border-success/30",
                 question.difficulty === "medium" && "bg-amber-500/10 text-amber-600 border-amber-500/30",
                 question.difficulty === "hard" && "bg-destructive/10 text-destructive border-destructive/30"
@@ -125,12 +126,12 @@ export function QuizQuestion({
       </Card>
 
       {/* Question Body */}
-      <Card className="p-6">
-        <div className="prose prose-slate dark:prose-invert max-w-none mb-6">
+      <Card className="p-4 sm:p-6">
+        <div className="prose prose-sm sm:prose-base prose-slate dark:prose-invert max-w-none mb-4 sm:mb-6">
           <ReactMarkdown>{question.question}</ReactMarkdown>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           {question.options.map((option, index) => {
             const letter = String.fromCharCode(65 + index);
             const isCorrect = index === question.correct_answer;
@@ -142,15 +143,15 @@ export function QuizQuestion({
                 onClick={() => onSelectOption(index)}
                 disabled={answered}
                 className={cn(
-                  "w-full flex items-start gap-4 p-4 rounded-lg border-2 transition-all text-left",
-                  !answered && "hover:border-primary hover:bg-primary/5 cursor-pointer",
+                  "w-full flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg border-2 transition-all text-left",
+                  !answered && "hover:border-primary hover:bg-primary/5 cursor-pointer active:scale-[0.99]",
                   answered && "cursor-not-allowed",
                   getOptionStyle(index)
                 )}
               >
                 <span
                   className={cn(
-                    "flex-shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center font-medium text-sm transition-colors",
+                    "flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 flex items-center justify-center font-medium text-xs sm:text-sm transition-colors",
                     getLetterStyle(index)
                   )}
                 >
@@ -158,7 +159,7 @@ export function QuizQuestion({
                 </span>
                 <span
                   className={cn(
-                    "text-sm pt-1",
+                    "text-xs sm:text-sm pt-0.5 sm:pt-1 leading-relaxed",
                     answered && isCorrect && "text-success font-medium",
                     answered && isSelected && !isCorrect && "text-destructive"
                   )}
@@ -170,21 +171,24 @@ export function QuizQuestion({
           })}
         </div>
 
-        <div className="mt-6 flex items-center justify-between">
+        {/* Action Buttons - Responsivo */}
+        <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-2">
           <Button
             onClick={onSubmitAnswer}
             disabled={selectedAnswer === null || answered}
-            className="bg-warning hover:bg-warning/90 text-warning-foreground border border-warning/50 hover:border-warning/70 rounded-md">
+            className="w-full sm:w-auto bg-warning hover:bg-warning/90 text-warning-foreground border border-warning/50 hover:border-warning/70 rounded-md text-sm sm:text-base py-2.5 sm:py-2"
+          >
             Responder
           </Button>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 justify-center sm:justify-end">
             <Button
               variant="outline"
               size="icon"
               onClick={onPrevious}
               disabled={!hasPrevious}
               title="Questão anterior"
+              className="h-9 w-9 sm:h-10 sm:w-10"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -194,6 +198,7 @@ export function QuizQuestion({
               onClick={onNext}
               disabled={!hasNext}
               title="Próxima questão"
+              className="h-9 w-9 sm:h-10 sm:w-10"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -203,16 +208,16 @@ export function QuizQuestion({
 
       {/* AI Explanation */}
       {answered && (
-        <Card className="p-6 border-primary/30 bg-primary/5">
+        <Card className="p-4 sm:p-6 border-primary/30 bg-primary/5">
           <button
             onClick={() => setShowAiExplanation(!showAiExplanation)}
-            className="flex items-center gap-2 text-primary font-medium"
+            className="flex items-center gap-2 text-primary font-medium text-sm sm:text-base w-full text-left"
           >
-            <Sparkles className="h-5 w-5" />
+            <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
             Explicação da IA
           </button>
           {showAiExplanation && (
-            <div className="mt-4 text-sm text-foreground leading-relaxed">
+            <div className="mt-3 sm:mt-4 text-xs sm:text-sm text-foreground leading-relaxed">
               {question.ai_explanation ? (
                 <p className="whitespace-pre-wrap">{question.ai_explanation}</p>
               ) : (

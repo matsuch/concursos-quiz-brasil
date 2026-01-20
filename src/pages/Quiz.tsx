@@ -76,12 +76,11 @@ const Quiz = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="min-h-screen bg-background">
       <Navbar />
       
-      <main className="flex-1 overflow-y-auto">
-        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8 pb-24 sm:pb-8">
-          <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8 pb-24 sm:pb-8">
+        <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
             <QuizFilters
               filters={filters}
               onFilterChange={setFilters}
@@ -126,9 +125,8 @@ const Quiz = () => {
                 />
               </div>
             )}
-          </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
