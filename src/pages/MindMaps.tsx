@@ -593,7 +593,7 @@ const MindMapViewer = () => {
                       ))}
                     </div>
 
-                    <div className="absolute bottom-2 sm:bottom-4 right-2 sm:right-4 bg-card px-2 sm:px-3 py-1 rounded-full shadow-md text-xs sm:text-sm text-muted-foreground border">
+                    <div className="absolute bottom-[calc(0.5rem+env(safe-area-inset-bottom))] sm:bottom-[calc(1rem+env(safe-area-inset-bottom))] right-2 sm:right-4 bg-card px-2 sm:px-3 py-1 rounded-full shadow-md text-xs sm:text-sm text-muted-foreground border">
                       {Math.round(zoom * 100)}%
                     </div>
                   </div>
