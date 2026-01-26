@@ -20,9 +20,9 @@ const guestOnlyNavItems = [
 const authOnlyNavItems = [
   { to: "/estudo", icon: BookOpen, label: "Estudo" },
   { to: "/aulas", icon: BookOpen, label: "Aulas" },
-  { to: "/duelo", icon: Swords, label: "Duelo" },
-  { to: "/conquistas", icon: Award, label: "Conquistas" },
-  { to: "/ranking", icon: Trophy, label: "Ranking" },
+  // { to: "/duelo", icon: Swords, label: "Duelo" },
+  // { to: "/conquistas", icon: Award, label: "Conquistas" },
+  // { to: "/ranking", icon: Trophy, label: "Ranking" },
   { to: "/simulado", icon: BookOpen, label: "Simulado" },
   { to: "/minha-conta", icon: Landmark, label: "Minha Conta" },
 ];
