@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import Navbar from "@/components/Navbar";
 import { QuizFilters } from "@/components/quiz/QuizFilters";
 import { QuizQuestion } from "@/components/quiz/QuizQuestion";
 import { useQuizData } from "@/hooks/useQuizData";
@@ -77,7 +76,6 @@ const Quiz = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
       
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8 pb-24 sm:pb-8">
         <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">

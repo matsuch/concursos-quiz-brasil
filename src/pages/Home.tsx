@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Navbar from "@/components/Navbar";
 import ConcursoCard from "@/components/ConcursoCard";
 import PricingSection from "@/components/PricingSection";
 import { Button } from "@/components/ui/button";
@@ -127,7 +126,6 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
       
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-secondary/5 to-background py-12 sm:py-20">

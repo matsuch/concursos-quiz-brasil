@@ -54,7 +54,7 @@ const Navbar = () => {
               <Scale className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
             <span className="text-base sm:text-lg lg:text-xl font-bold text-blue-600 truncate">
-              Concursos Brasil
+              Passar Concursos Brasil
             </span>
           </div>
           
@@ -113,7 +113,7 @@ const Navbar = () => {
                       <Scale className="w-6 h-6 text-white" />
                     </div>
                     <span className="text-lg font-bold text-blue-600">
-                      Concursos Brasil
+                      Passar Concursos Brasil
                     </span>
                   </div>
                   

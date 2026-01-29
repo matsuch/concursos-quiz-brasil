@@ -35,7 +35,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import Navbar from "@/components/Navbar";
 
 // Definição completa dos planos com todas as features
 const PLANS = [
@@ -230,7 +229,6 @@ export default function Planos() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
       
       {/* Header */}
       <div className="bg-gradient-to-b from-primary/10 to-background py-12 md:py-10">
