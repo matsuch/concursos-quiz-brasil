@@ -113,6 +113,7 @@ export type Database = {
           nivel: string
           orgao: string
           status: string
+          salario: number | null
           titulo: string
           url_edital: string | null
           vagas: number
@@ -124,6 +125,7 @@ export type Database = {
           local: string
           nivel: string
           orgao: string
+          salario: number | null
           status: string
           titulo: string
           url_edital?: string | null
@@ -136,6 +138,7 @@ export type Database = {
           local?: string
           nivel?: string
           orgao?: string
+          salario?: number | null
           status?: string
           titulo?: string
           url_edital?: string | null

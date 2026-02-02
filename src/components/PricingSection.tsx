@@ -1,67 +1,24 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Check, Loader2, Crown, Star, Zap } from "lucide-react";
+import { Check, Loader2, Zap, Sparkles, Crown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 
-const PLANS = [
-  {
-    id: "basic",
-    name: "Básico",
-    description: "Plano com acesso limitado às aulas",
-    price: 19.99,
-    priceId: "price_1So7fwQ8CcFgqvaDBJsxo4um",
-    productId: "prod_TlezKKKS4iuxKa",
-    icon: Zap,
-    features: [
-      "Acesso a aulas básicas",
-      "Quizzes limitados",
-      "Flashcards públicos",
-      "Suporte por email"
-    ],
-    popular: false
-  },
-  {
-    id: "standard",
-    name: "Padrão",
-    description: "Acesso a todas as aulas e sessões exclusivas",
-    price: 39.99,
-    priceId: "price_1So7glQ8CcFgqvaD1RofVZ1D",
-    productId: "prod_Tlf0EBsd5fLZ94",
-    icon: Star,
-    features: [
-      "Todas as aulas disponíveis",
-      "Quizzes ilimitados",
-      "Flashcards personalizados",
-      "Sessões exclusivas com professores",
-      "Duelos online",
-      "Suporte prioritário"
-    ],
-    popular: true
-  },
-  {
-    id: "premium",
-    name: "Premium",
-    description: "Acesso completo com provas corrigidas",
-    price: 59.99,
-    priceId: "price_1So7hgQ8CcFgqvaDEjvWErfc",
-    productId: "prod_Tlf1OTeWGfNMYd",
-    icon: Crown,
-    features: [
-      "Tudo do plano Padrão",
-      "Provas corrigidas e comentadas",
-      "Simulados exclusivos",
-      "Mentoria individual",
-      "Acesso antecipado a novidades",
-      "Suporte 24/7"
-    ],
-    popular: false
-  }
-];
+interface Plan {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  priceId: string;
+  productId: string;
+  icon: typeof Zap | typeof Sparkles | typeof Crown;
+  features: string[];
+  popular: boolean;
+  interval: string;
+}
 
 interface SubscriptionStatus {
   subscribed: boolean;
@@ -69,18 +26,92 @@ interface SubscriptionStatus {
   subscription_end: string | null;
 }
 
+interface StripePrice {
+  id: string;
+  product: string;
+  unit_amount: number;
+  currency: string;
+  recurring?: {
+    interval: string;
+  };
+}
+
+interface StripeProduct {
+  id: string;
+  name: string;
+  description: string;
+  marketing_features?: Array<{
+    name: string;
+  }>;
+  metadata?: {
+    popular?: string;
+    icon?: string;
+    interval?: string;
+  };
+}
+
+const ICON_MAP: Record<string, typeof Zap | typeof Sparkles | typeof Crown> = {
+  zap: Zap,
+  sparkles: Sparkles,
+  crown: Crown,
+};
+
 export default function PricingSection() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState<string | null>(null);
   const [subscription, setSubscription] = useState<SubscriptionStatus | null>(null);
   const [checkingSubscription, setCheckingSubscription] = useState(false);
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [loadingPlans, setLoadingPlans] = useState(true);
+
+  useEffect(() => {
+    fetchPlans();
+  }, []);
 
   useEffect(() => {
     if (user) {
       checkSubscription();
     }
   }, [user]);
+
+  const fetchPlans = async () => {
+    setLoadingPlans(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("get-products");
+      
+      if (error) throw error;
+      
+      if (data?.products && data?.prices) {
+        const formattedPlans: Plan[] = data.products.map((product: StripeProduct) => {
+          const price = data.prices.find((p: StripePrice) => p.product === product.id);
+          
+          return {
+            id: product.id,
+            name: product.name,
+            description: product.description || "",
+            price: price ? price.unit_amount / 100 : 0,
+            priceId: price?.id || "",
+            productId: product.id,
+            icon: ICON_MAP[product.metadata?.icon || "sparkles"] || Sparkles,
+            features: product.marketing_features 
+              ? product.marketing_features.map(f => f.name) 
+              : [],
+            popular: product.metadata?.popular === "true",
+            interval: price?.recurring?.interval === "year" ? "ano" : "mês",
+          };
+        });
+
+        formattedPlans.sort((a, b) => a.price - b.price);
+        setPlans(formattedPlans);
+      }
+    } catch (error) {
+      console.error("Error fetching plans:", error);
+      toast.error("Erro ao carregar planos");
+    } finally {
+      setLoadingPlans(false);
+    }
+  };
 
   const checkSubscription = async () => {
     if (!user) return;
@@ -142,124 +173,147 @@ export default function PricingSection() {
     return subscription?.subscribed && subscription.product_id === productId;
   };
 
+  if (subscription?.subscribed) {
+    return null;
+  }
+
   return (
-    <section id="pricing" className="py-16 bg-gradient-to-b from-background to-muted/30">
-      <div className="container mx-auto px-4">
+    <section className="w-full py-16 sm:py-20 bg-gradient-to-b from-background via-primary/5 to-background">
+      <div className="container mx-auto px-4 lg:px-24 xl:px-28 max-w-[1800px]">
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
             Escolha seu Plano
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-4">
-            Invista no seu futuro com nossos planos de estudo. Escolha o melhor para você e comece hoje!
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Desbloqueie todo o potencial da sua preparação com recursos avançados
           </p>
-          <Button 
-            variant="link" 
-            onClick={() => navigate("/planos")}
-            className="text-primary hover:text-primary/80"
-          >
-            Ver comparação detalhada dos planos →
-          </Button>
         </div>
 
-        {checkingSubscription ? (
-          <div className="flex justify-center py-8">
+        {loadingPlans || checkingSubscription ? (
+          <div className="flex justify-center items-center py-16">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
+        ) : plans.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-muted-foreground text-lg">
+              Nenhum plano disponível no momento.
+            </p>
+          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {PLANS.map((plan) => {
+          <div className="flex flex-col md:flex-row justify-center items-center md:items-stretch gap-6 lg:gap-8 max-w-4xl mx-auto">
+            {plans.map((plan) => {
               const Icon = plan.icon;
               const isCurrent = isCurrentPlan(plan.productId);
               
               return (
-                <Card 
+                <div 
                   key={plan.id}
-                  className={`relative flex flex-col transition-all duration-300 hover:shadow-xl ${
+                  className={`relative bg-card rounded-xl border shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg w-full md:w-1/2 max-w-md ${
                     plan.popular 
-                      ? "border-primary shadow-lg scale-105 z-10" 
-                      : "border-border hover:border-primary/50"
-                  } ${isCurrent ? "ring-2 ring-green-500" : ""}`}
+                      ? 'border-primary/30 shadow-primary/10 ring-1 ring-primary/10 transform hover:-translate-y-1' 
+                      : 'border-border'
+                  }`}
                 >
                   {plan.popular && (
-                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4">
-                      Mais Popular
-                    </Badge>
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                      <Badge className="bg-gradient-to-r from-primary to-blue-600 text-white px-4 py-1.5 text-sm font-medium shadow-md">
+                        Mais Popular
+                      </Badge>
+                    </div>
                   )}
                   
-                  {isCurrent && (
-                    <Badge className="absolute -top-3 right-4 bg-green-500 text-white px-4">
-                      Seu Plano
-                    </Badge>
-                  )}
-
-                  <CardHeader className="text-center pb-2">
-                    <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 ${
-                      plan.popular 
-                        ? "bg-primary text-primary-foreground" 
-                        : "bg-primary/10 text-primary"
-                    }`}>
-                      <Icon className="w-8 h-8" />
-                    </div>
-                    <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                    <CardDescription className="min-h-[40px]">{plan.description}</CardDescription>
-                  </CardHeader>
-
-                  <CardContent className="flex-1">
-                    <div className="text-center mb-6">
-                      <span className="text-4xl font-bold text-foreground">
-                        R$ {plan.price.toFixed(2).replace(".", ",")}
-                      </span>
-                      <span className="text-muted-foreground">/mês</span>
+                  <div className="p-6 sm:p-8 h-full flex flex-col">
+                    <div className="flex items-center justify-between mb-6">
+                      <div>
+                        <h3 className="text-xl font-bold text-foreground">{plan.name}</h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Ideal para {plan.name.toLowerCase().includes('básico') ? 'iniciantes' : 
+                                     plan.name.toLowerCase().includes('pro') ? 'avançados' : 
+                                     'profissionais'}
+                        </p>
+                      </div>
+                      <div className="p-3 rounded-lg bg-primary/10">
+                        <Icon className="w-6 h-6 text-primary" />
+                      </div>
                     </div>
 
-                    <ul className="space-y-3">
+                    <div className="mb-6">
+                      <div className="flex items-baseline">
+                        <span className="text-3xl sm:text-4xl font-bold text-foreground">
+                          R$ {plan.price.toFixed(2).replace(".", ",")}
+                        </span>
+                        <span className="text-muted-foreground ml-2">/{plan.interval}</span>
+                      </div>
+                      {plan.interval === "ano" && (
+                        <p className="text-sm text-green-600 mt-1">
+                          Economize 20% comparado ao plano mensal
+                        </p>
+                      )}
+                    </div>
+
+                    <ul className="space-y-3 mb-8 flex-grow">
                       {plan.features.map((feature, index) => (
                         <li key={index} className="flex items-start gap-3">
-                          <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                          <span className="text-sm text-muted-foreground">{feature}</span>
+                          <div className="p-1 rounded-full bg-primary/10 shrink-0 mt-0.5">
+                            <Check className="w-3 h-3 text-primary" />
+                          </div>
+                          <span className="text-sm sm:text-base text-muted-foreground">
+                            {feature}
+                          </span>
                         </li>
                       ))}
                     </ul>
-                  </CardContent>
 
-                  <CardFooter className="pt-4">
-                    {isCurrent ? (
-                      <Button 
-                        className="w-full" 
-                        variant="outline"
-                        onClick={handleManageSubscription}
-                        disabled={loading === "manage"}
-                      >
-                        {loading === "manage" ? (
-                          <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                        ) : null}
-                        Gerenciar Assinatura
-                      </Button>
-                    ) : (
-                      <Button 
-                        className={`w-full ${plan.popular ? "bg-primary hover:bg-primary/90" : ""}`}
-                        variant={plan.popular ? "default" : "outline"}
-                        onClick={() => handleSubscribe(plan.priceId)}
-                        disabled={loading === plan.priceId}
-                      >
-                        {loading === plan.priceId ? (
-                          <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                        ) : null}
-                        {subscription?.subscribed ? "Trocar Plano" : "Assinar Agora"}
-                      </Button>
-                    )}
-                  </CardFooter>
-                </Card>
+                    <div className="space-y-3 mt-auto">
+                      {isCurrent ? (
+                        <Button 
+                          className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white"
+                          onClick={handleManageSubscription}
+                          disabled={loading === "manage"}
+                          size="lg"
+                        >
+                          {loading === "manage" ? (
+                            <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                          ) : null}
+                          Gerenciar Assinatura
+                        </Button>
+                      ) : (
+                        <Button 
+                          className={`w-full ${
+                            plan.popular 
+                              ? 'bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-md'
+                              : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground'
+                          }`}
+                          onClick={() => handleSubscribe(plan.priceId)}
+                          disabled={loading === plan.priceId}
+                          size="lg"
+                        >
+                          {loading === plan.priceId ? (
+                            <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                          ) : (
+                            <span className="font-semibold">
+                              {plan.popular ? 'Começar Agora' : 'Escolher Plano'}
+                            </span>
+                          )}
+                        </Button>
+                      )}
+                      
+                      <p className="text-xs text-center text-muted-foreground">
+                        Cancelamento a qualquer momento
+                      </p>
+                    </div>
+                  </div>
+                </div>
               );
             })}
           </div>
         )}
 
-        {subscription?.subscribed && subscription.subscription_end && (
-          <p className="text-center text-sm text-muted-foreground mt-8">
-            Sua assinatura renova em: {new Date(subscription.subscription_end).toLocaleDateString("pt-BR")}
+        <div className="text-center mt-12 pt-8 border-t border-border">
+          <p className="text-sm text-muted-foreground">
+            Todos os planos incluem 7 dias grátis para teste • Suporte 24/7 • Garantia de 30 dias
           </p>
-        )}
+        </div>
       </div>
     </section>
   );

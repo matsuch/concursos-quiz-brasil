@@ -9,7 +9,8 @@ interface ConcursoCardProps {
   local: string;
   inscricoesAte: string;
   nivel: string;
-  status: "aberto" | "breve" | "encerrado";
+  salario: number | null;
+  status: "destaque" | "breve" | "encerrado";
   urlEdital?: string | null;
 }
 
@@ -20,20 +21,21 @@ const ConcursoCard = ({
   local,
   inscricoesAte,
   nivel,
+  salario,
   status,
   urlEdital,
 }: ConcursoCardProps) => {
   const statusConfig = {
-    aberto: {
-      label: "Inscrições Abertas",
+    destaque: {
+      label: "Destaque",
       className: "bg-success/10 text-success border-success/20",
     },
     breve: {
-      label: "Em Breve",
+      label: "Em Aberto",
       className: "bg-accent/10 text-accent-foreground border-accent/20",
     },
     encerrado: {
-      label: "Encerrado",
+      label: "Em Breve",
       className: "bg-muted text-muted-foreground border-border",
     },
   };
@@ -71,7 +73,7 @@ const ConcursoCard = ({
 
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <MapPin className="w-4 h-4 flex-shrink-0" />
-          <span className="truncate">{local}</span>
+          <span className="truncate">{salario}</span>
         </div>
 
         <div className="flex items-center gap-2 text-sm text-muted-foreground">

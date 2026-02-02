@@ -18,7 +18,7 @@ const guestOnlyNavItems = [
 ];
 
 const authOnlyNavItems = [
-  { to: "/estudo", icon: BookOpen, label: "Estudo" },
+  { to: "/estudo", icon: BookOpen, label: "Flashcards" },
   // { to: "/aulas", icon: BookOpen, label: "Aulas" },
   // { to: "/duelo", icon: Swords, label: "Duelo" },
   // { to: "/conquistas", icon: Award, label: "Conquistas" },
