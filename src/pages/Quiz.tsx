@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Adicionar esta importação
+import { useNavigate } from "react-router-dom";
 import { QuizFilters } from "@/components/quiz/QuizFilters";
 import { QuizQuestion } from "@/components/quiz/QuizQuestion";
 import { useQuizData } from "@/hooks/useQuizData";
-import { useAuth } from "@/hooks/useAuth"; // Adicionar esta importação
+import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
@@ -31,10 +31,10 @@ const Quiz = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [answered, setAnswered] = useState(false);
   const [score, setScore] = useState(0);
-  const navigate = useNavigate(); // Adicionar o hook de navegação
+  const navigate = useNavigate();
 
   const { questions, loading, error, fetchQuestions } = useQuizData();
-  const { user, loading: authLoading } = useAuth(); // Adicionar o hook de autenticação
+  const { user, loading: authLoading } = useAuth();
 
   // Carrega todas as questões ao montar o componente
   useEffect(() => {
@@ -59,12 +59,14 @@ const Quiz = () => {
     
     // Verifica se o usuário está logado
     if (!user) {
+      console.log("Usuário não logado, redirecionando para /auth");
       // Redireciona para a página de login
       navigate("/auth");
       return;
     }
     
     // Se estiver logado, segue o fluxo normal
+    console.log("Usuário logado, processando resposta...");
     setAnswered(true);
     if (selectedAnswer === questions[currentQuestionIndex].correct_answer) {
       setScore(score + 1);
@@ -100,16 +102,6 @@ const Quiz = () => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8 pb-24 sm:pb-8">
         <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
-          {/* Alerta para usuários não logados */}
-          {!user && (
-            <Alert className="bg-yellow-50 border-yellow-200">
-              <AlertTitle className="text-yellow-800">Atenção</AlertTitle>
-              <AlertDescription className="text-yellow-700">
-                Você precisa estar logado para responder às questões e salvar seu progresso.
-              </AlertDescription>
-            </Alert>
-          )}
-          
           <QuizFilters
             filters={filters}
             onFilterChange={setFilters}
@@ -146,12 +138,11 @@ const Quiz = () => {
                 selectedAnswer={selectedAnswer}
                 answered={answered}
                 onSelectOption={handleSelectOption}
-                onSubmitAnswer={handleSubmitAnswer} // Esta função agora verifica login
+                onSubmitAnswer={handleSubmitAnswer}
                 onNext={handleNext}
                 onPrevious={handlePrevious}
                 hasPrevious={currentQuestionIndex > 0}
                 hasNext={currentQuestionIndex < questions.length - 1}
-                isAuthenticated={!!user} // Passa o estado de autenticação
               />
             </div>
           )}

@@ -26,12 +26,11 @@ interface QuizQuestionProps {
   selectedAnswer: number | null;
   answered: boolean;
   onSelectOption: (index: number) => void;
-  onSubmitAnswer: () => void; // Esta função verifica login
+  onSubmitAnswer: () => void;
   onNext: () => void;
   onPrevious: () => void;
   hasPrevious: boolean;
   hasNext: boolean;
-  isAuthenticated?: boolean;
 }
 
 export function QuizQuestion({
@@ -44,7 +43,6 @@ export function QuizQuestion({
   onPrevious,
   hasPrevious,
   hasNext,
-  isAuthenticated = false,
 }: QuizQuestionProps) {
   const [showAiExplanation, setShowAiExplanation] = useState(false);
 
@@ -143,11 +141,10 @@ export function QuizQuestion({
               <button
                 key={index}
                 onClick={() => onSelectOption(index)}
-                disabled={answered || !isAuthenticated}
+                disabled={answered}
                 className={cn(
                   "w-full flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg border-2 transition-all text-left",
-                  !answered && isAuthenticated && "hover:border-primary hover:bg-primary/5 cursor-pointer active:scale-[0.99]",
-                  !answered && !isAuthenticated && "cursor-not-allowed opacity-70",
+                  !answered && "hover:border-primary hover:bg-primary/5 cursor-pointer active:scale-[0.99]",
                   answered && "cursor-not-allowed",
                   getOptionStyle(index)
                 )}
@@ -178,7 +175,7 @@ export function QuizQuestion({
         <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-2">
           <Button
             onClick={onSubmitAnswer}
-            disabled={isAuthenticated ? (selectedAnswer === null || answered) : false}
+            disabled={selectedAnswer === null || answered}
             className="w-full sm:w-auto bg-warning hover:bg-warning/90 text-warning-foreground border border-warning/50 hover:border-warning/70 rounded-md text-sm sm:text-base py-2.5 sm:py-2"
           >
             Responder
