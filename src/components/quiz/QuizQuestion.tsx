@@ -4,7 +4,7 @@ import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, ChevronRight, Sparkles, LogIn } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Question {
@@ -26,7 +26,7 @@ interface QuizQuestionProps {
   selectedAnswer: number | null;
   answered: boolean;
   onSelectOption: (index: number) => void;
-  onSubmitAnswer: () => void;
+  onSubmitAnswer: () => void; // Esta função verifica login
   onNext: () => void;
   onPrevious: () => void;
   hasPrevious: boolean;
@@ -77,13 +77,6 @@ export function QuizQuestion({
     if (isCorrect) return "border-success text-success bg-success/20";
     if (isSelected && !isCorrect) return "border-destructive text-destructive bg-destructive/20";
     return "border-muted text-muted-foreground";
-  };
-
-  // Função para lidar com clique no botão principal
-  const handleMainButtonClick = () => {
-    // Se não estiver autenticado, chama onSubmitAnswer que redirecionará para login
-    // Se estiver autenticado, também chama onSubmitAnswer normalmente
-    onSubmitAnswer();
   };
 
   return (
@@ -184,23 +177,11 @@ export function QuizQuestion({
         {/* Action Buttons - Responsivo */}
         <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-2">
           <Button
-            onClick={handleMainButtonClick} // Usa a nova função
+            onClick={onSubmitAnswer}
             disabled={isAuthenticated ? (selectedAnswer === null || answered) : false}
-            className={cn(
-              "w-full sm:w-auto rounded-md text-sm sm:text-base py-2.5 sm:py-2 flex items-center justify-center",
-              isAuthenticated 
-                ? "bg-warning hover:bg-warning/90 text-warning-foreground border border-warning/50 hover:border-warning/70"
-                : "bg-blue-600 hover:bg-blue-700 text-white border border-blue-600"
-            )}
+            className="w-full sm:w-auto bg-warning hover:bg-warning/90 text-warning-foreground border border-warning/50 hover:border-warning/70 rounded-md text-sm sm:text-base py-2.5 sm:py-2"
           >
-            {isAuthenticated ? (
-              "Responder"
-            ) : (
-              <>
-                <LogIn className="h-4 w-4 mr-2" />
-                Faça login para responder
-              </>
-            )}
+            Responder
           </Button>
 
           <div className="flex items-center gap-2 justify-center sm:justify-end">
