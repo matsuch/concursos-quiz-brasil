@@ -4,7 +4,7 @@ import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sparkles, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Question {
@@ -26,11 +26,12 @@ interface QuizQuestionProps {
   selectedAnswer: number | null;
   answered: boolean;
   onSelectOption: (index: number) => void;
-  onSubmitAnswer: () => void;
+  onSubmitAnswer: () => void; // Esta função já verifica login no componente pai
   onNext: () => void;
   onPrevious: () => void;
   hasPrevious: boolean;
   hasNext: boolean;
+  isAuthenticated?: boolean;
 }
 
 export function QuizQuestion({
@@ -38,11 +39,12 @@ export function QuizQuestion({
   selectedAnswer,
   answered,
   onSelectOption,
-  onSubmitAnswer,
+  onSubmitAnswer, // Esta função será chamada tanto para logados quanto não-logados
   onNext,
   onPrevious,
   hasPrevious,
   hasNext,
+  isAuthenticated = false,
 }: QuizQuestionProps) {
   const [showAiExplanation, setShowAiExplanation] = useState(false);
 
@@ -75,6 +77,13 @@ export function QuizQuestion({
     if (isCorrect) return "border-success text-success bg-success/20";
     if (isSelected && !isCorrect) return "border-destructive text-destructive bg-destructive/20";
     return "border-muted text-muted-foreground";
+  };
+
+  // Função para lidar com clique no botão principal
+  const handleMainButtonClick = () => {
+    // Se não estiver autenticado, chama onSubmitAnswer que redirecionará para login
+    // Se estiver autenticado, também chama onSubmitAnswer normalmente
+    onSubmitAnswer();
   };
 
   return (
@@ -141,10 +150,11 @@ export function QuizQuestion({
               <button
                 key={index}
                 onClick={() => onSelectOption(index)}
-                disabled={answered}
+                disabled={answered || !isAuthenticated}
                 className={cn(
                   "w-full flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg border-2 transition-all text-left",
-                  !answered && "hover:border-primary hover:bg-primary/5 cursor-pointer active:scale-[0.99]",
+                  !answered && isAuthenticated && "hover:border-primary hover:bg-primary/5 cursor-pointer active:scale-[0.99]",
+                  !answered && !isAuthenticated && "cursor-not-allowed opacity-70",
                   answered && "cursor-not-allowed",
                   getOptionStyle(index)
                 )}
@@ -174,11 +184,23 @@ export function QuizQuestion({
         {/* Action Buttons - Responsivo */}
         <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-2">
           <Button
-            onClick={onSubmitAnswer}
-            disabled={selectedAnswer === null || answered}
-            className="w-full sm:w-auto bg-warning hover:bg-warning/90 text-warning-foreground border border-warning/50 hover:border-warning/70 rounded-md text-sm sm:text-base py-2.5 sm:py-2"
+            onClick={handleMainButtonClick} // Usa a nova função
+            disabled={isAuthenticated ? (selectedAnswer === null || answered) : false}
+            className={cn(
+              "w-full sm:w-auto rounded-md text-sm sm:text-base py-2.5 sm:py-2 flex items-center justify-center",
+              isAuthenticated 
+                ? "bg-warning hover:bg-warning/90 text-warning-foreground border border-warning/50 hover:border-warning/70"
+                : "bg-blue-600 hover:bg-blue-700 text-white border border-blue-600"
+            )}
           >
-            Responder
+            {isAuthenticated ? (
+              "Responder"
+            ) : (
+              <>
+                <LogIn className="h-4 w-4 mr-2" />
+                Faça login para responder
+              </>
+            )}
           </Button>
 
           <div className="flex items-center gap-2 justify-center sm:justify-end">
