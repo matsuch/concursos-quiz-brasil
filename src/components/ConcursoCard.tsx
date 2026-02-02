@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Users, ExternalLink } from "lucide-react";
+import { Calendar, Banknote, Users, ExternalLink } from "lucide-react";
 
 interface ConcursoCardProps {
   titulo: string;
@@ -10,7 +10,7 @@ interface ConcursoCardProps {
   inscricoesAte: string;
   nivel: string;
   salario: number | null;
-  status: "destaque" | "breve" | "encerrado";
+  status: "destaque" | "breve" | "aberto";
   urlEdital?: string | null;
 }
 
@@ -30,18 +30,18 @@ const ConcursoCard = ({
       label: "Destaque",
       className: "bg-success/10 text-success border-success/20",
     },
-    breve: {
-      label: "Em Aberto",
+    aberto: {
+      label: "Abertos",
       className: "bg-accent/10 text-accent-foreground border-accent/20",
     },
-    encerrado: {
+    breve: {
       label: "Em Breve",
       className: "bg-muted text-muted-foreground border-border",
     },
   };
 
   const config = statusConfig[status];
-  const isDisabled = status === "encerrado" || !urlEdital;
+  const isDisabled = status === "breve" || !urlEdital;
 
   return (
     <Card className="p-6 hover:shadow-lg transition-all duration-300 border-border hover:border-primary/20 relative">
@@ -61,6 +61,13 @@ const ConcursoCard = ({
       </div>
 
       <div className="space-y-2 mb-4">
+        <div className="flex items-center gap-2 text-sm font-medium text-emerald-600">
+          <Banknote className="w-5 h-5 flex-shrink-0" />
+          <span className="truncate font-bold">
+            {salario ? `R$ ${salario.toLocaleString('pt-BR')}` : 'Não informado'}
+          </span>
+        </div>
+
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Users className="w-4 h-4 flex-shrink-0" />
           <span>
@@ -69,11 +76,6 @@ const ConcursoCard = ({
           <span className="text-xs px-2 py-0.5 rounded-full bg-muted ml-auto">
             {nivel}
           </span>
-        </div>
-
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <MapPin className="w-4 h-4 flex-shrink-0" />
-          <span className="truncate">{salario}</span>
         </div>
 
         <div className="flex items-center gap-2 text-sm text-muted-foreground">

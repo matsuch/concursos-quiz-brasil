@@ -15,8 +15,9 @@ interface Concurso {
   local: string;
   inscricoesAte: string;
   nivel: string;
-  status: "aberto" | "breve" | "encerrado";
+  status: "destaque" | "breve" | "aberto";
   urlEdital?: string | null;
+  salario?: number | null;
 }
 
 const Home = () => {
@@ -41,6 +42,7 @@ const Home = () => {
         .from("concursos")
         .select("*")
         .order("created_at", { ascending: false })
+        .order("salario", { ascending: false, nullsFirst: false })
         .limit(12);
 
       if (concursosError) {
@@ -54,8 +56,9 @@ const Home = () => {
           local: c.local,
           inscricoesAte: c.inscricoes_ate,
           nivel: c.nivel,
-          status: c.status as "aberto" | "breve" | "encerrado",
-          urlEdital: c.url_edital
+          status: c.status as "destaque" | "breve" | "aberto",
+          urlEdital: c.url_edital,
+          salario: c.salario
         }));
 
         setConcursos(concursosFormatados);
@@ -67,7 +70,7 @@ const Home = () => {
     }
   };
 
-  const concursosDestaque = concursos.slice(0, 4);
+  const concursosDestaque = concursos.filter(c => c.status === "destaque").slice(0, 4);
   const concursosAbertos = concursos.filter(c => c.status === "aberto").slice(0, 4);
   const concursosBreve = concursos.filter(c => c.status === "breve").slice(0, 4);
 
@@ -99,7 +102,7 @@ const Home = () => {
         {/* Desktop - Grid 2x2 */}
         <div className="hidden md:grid md:grid-cols-2 gap-6">
           {concursosList.map((concurso) => (
-            <ConcursoCard key={concurso.id} {...concurso} />
+            <ConcursoCard key={concurso.id} {...concurso} salario={concurso.salario ?? null} />
           ))}
         </div>
 
@@ -112,7 +115,7 @@ const Home = () => {
             >
               {concursosList.map((concurso) => (
                 <div key={concurso.id} className="w-full flex-shrink-0 px-2">
-                  <ConcursoCard {...concurso} />
+                  <ConcursoCard key={concurso.id} {...concurso} salario={concurso.salario ?? null} />
                 </div>
               ))}
             </div>
@@ -215,8 +218,8 @@ const Home = () => {
           ) : (
             <Tabs defaultValue="destaque" className="w-full">
               <TabsList className="grid w-full grid-cols-3 max-w-md mx-auto mb-8">
-                <TabsTrigger value="destaque">Em Destaque</TabsTrigger>
-                <TabsTrigger value="aberto">Em Aberto</TabsTrigger>
+                <TabsTrigger value="destaque">Destaques</TabsTrigger>
+                <TabsTrigger value="aberto">Abertos</TabsTrigger>
                 <TabsTrigger value="breve">Em Breve</TabsTrigger>
               </TabsList>
 
