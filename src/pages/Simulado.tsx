@@ -190,7 +190,6 @@ const SimuladoPage = () => {
   if (!started) {
     return (
       <div className="min-h-screen bg-background">
-        <Navbar />
           <div className="container mx-auto px-4 py-10 sm:py-20">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-8">
@@ -287,7 +286,6 @@ const SimuladoPage = () => {
 
     return (
       <div className="min-h-screen bg-background">
-        <Navbar />
         <div className="container mx-auto px-4 py-20">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-8">
@@ -421,7 +419,6 @@ const SimuladoPage = () => {
   if (questions.length === 0) {
     return (
       <div className="min-h-screen bg-background">
-        <Navbar />
         <div className="container mx-auto px-4 py-20 text-center">
           <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-primary" />
           <p className="text-muted-foreground">Carregando questões...</p>
@@ -432,7 +429,6 @@ const SimuladoPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
       <div className="container mx-auto px-4 py-6 sm:py-12">
         <div className="max-w-4xl mx-auto">
           {/* Header with progress */}

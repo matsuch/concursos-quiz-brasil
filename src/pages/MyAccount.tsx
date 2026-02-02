@@ -394,7 +394,6 @@ const MyAccount = () => {
 
   return (
     <>
-      <Navbar />
       <div className="min-h-screen bg-background py-6 px-4 md:py-10">
         <div className="max-w-4xl mx-auto space-y-6">
           
