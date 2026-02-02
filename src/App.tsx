@@ -44,7 +44,7 @@ const App = () => (
                     <Route path="/planos" element={<Planos />} />
                     <Route path="/auth" element={<Auth />} />
 
-                    <Route 
+                    {/* <Route 
                       path="/mindmaps" 
                       element={
                         <CanvasEditor 
@@ -52,7 +52,7 @@ const App = () => (
                           height="100%"
                         />
                       } 
-                    />
+                    /> */}
 
                     <Route 
                       path="/simulado" 

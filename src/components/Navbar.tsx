@@ -10,7 +10,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 const publicNavItems = [
   { to: "/", icon: Home, label: "Início" },
   { to: "/quiz", icon: Notebook, label: "Questões" },
-  { to: "/mindmaps", icon: Map, label: "Mapas Mentais" },
+  // { to: "/mindmaps", icon: Map, label: "Mapas Mentais" },
 ];
 
 const guestOnlyNavItems = [

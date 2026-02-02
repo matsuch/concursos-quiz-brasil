@@ -63,7 +63,7 @@ export const CanvasEditor: React.FC<CanvasEditorProps> = ({
 
   return (
     <div style={{ position: 'relative', width, height }} className={className}>
-      {/* Toolbar */}
+      {/* Toolbar Principal */}
       <div style={{
         position: 'absolute',
         top: '20px',
@@ -71,11 +71,11 @@ export const CanvasEditor: React.FC<CanvasEditorProps> = ({
         transform: 'translateX(-50%)',
         zIndex: 10,
         background: 'white',
-        borderRadius: '8px',
+        borderRadius: '12px',
         padding: '8px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         display: 'flex',
-        gap: '8px'
+        gap: '4px'
       }}>
         <ToolButton
           active={currentTool === 'select'}
@@ -165,18 +165,20 @@ export const CanvasEditor: React.FC<CanvasEditorProps> = ({
         position: 'absolute',
         bottom: '20px',
         left: '20px',
-        background: 'rgba(0,0,0,0.7)',
+        background: 'rgba(0,0,0,0.75)',
         color: 'white',
         padding: '12px 16px',
         borderRadius: '8px',
-        fontSize: '14px',
-        fontFamily: 'monospace',
-        zIndex: 10
+        fontSize: '13px',
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        zIndex: 10,
+        lineHeight: '1.6'
       }}>
-        <div>🖱️ Scroll: Zoom</div>
-        <div>⌘/Ctrl + Arraste: Pan</div>
-        <div>Delete: Remover selecionado</div>
-        <div>Esc: Deselecionar</div>
+        <div><strong>🔗 Conectores:</strong> Clique no botão + para conectar</div>
+        <div><strong>🖱️ Zoom:</strong> Scroll do mouse</div>
+        <div><strong>✋ Pan:</strong> Ctrl/⌘ + Arraste</div>
+        <div><strong>🗑️ Deletar:</strong> Delete/Backspace</div>
+        <div><strong>⎋ Deselecionar:</strong> Esc</div>
       </div>
 
       <canvas
@@ -192,7 +194,6 @@ export const CanvasEditor: React.FC<CanvasEditorProps> = ({
   );
 };
 
-// ToolButton component permanece igual
 interface ToolButtonProps {
   active?: boolean;
   onClick: () => void;
@@ -205,11 +206,11 @@ const ToolButton: React.FC<ToolButtonProps> = ({ active, onClick, title, childre
     onClick={onClick}
     title={title}
     style={{
-      padding: '8px',
+      padding: '10px',
       border: 'none',
       background: active ? '#3b82f6' : 'transparent',
       color: active ? 'white' : '#374151',
-      borderRadius: '4px',
+      borderRadius: '8px',
       cursor: 'pointer',
       display: 'flex',
       alignItems: 'center',

@@ -353,7 +353,6 @@ const MyAccount = () => {
   if (loading) {
     return (
       <>
-        <Navbar />
         <div className="min-h-screen bg-background flex items-center justify-center">
           <div className="text-center">
             <Loader2 className="animate-spin h-12 w-12 text-primary mx-auto" />
@@ -368,7 +367,6 @@ const MyAccount = () => {
   if (!isAuthenticated) {
     return (
       <>
-        <Navbar />
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
           <Card className="max-w-md w-full text-center shadow-lg">
             <CardContent className="pt-8 pb-8">
