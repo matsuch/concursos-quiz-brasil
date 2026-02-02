@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Adicionar esta importação
 import { QuizFilters } from "@/components/quiz/QuizFilters";
 import { QuizQuestion } from "@/components/quiz/QuizQuestion";
 import { useQuizData } from "@/hooks/useQuizData";
+import { useAuth } from "@/hooks/useAuth"; // Adicionar esta importação
 import { Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
@@ -29,8 +31,10 @@ const Quiz = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [answered, setAnswered] = useState(false);
   const [score, setScore] = useState(0);
+  const navigate = useNavigate(); // Adicionar o hook de navegação
 
   const { questions, loading, error, fetchQuestions } = useQuizData();
+  const { user, loading: authLoading } = useAuth(); // Adicionar o hook de autenticação
 
   // Carrega todas as questões ao montar o componente
   useEffect(() => {
@@ -52,6 +56,15 @@ const Quiz = () => {
 
   const handleSubmitAnswer = () => {
     if (selectedAnswer === null || answered) return;
+    
+    // Verifica se o usuário está logado
+    if (!user) {
+      // Redireciona para a página de login
+      navigate("/auth");
+      return;
+    }
+    
+    // Se estiver logado, segue o fluxo normal
     setAnswered(true);
     if (selectedAnswer === questions[currentQuestionIndex].correct_answer) {
       setScore(score + 1);
@@ -74,55 +87,74 @@ const Quiz = () => {
     }
   };
 
+  // Se estiver carregando autenticação, mostra loading
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
-      
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8 pb-24 sm:pb-8">
         <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
-            <QuizFilters
-              filters={filters}
-              onFilterChange={setFilters}
-              loading={loading}
-            />
-            
-            {error && (
-              <Alert variant="destructive">
-                <AlertTitle>Erro</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+          {/* Alerta para usuários não logados */}
+          {!user && (
+            <Alert className="bg-yellow-50 border-yellow-200">
+              <AlertTitle className="text-yellow-800">Atenção</AlertTitle>
+              <AlertDescription className="text-yellow-700">
+                Você precisa estar logado para responder às questões e salvar seu progresso.
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          <QuizFilters
+            filters={filters}
+            onFilterChange={setFilters}
+            loading={loading}
+          />
+          
+          {error && (
+            <Alert variant="destructive">
+              <AlertTitle>Erro</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
 
-            {loading ? (
-              <div className="text-center py-8 sm:py-12">
-                <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 animate-spin mx-auto mb-4 text-primary" />
-                <p className="text-sm sm:text-base text-muted-foreground">Carregando questões...</p>
+          {loading ? (
+            <div className="text-center py-8 sm:py-12">
+              <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 animate-spin mx-auto mb-4 text-primary" />
+              <p className="text-sm sm:text-base text-muted-foreground">Carregando questões...</p>
+            </div>
+          ) : questions.length === 0 ? (
+            <Alert>
+              <AlertTitle>Nenhuma questão encontrada</AlertTitle>
+              <AlertDescription>
+                Tente ajustar os filtros ou aguarde enquanto carregamos o conteúdo.
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <div className="space-y-3 sm:space-y-4">
+              <div className="text-xs sm:text-sm text-muted-foreground px-1">
+                Mostrando {currentQuestionIndex + 1} de {questions.length} questões
               </div>
-            ) : questions.length === 0 ? (
-              <Alert>
-                <AlertTitle>Nenhuma questão encontrada</AlertTitle>
-                <AlertDescription>
-                  Tente ajustar os filtros ou aguarde enquanto carregamos o conteúdo.
-                </AlertDescription>
-              </Alert>
-            ) : (
-              <div className="space-y-3 sm:space-y-4">
-                <div className="text-xs sm:text-sm text-muted-foreground px-1">
-                  Mostrando {currentQuestionIndex + 1} de {questions.length} questões
-                </div>
-                
-                <QuizQuestion
-                  question={questions[currentQuestionIndex]}
-                  selectedAnswer={selectedAnswer}
-                  answered={answered}
-                  onSelectOption={handleSelectOption}
-                  onSubmitAnswer={handleSubmitAnswer}
-                  onNext={handleNext}
-                  onPrevious={handlePrevious}
-                  hasPrevious={currentQuestionIndex > 0}
-                  hasNext={currentQuestionIndex < questions.length - 1}
-                />
-              </div>
-            )}
+              
+              <QuizQuestion
+                question={questions[currentQuestionIndex]}
+                selectedAnswer={selectedAnswer}
+                answered={answered}
+                onSelectOption={handleSelectOption}
+                onSubmitAnswer={handleSubmitAnswer} // Esta função agora verifica login
+                onNext={handleNext}
+                onPrevious={handlePrevious}
+                hasPrevious={currentQuestionIndex > 0}
+                hasNext={currentQuestionIndex < questions.length - 1}
+                isAuthenticated={!!user} // Passa o estado de autenticação
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

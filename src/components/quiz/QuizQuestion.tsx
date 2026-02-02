@@ -26,7 +26,7 @@ interface QuizQuestionProps {
   selectedAnswer: number | null;
   answered: boolean;
   onSelectOption: (index: number) => void;
-  onSubmitAnswer: () => void; // Esta função já verifica login no componente pai
+  onSubmitAnswer: () => void;
   onNext: () => void;
   onPrevious: () => void;
   hasPrevious: boolean;
@@ -39,7 +39,7 @@ export function QuizQuestion({
   selectedAnswer,
   answered,
   onSelectOption,
-  onSubmitAnswer, // Esta função será chamada tanto para logados quanto não-logados
+  onSubmitAnswer,
   onNext,
   onPrevious,
   hasPrevious,
