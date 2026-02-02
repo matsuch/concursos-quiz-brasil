@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import ConcursoCard from "@/components/ConcursoCard";
 import PricingSection from "@/components/PricingSection";
 import { Button } from "@/components/ui/button";
-import { Book, Notebook, Loader2} from "lucide-react";
+import { BookOpen, Notebook, Loader2} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -150,11 +150,11 @@ const Home = () => {
               <Button 
                 size="lg" 
                 variant="outline"
-                onClick={() => navigate("/mindmaps")}
+                onClick={() => navigate("/estudo")}
                 className="w-full sm:w-auto bg-[#FACC15] hover:bg-[#EAB308] transition-colors"
               >
-                <Book className="w-5 h-5 mr-2" />
-                Mapas Mentais
+                <BookOpen className="w-5 h-5 mr-2" />
+                Flashcards
               </Button>
             </div>
           </div>

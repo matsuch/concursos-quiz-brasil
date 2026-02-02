@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
-import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CheckCircle2, XCircle, Play, BookOpen, Loader2, Clock } from "lucide-react";
