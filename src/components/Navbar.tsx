@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/hooks/useAuth";
-import { Trophy, Notebook, Swords, Home, BookOpen, Award, Menu, LogIn, LogOut, User, Landmark, Scale, CreditCard, Map } from "lucide-react";
+import { Trophy, Notebook, Swords, Home, BookOpen, Award, Menu, LogIn, LogOut, User, Landmark, Scale, CreditCard, Map, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +19,7 @@ const guestOnlyNavItems = [
 
 const authOnlyNavItems = [
   { to: "/estudo", icon: BookOpen, label: "Flashcards" },
+  { to: "/planner", icon: CalendarDays, label: "Planner" },
   // { to: "/aulas", icon: BookOpen, label: "Aulas" },
   // { to: "/duelo", icon: Swords, label: "Duelo" },
   // { to: "/conquistas", icon: Award, label: "Conquistas" },
