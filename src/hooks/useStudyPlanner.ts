@@ -3,6 +3,21 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useToast } from './use-toast';
 
+export type StudyCalendarEvent = {
+  id: string;
+  user_id: string;
+  title: string;
+  subject: string | null;
+  start_time: string;
+  end_time: string;
+  color: string | null;
+  notes: string | null;
+  is_recurring: boolean | null;
+  recurrence_rule: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export interface StudyCycle {
   id: string;
   user_id: string;
@@ -262,6 +277,68 @@ export function useStudyPlanner() {
     },
   });
 
+  // Buscar eventos do calendário
+  const { data: calendarEvents, refetch: refetchCalendarEvents } = useQuery({
+    queryKey: ['calendarEvents', user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('study_calendar_events')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('start_time', { ascending: true });
+      if (error) throw error;
+      return data as StudyCalendarEvent[];
+    },
+    enabled: !!user,
+  });
+
+  // Criar evento
+  const createCalendarEvent = useMutation({
+    mutationFn: async (event: Omit<StudyCalendarEvent, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+      const { data, error } = await supabase
+        .from('study_calendar_events')
+        .insert([{ ...event, user_id: user?.id }])
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['calendarEvents'] });
+    },
+  });
+
+  // Atualizar evento
+  const updateCalendarEvent = useMutation({
+    mutationFn: async ({ id, ...updates }: Partial<StudyCalendarEvent> & { id: string }) => {
+      const { data, error } = await supabase
+        .from('study_calendar_events')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['calendarEvents'] });
+    },
+  });
+
+  // Deletar evento
+  const deleteCalendarEvent = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('study_calendar_events')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['calendarEvents'] });
+    },
+  });
+
   return {
     // Data
     cycles,
@@ -280,5 +357,9 @@ export function useStudyPlanner() {
     createReview,
     toggleReview,
     deleteReview,
+    calendarEvents,
+    createCalendarEvent,
+    updateCalendarEvent,
+    deleteCalendarEvent,
   };
 }

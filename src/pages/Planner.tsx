@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { CalendarDays, BookOpen, Bell, RotateCcw } from 'lucide-react';
+import { CalendarDays, BookOpen, Bell, RotateCcw, Calendar } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { StudyCycleTab } from '@/components/planner/StudyCycleTab';
 import { EditalControlTab } from '@/components/planner/EditalControlTab';
 import { ReviewsTab } from '@/components/planner/ReviewsTab';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
+import { CalendarTab } from '@/components/planner/CalendarTab';
 
 export default function Planner() {
   const { user, loading } = useAuth();
@@ -69,6 +70,14 @@ export default function Planner() {
                   <span className="hidden sm:inline text-sm font-medium">Revisões</span>
                   <span className="sm:hidden text-sm font-medium">Revisões</span>
                 </TabsTrigger>
+                <TabsTrigger 
+                value="calendar" 
+                className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm transition-all"
+              >
+                <Calendar className="w-4 h-4" />
+                <span className="hidden sm:inline text-sm font-medium">Calendário</span>
+                <span className="sm:hidden text-sm font-medium">Calendário</span>
+              </TabsTrigger>
               </TabsList>
             </div>
 
@@ -80,6 +89,10 @@ export default function Planner() {
 
               <TabsContent value="edital" className="mt-0 focus-visible:outline-none">
                 <EditalControlTab />
+              </TabsContent>
+
+              <TabsContent value="calendar" className="mt-0 focus-visible:outline-none">
+                <CalendarTab />
               </TabsContent>
 
               <TabsContent value="reviews" className="mt-0 focus-visible:outline-none">
