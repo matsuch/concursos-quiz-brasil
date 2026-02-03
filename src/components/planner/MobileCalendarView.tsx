@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { format, startOfWeek, addDays, isSameDay, isToday, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Calendar, Clock, Plus, ChevronLeft, ChevronRight, X, MoreVertical } from 'lucide-react';
+import { Calendar, Clock, Plus, ChevronLeft, ChevronRight, ChevronDown, X, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -367,23 +367,50 @@ function QuickEventForm({ selectedDay, onClose }: { selectedDay: Date; onClose: 
   const [formData, setFormData] = useState({
     title: '',
     subject: '',
+    startTime: '09:00', // Horário padrão 09:00
     duration: '60', // minutos
   });
+
+  // Gerar opções de horário a cada 30 minutos
+  const timeOptions = useMemo(() => {
+    const options = [];
+    for (let hour = 6; hour <= 22; hour++) {
+      for (let minute = 0; minute < 60; minute += 30) {
+        const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+        options.push(time);
+      }
+    }
+    return options;
+  }, []);
+
+  // Calcular horário de término baseado na duração
+  const endTime = useMemo(() => {
+    const [hours, minutes] = formData.startTime.split(':').map(Number);
+    const startDate = new Date(selectedDay);
+    startDate.setHours(hours, minutes, 0, 0);
+    
+    const endDate = new Date(startDate);
+    endDate.setMinutes(endDate.getMinutes() + parseInt(formData.duration));
+    
+    return format(endDate, 'HH:mm');
+  }, [formData.startTime, formData.duration, selectedDay]);
 
   const handleSubmit = async () => {
     if (!formData.title.trim()) return;
 
-    const startTime = new Date(selectedDay);
-    startTime.setHours(9, 0, 0, 0); // 09:00 por padrão
+    // Converter startTime para objeto Date
+    const [hours, minutes] = formData.startTime.split(':').map(Number);
+    const startDateTime = new Date(selectedDay);
+    startDateTime.setHours(hours, minutes, 0, 0);
     
-    const endTime = new Date(startTime);
-    endTime.setMinutes(endTime.getMinutes() + parseInt(formData.duration));
+    const endDateTime = new Date(startDateTime);
+    endDateTime.setMinutes(endDateTime.getMinutes() + parseInt(formData.duration));
 
     await createCalendarEvent.mutateAsync({
       title: formData.title,
       subject: formData.subject || null,
-      start_time: startTime.toISOString(),
-      end_time: endTime.toISOString(),
+      start_time: startDateTime.toISOString(),
+      end_time: endDateTime.toISOString(),
       color: '#3b82f6',
       notes: null,
       is_recurring: false,
@@ -410,7 +437,7 @@ function QuickEventForm({ selectedDay, onClose }: { selectedDay: Date; onClose: 
       <div>
         <label className="text-sm font-medium mb-1 block">Matéria</label>
         <div className="flex gap-2 flex-wrap">
-          {SUBJECTS.slice(0, 5).map((subject) => (
+          {SUBJECTS.slice(0, 6).map((subject) => (
             <button
               key={subject}
               type="button"
@@ -428,25 +455,62 @@ function QuickEventForm({ selectedDay, onClose }: { selectedDay: Date; onClose: 
         </div>
       </div>
 
-      <div>
-        <label className="text-sm font-medium mb-1 block">Duração</label>
-        <div className="grid grid-cols-3 gap-2">
-          {['30', '60', '90', '120', '150', '180'].map((minutes) => (
-            <button
-              key={minutes}
-              type="button"
-              className={cn(
-                "py-2 rounded-lg border text-sm transition-colors",
-                formData.duration === minutes
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-muted hover:bg-muted/80"
-              )}
-              onClick={() => setFormData({ ...formData, duration: minutes })}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="text-sm font-medium mb-1 block">Horário de início</label>
+          <div className="relative">
+            <select
+              className="w-full p-3 rounded-lg border bg-background appearance-none"
+              value={formData.startTime}
+              onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
             >
-              {minutes} min
-            </button>
-          ))}
+              {timeOptions.map((time) => (
+                <option key={time} value={time}>
+                  {time}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <ChevronDown className="w-4 h-4 text-muted-foreground" />
+            </div>
+          </div>
         </div>
+
+        <div>
+          <label className="text-sm font-medium mb-1 block">Duração</label>
+          <div className="relative">
+            <select
+              className="w-full p-3 rounded-lg border bg-background appearance-none"
+              value={formData.duration}
+              onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+            >
+              {[30, 60, 90, 120, 150, 180].map((minutes) => (
+                <option key={minutes} value={minutes.toString()}>
+                  {minutes} min
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <ChevronDown className="w-4 h-4 text-muted-foreground" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mostrar horário de término */}
+      <div className="p-3 bg-muted/30 rounded-lg">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium">Horário:</span>
+          <div className="flex items-center gap-2">
+            <Clock className="w-4 h-4 text-muted-foreground" />
+            <span className="font-medium">
+              {formData.startTime} - {endTime}
+            </span>
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground mt-1">
+          {format(selectedDay, "dd 'de' MMMM", { locale: ptBR })}
+        </p>
       </div>
 
       <div className="flex gap-2 pt-4">
