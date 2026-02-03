@@ -142,9 +142,13 @@ All colors MUST be HSL.
     min-height: 100vh;
   }
 
-  /* Container principal do React */
+  /* CORREÇÃO: Permitir overflow visible para dialogs */
+  body:has([data-state="open"]) {
+    overflow: hidden;
+  }
+
+  /* Container principal do React - CORREÇÃO: remover overflow-x: hidden */
   #root {
-    overflow-x: hidden;
     min-height: 100vh;
     position: relative;
   }
@@ -154,6 +158,33 @@ All colors MUST be HSL.
     max-width: 100%;
     height: auto;
   }
+}
+
+/* ========================================
+   CORREÇÕES ESPECÍFICAS PARA DIALOG
+   ======================================== */
+
+/* Garantir que o Dialog Portal não seja afetado por overflow hidden */
+[data-radix-portal] {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+[data-radix-dialog-overlay] {
+  pointer-events: auto;
+  position: fixed !important;
+  inset: 0 !important;
+}
+
+[data-radix-dialog-content] {
+  pointer-events: auto;
+  position: fixed !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
 }
 
 /* ========================================
@@ -185,18 +216,19 @@ All colors MUST be HSL.
     -webkit-transform: translateZ(0);
   }
 
-  /* Previne seleção de texto durante scroll */
-  * {
+  /* Previne seleção de texto durante scroll - EXCETO em Dialogs */
+  *:not([data-radix-dialog-content] *) {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
   }
 
-  /* Permite seleção em elementos apropriados */
+  /* Permite seleção em elementos apropriados E dentro de Dialogs */
   input,
   textarea,
   [contenteditable="true"],
-  .selectable-text {
+  .selectable-text,
+  [data-radix-dialog-content] * {
     -webkit-user-select: text;
     user-select: text;
   }
