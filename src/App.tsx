@@ -21,7 +21,6 @@ import SimuladoPage from "./pages/Simulado";
 import MyAccount from "./pages/MyAccount";
 import Planos from "./pages/Planos";
 import Planner from "./pages/Planner";
-import { CanvasEditor } from "./pages/CanvasEditor"; // ajuste o import se necessário
 
 const queryClient = new QueryClient();
 
@@ -31,7 +30,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <BrowserRouter> 
           <AuthProvider>
             <SubscriptionProvider>
               <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
@@ -45,9 +44,25 @@ const App = () => (
                     <Route path="/planos" element={<Planos />} />
                     <Route path="/planner" element={<Planner />} />
                     <Route path="/auth" element={<Auth />} />
-
+                    
                     <Route 
-                      path="/simulado" 
+                      path="/quiz" 
+                      element={
+                        <ProtectedRoute requiredPlan="Basic">
+                          <SimuladoPage />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/planner" 
+                      element={
+                        <ProtectedRoute requiredPlan="Basic">
+                          <SimuladoPage />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/estudo" 
                       element={
                         <ProtectedRoute requiredPlan="Standard">
                           <SimuladoPage />
@@ -55,26 +70,10 @@ const App = () => (
                       } 
                     />
                     <Route 
-                      path="/duelo" 
+                      path="/simulado" 
                       element={
                         <ProtectedRoute requiredPlan="Standard">
-                          <Duelo />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    <Route 
-                      path="/ranking" 
-                      element={
-                        <ProtectedRoute requiresPremium>
-                          <Ranking />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    <Route 
-                      path="/conquistas" 
-                      element={
-                        <ProtectedRoute requiresPremium>
-                          <Conquistas />
+                          <SimuladoPage />
                         </ProtectedRoute>
                       } 
                     />
