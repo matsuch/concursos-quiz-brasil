@@ -35,7 +35,7 @@ export default function Planner() {
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Planner de Estudos</h1>
           </div>
-          <p className="text-muted-foreground text-sm sm:text-base max-w-2xl">
+          <p className="text-muted-foreground text-sm sm:text-base">
             Organize seu cronograma, controle o edital e agende revisões para maximizar seu aprendizado.
           </p>
         </div>

@@ -10,8 +10,6 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 const publicNavItems = [
   { to: "/", icon: Home, label: "Início" },
   { to: "/quiz", icon: Notebook, label: "Questões" },
-  { to: "/planner", icon: CalendarDays, label: "Planner" },
-  // { to: "/mindmaps", icon: Map, label: "Mapas Mentais" },
 ];
 
 const guestOnlyNavItems = [
@@ -21,12 +19,12 @@ const guestOnlyNavItems = [
 const authOnlyNavItems = [
   { to: "/estudo", icon: BookOpen, label: "Flashcards" },
   { to: "/planner", icon: CalendarDays, label: "Planner" },
+  { to: "/simulado", icon: BookOpen, label: "Simulado" },
+  { to: "/minha-conta", icon: Landmark, label: "Minha Conta" },
   // { to: "/aulas", icon: BookOpen, label: "Aulas" },
   // { to: "/duelo", icon: Swords, label: "Duelo" },
   // { to: "/conquistas", icon: Award, label: "Conquistas" },
   // { to: "/ranking", icon: Trophy, label: "Ranking" },
-  { to: "/simulado", icon: BookOpen, label: "Simulado" },
-  { to: "/minha-conta", icon: Landmark, label: "Minha Conta" },
 ];
 
 const Navbar = () => {
