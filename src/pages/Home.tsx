@@ -164,34 +164,33 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-secondary/5 to-background py-12 sm:py-20">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 text-blue-600 leading-tight">
-              Conquiste sua aprovação em concursos públicos
+          <div className="flex flex-col items-center justify-center text-center">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold mb-4 sm:mb-6 text-blue-600 leading-tight">
+              Conquiste sua aprovação
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8 px-2">
-              Treine com quizzes interativos, desafie outros candidatos em duelos e acompanhe os melhores concursos do Brasil
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mb-6 sm:mb-8 lg:mb-10 max-w-3xl">
+              Treine com questões oficiais, revise com flashcards personalizados e se organize seu plano de estudos.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
-              <Button 
-                size="lg" 
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-6 items-center">
+              <Button
+                size="lg"
                 onClick={() => navigate("/quiz")}
-                className="w-full sm:w-auto bg-[#2563eb] hover:bg-[#1d4ed8] transition-colors"
+                className="w-full sm:w-auto bg-[#2563eb] hover:bg-[#1d4ed8] transition-colors text-base lg:text-lg px-6 lg:px-8 py-6 lg:py-7"
               >
-                <Notebook className="w-5 h-5 mr-2" />
+                <Notebook className="w-4 h-5 lg:w-6 lg:h-6" />
                 Questões Oficiais
               </Button>
-              
-              <Button 
-                size="lg" 
+
+              <Button
+                size="lg"
                 variant="outline"
                 onClick={() => navigate("/estudo")}
-                className="w-full sm:w-auto bg-[#FACC15] hover:bg-[#EAB308] transition-colors"
+                className="w-full sm:w-auto bg-[#FACC15] hover:bg-[#EAB308] transition-colors text-base lg:text-lg px-6 lg:px-8 py-6 lg:py-7"
               >
-                <BookOpen className="w-5 h-5 mr-2" />
+                <BookOpen className="w-5 h-5 lg:w-6 lg:h-6 mr-2" />
                 Flashcards
               </Button>
             </div>

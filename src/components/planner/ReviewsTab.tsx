@@ -14,22 +14,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { useStudyPlanner, StudyReview } from '@/hooks/useStudyPlanner';
 import { cn } from '@/lib/utils';
 
-const CenteredDialogContent = ({ 
-  children, 
-  className 
-}: { 
-  children: React.ReactNode; 
-  className?: string 
-}) => {
-  return (
-    <DialogContent className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 ${className}`}>
-      <div className="mx-4 w-full max-w-lg rounded-lg bg-background p-6 shadow-lg max-h-[90vh] overflow-y-auto">
-        {children}
-      </div>
-    </DialogContent>
-  );
-};
-
 const SUBJECTS = [
   'Direito Constitucional',
   'Direito Administrativo',

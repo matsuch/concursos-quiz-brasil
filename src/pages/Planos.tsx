@@ -8,14 +8,14 @@ import {
   Crown, 
   Star, 
   Zap, 
-  Headphones,
+  BookOpen,
   Sparkles,
   Shield,
   Clock,
   Users,
   Rocket,
   TrendingUp,
-  Award,
+  Wallet,
   Brain,
   MessageSquare,
   HelpCircle
@@ -113,7 +113,7 @@ const FAQ_ITEMS = [
   },
   {
     question: "Como funciona o suporte?",
-    answer: "Todos os planos incluem suporte por email. Planos Premium incluem suporte 24/7 via chat e ligação.",
+    answer: "Todo o suporte é feito digitalmente por e-mail. Nossa equipe está pronta para ajudar você!",
     icon: MessageSquare
   },
   {
@@ -122,9 +122,9 @@ const FAQ_ITEMS = [
     icon: TrendingUp
   },
   {
-    question: "Os planos têm garantia?",
-    answer: "Oferecemos garantia de 30 dias. Se não estiver satisfeito, devolvemos 100% do seu dinheiro.",
-    icon: Shield
+    question: "Existe versão gratuita?",
+    answer: "Sim! Você pode usar nossa versão gratuita com recursos limitados.",
+    icon: Wallet
   },
   {
     question: "Quando tenho acesso ao conteúdo?",
@@ -328,10 +328,7 @@ export default function Planos() {
                     )}
 
                     <CardHeader className="text-center pb-2">
-                      <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 bg-gradient-to-br ${plan.color} text-white`}>
-                        <Icon className="w-8 h-8" />
-                      </div>
-                      <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                      <CardTitle className="text-4xl">{plan.name}</CardTitle>
                       <CardDescription>{plan.description}</CardDescription>
                     </CardHeader>
 
@@ -405,11 +402,11 @@ export default function Planos() {
                 <Card className="border-primary/20 hover:border-primary/40 transition-all">
                   <CardContent className="pt-6">
                     <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
-                      <Brain className="w-6 h-6 text-blue-600" />
+                      <BookOpen className="w-6 h-6 text-blue-600" />
                     </div>
-                    <h3 className="font-semibold text-lg mb-2">Método Científico</h3>
+                    <h3 className="font-semibold text-lg mb-2">Questões reais</h3>
                     <p className="text-sm text-muted-foreground">
-                      Técnicas de estudo baseadas em ciência para melhor retenção e aprendizado
+                      Tenha acesso a milhares de questões reais de exames anteriores
                     </p>
                   </CardContent>
                 </Card>
@@ -419,7 +416,7 @@ export default function Planos() {
                     <div className="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center mb-4">
                       <Users className="w-6 h-6 text-green-600" />
                     </div>
-                    <h3 className="font-semibold text-lg mb-2">Comunidade Ativa</h3>
+                    <h3 className="font-semibold text-lg mb-2">Forúm de comunidade</h3>
                     <p className="text-sm text-muted-foreground">
                       Conecte-se com outros estudantes e compartilhe experiências e dicas
                     </p>
@@ -431,7 +428,7 @@ export default function Planos() {
                     <div className="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center mb-4">
                       <Rocket className="w-6 h-6 text-purple-600" />
                     </div>
-                    <h3 className="font-semibold text-lg mb-2">Progresso Rápido</h3>
+                    <h3 className="font-semibold text-lg mb-2">Progresso de estudos</h3>
                     <p className="text-sm text-muted-foreground">
                       Acompanhe seu desenvolvimento com relatórios detalhados e métricas
                     </p>
@@ -479,7 +476,7 @@ export default function Planos() {
 
             {/* CTA Section */}
             <div className="max-w-4xl mx-auto">
-              <Card className="bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 border-primary/20 overflow-hidden">
+              <Card className="bg-background border-primary/20 overflow-hidden">
                 <CardContent className="p-8 md:p-12">
                   <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                     <div>
@@ -487,17 +484,16 @@ export default function Planos() {
                         Ainda tem dúvidas?
                       </h3>
                       <p className="text-muted-foreground">
-                        Nossa equipe está pronta para ajudar você a escolher o melhor plano.
+                        Faça um teste gratuito por 7 dias e descubra como podemos ajudar na sua aprovação!
                       </p>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-3 shrink-0">
-                      <Button variant="outline" onClick={() => navigate("/support")} size="lg">
-                        <Headphones className="w-4 h-4 mr-2" />
-                        Falar com Suporte
-                      </Button>
-                      <Button onClick={() => navigate("/auth")} size="lg">
-                        <Rocket className="w-4 h-4 mr-2" />
-                        Começar Agora
+                      <Button 
+                        onClick={() => navigate("/auth")} 
+                        size="lg"
+                        className="w-full sm:w-auto bg-[#2563eb] hover:bg-[#1d4ed8] transition-colors text-base lg:text-lg px-6 lg:px-8 py-6 lg:py-7"
+                      >
+                        Começar Teste Grátis
                       </Button>
                     </div>
                   </div>
