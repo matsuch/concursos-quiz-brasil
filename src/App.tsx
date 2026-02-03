@@ -46,20 +46,10 @@ const App = () => (
                     <Route path="/planner" element={<Planner />} />
                     <Route path="/auth" element={<Auth />} />
 
-                    {/* <Route 
-                      path="/mindmaps" 
-                      element={
-                        <CanvasEditor 
-                          width="100%"
-                          height="100%"
-                        />
-                      } 
-                    /> */}
-
                     <Route 
                       path="/simulado" 
                       element={
-                        <ProtectedRoute requiredPlan="Premium">
+                        <ProtectedRoute requiredPlan="Standard">
                           <SimuladoPage />
                         </ProtectedRoute>
                       } 
