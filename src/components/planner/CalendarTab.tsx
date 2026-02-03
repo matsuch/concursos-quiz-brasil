@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { useStudyPlanner, StudyCalendarEvent } from '@/hooks/useStudyPlanner';
 import { cn } from '@/lib/utils';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { MobileCalendarView } from './MobileCalendarView';
 
 const localizer = momentLocalizer(moment);
 
@@ -139,6 +141,12 @@ export function CalendarTab() {
     end: new Date(event.end_time),
     title: `${event.subject}: ${event.topic}`,
   })) || [];
+
+  const isMobile = useMediaQuery('(max-width: 640px)');
+
+  if (isMobile) {
+    return <MobileCalendarView />;
+  }
 
   return (
     <div className="space-y-6">
