@@ -14,33 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      mind_maps: {
-        Row: {
-          created_at: string | null
-          updated_at: string | null
-          id: string
-          title: string
-          subject: string
-          nodes: Json
-      }
-        Insert: {
-          created_at?: string | null
-          updated_at?: string | null
-          id?: string
-          title: string
-          subject: string
-          nodes: Json
-        }
-        Update: {
-          created_at?: string | null
-          updated_at?: string | null
-          id?: string
-          title?: string
-          subject?: string
-          nodes?: Json
-        }
-        Relationships: []
-      }
       badge_audit: {
         Row: {
           action: string
@@ -112,8 +85,8 @@ export type Database = {
           local: string
           nivel: string
           orgao: string
-          status: string
           salario: number | null
+          status: string
           titulo: string
           url_edital: string | null
           vagas: number
@@ -125,7 +98,7 @@ export type Database = {
           local: string
           nivel: string
           orgao: string
-          salario: number | null
+          salario?: number | null
           status: string
           titulo: string
           url_edital?: string | null
@@ -328,6 +301,33 @@ export type Database = {
         }
         Relationships: []
       }
+      mind_maps: {
+        Row: {
+          created_at: string
+          id: string
+          nodes: Json
+          subject: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nodes: Json
+          subject: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nodes?: Json
+          subject?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       modules: {
         Row: {
           course_id: string | null
@@ -404,6 +404,9 @@ export type Database = {
       }
       questions: {
         Row: {
+          ai_explanation: string | null
+          assunto: string | null
+          banca: string | null
           correct_answer: number
           created_at: string
           created_by: string | null
@@ -411,14 +414,14 @@ export type Database = {
           id: string
           is_official: boolean | null
           options: Json
+          prova: string | null
           question: string
           subject: string
-          assunto: string | null
-          banca: string | null
-          prova: string | null
-          ai_explanation: string | null
         }
         Insert: {
+          ai_explanation?: string | null
+          assunto?: string | null
+          banca?: string | null
           correct_answer: number
           created_at?: string
           created_by?: string | null
@@ -426,14 +429,14 @@ export type Database = {
           id?: string
           is_official?: boolean | null
           options: Json
+          prova?: string | null
           question: string
           subject: string
-          assunto: string | null
-          banca: string | null
-          prova: string | null
-          ai_explanation: string | null
         }
         Update: {
+          ai_explanation?: string | null
+          assunto?: string | null
+          banca?: string | null
           correct_answer?: number
           created_at?: string
           created_by?: string | null
@@ -441,12 +444,9 @@ export type Database = {
           id?: string
           is_official?: boolean | null
           options?: Json
+          prova?: string | null
           question?: string
           subject?: string
-          assunto: string | null
-          banca: string | null
-          prova: string | null
-          ai_explanation: string | null
         }
         Relationships: []
       }
