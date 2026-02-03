@@ -10,6 +10,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 const publicNavItems = [
   { to: "/", icon: Home, label: "Início" },
   { to: "/quiz", icon: Notebook, label: "Questões" },
+  { to: "/planner", icon: CalendarDays, label: "Planner" },
   // { to: "/mindmaps", icon: Map, label: "Mapas Mentais" },
 ];
 
@@ -101,6 +102,25 @@ const Navbar = () => {
           {/* Mobile Navigation */}
           <div className="flex items-center gap-2 md:hidden">
             <ThemeToggle />
+            
+            {/* Botão de Login/Auth visível no mobile */}
+            <Button 
+              variant={user ? "ghost" : "default"}
+              size="sm"
+              onClick={handleAuthClick}
+              className={user 
+                ? "text-blue-600 hover:bg-blue-50" 
+                : "bg-[#2563eb] hover:bg-[#1d4ed8]"
+              }
+            >
+              {user ? (
+                <LogOut className="w-4 h-4" />
+              ) : (
+                <LogIn className="w-4 h-4" />
+              )}
+            </Button>
+            
+            {/* Menu hamburguer */}
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="hover:text-blue-600 hover:bg-blue-50">

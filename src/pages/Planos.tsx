@@ -4,163 +4,133 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { 
   Check, 
-  X, 
   Loader2, 
   Crown, 
   Star, 
   Zap, 
-  ArrowLeft,
-  BookOpen,
-  Brain,
-  Swords,
-  Trophy,
-  FileText,
-  Users,
-  Clock,
   Headphones,
   Sparkles,
-  GraduationCap,
-  Target
+  Shield,
+  Clock,
+  Users,
+  Rocket,
+  TrendingUp,
+  Award,
+  Brain,
+  MessageSquare,
+  HelpCircle
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
-// Definição completa dos planos com todas as features
-const PLANS = [
-  {
-    id: "basic",
-    name: "Básico",
-    description: "Ideal para quem está começando",
-    price: 19.99,
-    priceId: "price_1So7fwQ8CcFgqvaDBJsxo4um",
-    productId: "prod_TlezKKKS4iuxKa",
-    icon: Zap,
+interface Plan {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  priceId: string;
+  productId: string;
+  icon: typeof Zap | typeof Star | typeof Crown;
+  color: string;
+  bgColor: string;
+  textColor: string;
+  popular: boolean;
+  interval: string;
+  features: string[];
+}
+
+interface SubscriptionStatus {
+  subscribed: boolean;
+  product_id: string | null;
+  subscription_end: string | null;
+}
+
+interface StripePrice {
+  id: string;
+  product: string;
+  unit_amount: number;
+  currency: string;
+  recurring?: {
+    interval: string;
+  };
+}
+
+interface StripeProduct {
+  id: string;
+  name: string;
+  description: string;
+  marketing_features?: Array<{
+    name: string;
+  }>;
+  metadata?: {
+    popular?: string;
+    icon?: string;
+    color?: string;
+    bgColor?: string;
+    textColor?: string;
+    interval?: string;
+  };
+}
+
+const ICON_MAP: Record<string, typeof Zap | typeof Star | typeof Crown> = {
+  zap: Zap,
+  star: Star,
+  crown: Crown,
+};
+
+const COLOR_MAP: Record<string, { color: string; bgColor: string; textColor: string }> = {
+  basic: {
     color: "from-blue-500 to-blue-600",
     bgColor: "bg-blue-500/10",
-    textColor: "text-blue-500",
-    popular: false
+    textColor: "text-blue-500"
   },
-  {
-    id: "standard",
-    name: "Padrão",
-    description: "Para quem quer se destacar",
-    price: 39.99,
-    priceId: "price_1So7glQ8CcFgqvaD1RofVZ1D",
-    productId: "prod_Tlf0EBsd5fLZ94",
-    icon: Star,
+  standard: {
     color: "from-primary to-secondary",
     bgColor: "bg-primary/10",
-    textColor: "text-primary",
-    popular: true
+    textColor: "text-primary"
   },
-  {
-    id: "premium",
-    name: "Premium",
-    description: "Experiência completa",
-    price: 59.99,
-    priceId: "price_1So7hgQ8CcFgqvaDEjvWErfc",
-    productId: "prod_Tlf1OTeWGfNMYd",
-    icon: Crown,
+  premium: {
     color: "from-amber-500 to-orange-500",
     bgColor: "bg-amber-500/10",
-    textColor: "text-amber-500",
-    popular: false
+    textColor: "text-amber-500"
   }
-];
+};
 
-// Categorias de features para comparação
-const FEATURE_CATEGORIES = [
+// FAQ Section
+const FAQ_ITEMS = [
   {
-    name: "Conteúdo de Estudo",
-    icon: BookOpen,
-    features: [
-      { name: "Acesso a aulas básicas", basic: true, standard: true, premium: true },
-      { name: "Aulas avançadas", basic: false, standard: true, premium: true },
-      { name: "Aulas exclusivas de especialistas", basic: false, standard: false, premium: true },
-      { name: "Material em PDF para download", basic: false, standard: true, premium: true },
-    ]
+    question: "Posso cancelar a qualquer momento?",
+    answer: "Sim! Todos os planos podem ser cancelados a qualquer momento sem multa. Você mantém acesso até o final do período pago.",
+    icon: HelpCircle
   },
   {
-    name: "Quizzes e Exercícios",
-    icon: Brain,
-    features: [
-      { name: "Quizzes básicos", basic: true, standard: true, premium: true },
-      { name: "Quizzes ilimitados", basic: false, standard: true, premium: true },
-      { name: "Histórico de desempenho", basic: false, standard: true, premium: true },
-      { name: "Questões comentadas", basic: false, standard: false, premium: true },
-    ]
+    question: "Existe período de teste gratuito?",
+    answer: "Oferecemos 7 dias grátis em todos os planos para você testar todas as funcionalidades antes de assinar.",
+    icon: Clock
   },
   {
-    name: "Flashcards",
-    icon: Sparkles,
-    features: [
-      { name: "Flashcards públicos", basic: true, standard: true, premium: true },
-      { name: "Criar flashcards personalizados", basic: false, standard: true, premium: true },
-      { name: "Flashcards ilimitados", basic: false, standard: true, premium: true },
-      { name: "Compartilhar flashcards", basic: false, standard: false, premium: true },
-    ]
+    question: "Como funciona o suporte?",
+    answer: "Todos os planos incluem suporte por email. Planos Premium incluem suporte 24/7 via chat e ligação.",
+    icon: MessageSquare
   },
   {
-    name: "Duelos e Competição",
-    icon: Swords,
-    features: [
-      { name: "Modo duelo solo", basic: false, standard: true, premium: true },
-      { name: "Duelos online", basic: false, standard: true, premium: true },
-      { name: "Ligas competitivas", basic: false, standard: false, premium: true },
-      { name: "Torneios exclusivos", basic: false, standard: false, premium: true },
-    ]
+    question: "Posso mudar de plano depois?",
+    answer: "Sim! Você pode atualizar ou downgrade seu plano a qualquer momento. O valor será ajustado proporcionalmente.",
+    icon: TrendingUp
   },
   {
-    name: "Simulados",
-    icon: FileText,
-    features: [
-      { name: "Simulados básicos", basic: false, standard: false, premium: true },
-      { name: "Simulados exclusivos", basic: false, standard: false, premium: true },
-      { name: "Provas corrigidas", basic: false, standard: false, premium: true },
-      { name: "Relatório detalhado", basic: false, standard: false, premium: true },
-    ]
+    question: "Os planos têm garantia?",
+    answer: "Oferecemos garantia de 30 dias. Se não estiver satisfeito, devolvemos 100% do seu dinheiro.",
+    icon: Shield
   },
   {
-    name: "Ranking e Conquistas",
-    icon: Trophy,
-    features: [
-      { name: "Ver ranking geral", basic: false, standard: false, premium: true },
-      { name: "Sistema de badges", basic: true, standard: true, premium: true },
-      { name: "Conquistas exclusivas", basic: false, standard: false, premium: true },
-      { name: "Perfil destacado", basic: false, standard: false, premium: true },
-    ]
-  },
-  {
-    name: "Mentoria e Suporte",
-    icon: Users,
-    features: [
-      { name: "Suporte por email", basic: true, standard: true, premium: true },
-      { name: "Suporte prioritário", basic: false, standard: true, premium: true },
-      { name: "Suporte 24/7", basic: false, standard: false, premium: true },
-      { name: "Mentoria individual", basic: false, standard: false, premium: true },
-    ]
-  },
-  {
-    name: "Extras",
-    icon: GraduationCap,
-    features: [
-      { name: "Acesso antecipado a novidades", basic: false, standard: false, premium: true },
-      { name: "Sessões com professores", basic: false, standard: true, premium: true },
-      { name: "Comunidade exclusiva", basic: false, standard: false, premium: true },
-      { name: "Certificados de conclusão", basic: false, standard: true, premium: true },
-    ]
-  },
+    question: "Quando tenho acesso ao conteúdo?",
+    answer: "O acesso é imediato após a confirmação do pagamento. Você recebe um email com todas as instruções.",
+    icon: Rocket
+  }
 ];
 
 export default function Planos() {
@@ -169,15 +139,66 @@ export default function Planos() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<string | null>(null);
   const [checkingSubscription, setCheckingSubscription] = useState(false);
-  const [subscription, setSubscription] = useState<any>(null);
+  const [subscription, setSubscription] = useState<SubscriptionStatus | null>(null);
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [loadingPlans, setLoadingPlans] = useState(true);
 
   const currentPlan = getCurrentPlan();
+
+  useEffect(() => {
+    fetchPlans();
+  }, []);
 
   useEffect(() => {
     if (user) {
       checkSubscription();
     }
   }, [user]);
+
+  const fetchPlans = async () => {
+    setLoadingPlans(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("get-products");
+      
+      if (error) throw error;
+      
+      if (data?.products && data?.prices) {
+        const formattedPlans: Plan[] = data.products.map((product: StripeProduct) => {
+          const price = data.prices.find((p: StripePrice) => p.product === product.id);
+          const planId = product.name.toLowerCase().includes('básico') ? 'basic' 
+            : product.name.toLowerCase().includes('padrão') ? 'standard' 
+            : 'premium';
+          
+          return {
+            id: planId,
+            name: product.name,
+            description: product.description || "",
+            price: price ? price.unit_amount / 100 : 0,
+            priceId: price?.id || "",
+            productId: product.id,
+            icon: ICON_MAP[product.metadata?.icon || "star"] || Star,
+            color: COLOR_MAP[planId]?.color || "from-primary to-secondary",
+            bgColor: COLOR_MAP[planId]?.bgColor || "bg-primary/10",
+            textColor: COLOR_MAP[planId]?.textColor || "text-primary",
+            popular: product.metadata?.popular === "true",
+            interval: price?.recurring?.interval === "year" ? "ano" : "mês",
+            features: product.marketing_features 
+              ? product.marketing_features.map(f => f.name) 
+              : [],
+          };
+        });
+
+        // Ordenar por preço
+        formattedPlans.sort((a, b) => a.price - b.price);
+        setPlans(formattedPlans);
+      }
+    } catch (error) {
+      console.error("Error fetching plans:", error);
+      toast.error("Erro ao carregar planos");
+    } finally {
+      setLoadingPlans(false);
+    }
+  };
 
   const checkSubscription = async () => {
     if (!user) return;
@@ -223,9 +244,33 @@ export default function Planos() {
     return currentPlan?.toLowerCase() === planId.toLowerCase();
   };
 
-  const getPlanIndex = (planId: string) => {
-    return PLANS.findIndex(p => p.id === planId);
-  };
+  // Se o usuário já tem uma assinatura ativa
+  if (subscription?.subscribed) {
+    return (
+      <div className="min-h-screen bg-background py-16">
+        <div className="container mx-auto px-4 text-center">
+          <div className="max-w-2xl mx-auto">
+            <div className="w-20 h-20 mx-auto rounded-full bg-green-100 flex items-center justify-center mb-6">
+              <Check className="w-10 h-10 text-green-600" />
+            </div>
+            <h1 className="text-3xl font-bold text-foreground mb-4">
+              Você já tem uma assinatura ativa!
+            </h1>
+            <p className="text-lg text-muted-foreground mb-8">
+              Acesse o portal do cliente para gerenciar sua assinatura, ver faturas ou alterar seu plano.
+            </p>
+            <Button 
+              onClick={() => window.open("https://billing.stripe.com/p/login/test_6oE5mfdGX2Aq2kQ288", "_blank")}
+              size="lg"
+              className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
+            >
+              Gerenciar Assinatura
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -234,257 +279,233 @@ export default function Planos() {
       <div className="bg-gradient-to-b from-primary/10 to-background py-12 md:py-10">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
-              Escolha o plano ideal para você
-            </h1>
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <h1 className="text-3xl md:text-5xl font-bold text-foreground">
+                Escolha o plano ideal para você
+              </h1>
+            </div>
             <p className="text-lg text-muted-foreground">
-              Compare todas as funcionalidades e descubra qual plano se encaixa melhor nas suas necessidades de estudo.
+              Desbloqueie todo o potencial da sua preparação com recursos avançados
             </p>
           </div>
         </div>
       </div>
 
       {/* Plan Cards */}
-      <div className="container mx-auto px-4">
-        {checkingSubscription ? (
-          <div className="flex justify-center py-8">
+      <div className="container mx-auto px-4 py-8">
+        {loadingPlans || checkingSubscription ? (
+          <div className="flex justify-center items-center py-16">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-16">
-            {PLANS.map((plan) => {
-              const Icon = plan.icon;
-              const isCurrent = isCurrentPlan(plan.id);
-              
-              return (
-                <Card 
-                  key={plan.id}
-                  className={`relative flex flex-col transition-all duration-300 hover:shadow-xl ${
-                    plan.popular 
-                      ? "border-primary shadow-lg md:scale-105 z-10 mt-5" 
-                      : "border-border hover:border-primary/50 mt-3"
-                  } ${isCurrent ? "ring-2 ring-green-500" : ""}`}
-                >
-                  {plan.popular && (
-                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4">
-                      Mais Popular
-                    </Badge>
-                  )}
-                  
-                  {isCurrent && (
-                    <Badge className="absolute -top-3 right-4 bg-green-500 text-white px-4">
-                      Seu Plano
-                    </Badge>
-                  )}
-
-                  <CardHeader className="text-center pb-2">
-                    <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 bg-gradient-to-br ${plan.color} text-white`}>
-                      <Icon className="w-8 h-8" />
-                    </div>
-                    <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                    <CardDescription>{plan.description}</CardDescription>
-                  </CardHeader>
-
-                  <CardContent className="flex-1">
-                    <div className="text-center mb-6">
-                      <span className="text-4xl font-bold text-foreground">
-                        R$ {plan.price.toFixed(2).replace(".", ",")}
-                      </span>
-                      <span className="text-muted-foreground">/mês</span>
-                    </div>
-                  </CardContent>
-
-                  <CardFooter>
-                    {isCurrent ? (
-                      <Button className="w-full" variant="outline" disabled>
-                        <Check className="w-4 h-4 mr-2" />
-                        Plano Atual
-                      </Button>
-                    ) : (
-                      <Button 
-                        className={`w-full ${plan.popular ? "bg-primary hover:bg-primary/90" : ""}`}
-                        variant={plan.popular ? "default" : "outline"}
-                        onClick={() => handleSubscribe(plan.priceId)}
-                        disabled={loading === plan.priceId}
-                      >
-                        {loading === plan.priceId ? (
-                          <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                        ) : null}
-                        {isSubscriptionValid() ? "Trocar Plano" : "Assinar Agora"}
-                      </Button>
+          <>
+            {/* Container para centralizar os planos */}
+            <div className="flex flex-col md:flex-row justify-center items-stretch gap-6 mb-16 max-w-4xl mx-auto">
+              {plans.map((plan) => {
+                const Icon = plan.icon;
+                const isCurrent = isCurrentPlan(plan.id);
+                
+                return (
+                  <Card 
+                    key={plan.id}
+                    className={`relative flex flex-col transition-all duration-300 hover:shadow-xl flex-1 max-w-md ${
+                      plan.popular 
+                        ? "border-primary shadow-lg md:scale-[1.02] z-10" 
+                        : "border-border hover:border-primary/50"
+                    } ${isCurrent ? "ring-2 ring-green-500" : ""}`}
+                  >
+                    {plan.popular && (
+                      <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-blue-600 text-white px-4 py-1.5">
+                        <Sparkles className="w-3 h-3 mr-1" />
+                        Mais Popular
+                      </Badge>
                     )}
-                  </CardFooter>
-                </Card>
-              );
-            })}
-          </div>
-        )}
+                    
+                    {isCurrent && (
+                      <Badge className="absolute -top-3 right-4 bg-green-500 text-white px-4">
+                        Seu Plano
+                      </Badge>
+                    )}
 
-        {/* Feature Comparison Table */}
-        <div className="max-w-6xl mx-auto pb-16">
-          <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-              Comparação Detalhada
-            </h2>
-            <p className="text-muted-foreground">
-              Veja todas as funcionalidades incluídas em cada plano
-            </p>
-          </div>
-
-          {/* Desktop Table */}
-          <div className="hidden md:block">
-            <Card className="overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-muted/50">
-                    <TableHead className="w-[300px] font-semibold">Funcionalidade</TableHead>
-                    {PLANS.map((plan) => {
-                      const Icon = plan.icon;
-                      const isCurrent = isCurrentPlan(plan.id);
-                      return (
-                        <TableHead 
-                          key={plan.id} 
-                          className={`text-center font-semibold ${isCurrent ? "bg-green-500/10" : ""}`}
-                        >
-                          <div className="flex flex-col items-center gap-2 py-2">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br ${plan.color} text-white`}>
-                              <Icon className="w-5 h-5" />
-                            </div>
-                            <span>{plan.name}</span>
-                            {isCurrent && (
-                              <Badge variant="outline" className="text-xs border-green-500 text-green-500">
-                                Atual
-                              </Badge>
-                            )}
-                          </div>
-                        </TableHead>
-                      );
-                    })}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {FEATURE_CATEGORIES.map((category, categoryIndex) => {
-                    const CategoryIcon = category.icon;
-                    return (
-                      <>
-                        <TableRow key={`category-${categoryIndex}`} className="bg-muted/30">
-                          <TableCell colSpan={4} className="py-3">
-                            <div className="flex items-center gap-2 font-semibold text-foreground">
-                              <CategoryIcon className="w-5 h-5 text-primary" />
-                              {category.name}
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                        {category.features.map((feature, featureIndex) => (
-                          <TableRow key={`feature-${categoryIndex}-${featureIndex}`}>
-                            <TableCell className="text-muted-foreground">
-                              {feature.name}
-                            </TableCell>
-                            <TableCell className={`text-center ${isCurrentPlan("basic") ? "bg-green-500/5" : ""}`}>
-                              {feature.basic ? (
-                                <Check className="w-5 h-5 text-green-500 mx-auto" />
-                              ) : (
-                                <X className="w-5 h-5 text-muted-foreground/30 mx-auto" />
-                              )}
-                            </TableCell>
-                            <TableCell className={`text-center ${isCurrentPlan("standard") ? "bg-green-500/5" : ""}`}>
-                              {feature.standard ? (
-                                <Check className="w-5 h-5 text-green-500 mx-auto" />
-                              ) : (
-                                <X className="w-5 h-5 text-muted-foreground/30 mx-auto" />
-                              )}
-                            </TableCell>
-                            <TableCell className={`text-center ${isCurrentPlan("premium") ? "bg-green-500/5" : ""}`}>
-                              {feature.premium ? (
-                                <Check className="w-5 h-5 text-green-500 mx-auto" />
-                              ) : (
-                                <X className="w-5 h-5 text-muted-foreground/30 mx-auto" />
-                              )}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </Card>
-          </div>
-
-          {/* Mobile Accordion */}
-          <div className="md:hidden space-y-4">
-            {FEATURE_CATEGORIES.map((category, categoryIndex) => {
-              const CategoryIcon = category.icon;
-              return (
-                <Card key={categoryIndex} className="overflow-hidden">
-                  <div className="bg-muted/30 p-4 flex items-center gap-2">
-                    <CategoryIcon className="w-5 h-5 text-primary" />
-                    <span className="font-semibold">{category.name}</span>
-                  </div>
-                  <CardContent className="p-0">
-                    {category.features.map((feature, featureIndex) => (
-                      <div 
-                        key={featureIndex}
-                        className="border-t border-border p-4"
-                      >
-                        <p className="text-sm text-foreground mb-3">{feature.name}</p>
-                        <div className="grid grid-cols-3 gap-2">
-                          {PLANS.map((plan) => {
-                            const hasFeature = plan.id === "basic" ? feature.basic 
-                              : plan.id === "standard" ? feature.standard 
-                              : feature.premium;
-                            const isCurrent = isCurrentPlan(plan.id);
-                            
-                            return (
-                              <div 
-                                key={plan.id}
-                                className={`text-center p-2 rounded-lg ${
-                                  isCurrent ? "bg-green-500/10 ring-1 ring-green-500/30" : "bg-muted/30"
-                                }`}
-                              >
-                                <span className="text-xs text-muted-foreground block mb-1">
-                                  {plan.name}
-                                </span>
-                                {hasFeature ? (
-                                  <Check className="w-4 h-4 text-green-500 mx-auto" />
-                                ) : (
-                                  <X className="w-4 h-4 text-muted-foreground/30 mx-auto" />
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
+                    <CardHeader className="text-center pb-2">
+                      <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 bg-gradient-to-br ${plan.color} text-white`}>
+                        <Icon className="w-8 h-8" />
                       </div>
-                    ))}
+                      <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                      <CardDescription>{plan.description}</CardDescription>
+                    </CardHeader>
+
+                    <CardContent className="flex-1">
+                      <div className="text-center mb-6">
+                        <span className="text-4xl font-bold text-foreground">
+                          R$ {plan.price.toFixed(2).replace(".", ",")}
+                        </span>
+                        <span className="text-muted-foreground">/{plan.interval}</span>
+                        {plan.interval === "ano" && (
+                          <p className="text-sm text-green-600 mt-1">
+                            Economize 20% comparado ao mensal
+                          </p>
+                        )}
+                      </div>
+                      
+                      {/* Lista de features do plano */}
+                      <div className="space-y-3 mb-4">
+                        {plan.features.slice(0, 5).map((feature, index) => (
+                          <div key={index} className="flex items-start gap-3">
+                            <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-1" />
+                            <span className="text-sm text-muted-foreground text-left">{feature}</span>
+                          </div>
+                        ))}
+                        {plan.features.length > 5 && (
+                          <div className="text-sm text-muted-foreground text-center">
+                            + {plan.features.length - 5} recursos adicionais
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+
+                    <CardFooter className="flex flex-col gap-3">
+                      {isCurrent ? (
+                        <Button className="w-full" variant="outline" disabled>
+                          <Check className="w-4 h-4 mr-2" />
+                          Plano Atual
+                        </Button>
+                      ) : (
+                        <Button 
+                          className={`w-full ${plan.popular ? "bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90" : ""}`}
+                          variant={plan.popular ? "default" : "outline"}
+                          onClick={() => handleSubscribe(plan.priceId)}
+                          disabled={loading === plan.priceId}
+                          size="lg"
+                        >
+                          {loading === plan.priceId ? (
+                            <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                          ) : null}
+                          {isSubscriptionValid() ? "Trocar Plano" : "Começar Agora"}
+                        </Button>
+                      )}
+                    </CardFooter>
+                  </Card>
+                );
+              })}
+            </div>
+
+            {/* Seção de Diferenciais */}
+            <div className="max-w-4xl mx-auto mb-16">
+              <div className="text-center mb-10">
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+                  Por que escolher nossa plataforma?
+                </h2>
+                <p className="text-muted-foreground">
+                  Diferenciais que fazem a diferença na sua preparação
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card className="border-primary/20 hover:border-primary/40 transition-all">
+                  <CardContent className="pt-6">
+                    <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
+                      <Brain className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <h3 className="font-semibold text-lg mb-2">Método Científico</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Técnicas de estudo baseadas em ciência para melhor retenção e aprendizado
+                    </p>
                   </CardContent>
                 </Card>
-              );
-            })}
-          </div>
 
-          {/* CTA Section */}
-          <div className="mt-12 text-center">
-            <Card className="bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 border-primary/20">
-              <CardContent className="py-8">
-                <h3 className="text-xl font-bold text-foreground mb-2">
-                  Ainda tem dúvidas?
-                </h3>
-                <p className="text-muted-foreground mb-4">
-                  Entre em contato conosco e tire todas as suas dúvidas sobre os planos.
+                <Card className="border-primary/20 hover:border-primary/40 transition-all">
+                  <CardContent className="pt-6">
+                    <div className="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center mb-4">
+                      <Users className="w-6 h-6 text-green-600" />
+                    </div>
+                    <h3 className="font-semibold text-lg mb-2">Comunidade Ativa</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Conecte-se com outros estudantes e compartilhe experiências e dicas
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-primary/20 hover:border-primary/40 transition-all">
+                  <CardContent className="pt-6">
+                    <div className="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center mb-4">
+                      <Rocket className="w-6 h-6 text-purple-600" />
+                    </div>
+                    <h3 className="font-semibold text-lg mb-2">Progresso Rápido</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Acompanhe seu desenvolvimento com relatórios detalhados e métricas
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* FAQ Section */}
+            <div className="max-w-4xl mx-auto mb-16">
+              <div className="text-center mb-10">
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+                  Perguntas Frequentes
+                </h2>
+                <p className="text-muted-foreground">
+                  Tire suas dúvidas sobre nossos planos e assinatura
                 </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Button variant="outline" onClick={() => navigate("/")}>
-                    <Headphones className="w-4 h-4 mr-2" />
-                    Falar com Suporte
-                  </Button>
-                  <Button onClick={() => navigate("/auth")}>
-                    Começar Agora
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {FAQ_ITEMS.map((item, index) => {
+                  const Icon = item.icon;
+                  return (
+                    <Card key={index} className="hover:shadow-md transition-shadow">
+                      <CardContent className="pt-6">
+                        <div className="flex items-start gap-4">
+                          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <Icon className="w-5 h-5 text-primary" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-foreground mb-2">
+                              {item.question}
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                              {item.answer}
+                            </p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* CTA Section */}
+            <div className="max-w-4xl mx-auto">
+              <Card className="bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 border-primary/20 overflow-hidden">
+                <CardContent className="p-8 md:p-12">
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div>
+                      <h3 className="text-xl font-bold text-foreground mb-2">
+                        Ainda tem dúvidas?
+                      </h3>
+                      <p className="text-muted-foreground">
+                        Nossa equipe está pronta para ajudar você a escolher o melhor plano.
+                      </p>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+                      <Button variant="outline" onClick={() => navigate("/support")} size="lg">
+                        <Headphones className="w-4 h-4 mr-2" />
+                        Falar com Suporte
+                      </Button>
+                      <Button onClick={() => navigate("/auth")} size="lg">
+                        <Rocket className="w-4 h-4 mr-2" />
+                        Começar Agora
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
