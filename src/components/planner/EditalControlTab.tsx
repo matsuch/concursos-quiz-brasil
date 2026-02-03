@@ -75,16 +75,17 @@ export function EditalControlTab() {
 
   return (
     <div className="space-y-6">
+      {/* Section Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold">Controle de Edital</h2>
-          <p className="text-muted-foreground">Acompanhe seu progresso em cada tópico do edital</p>
+        <div className="space-y-1">
+          <h2 className="text-xl sm:text-2xl font-semibold text-foreground">Controle de Edital</h2>
+          <p className="text-sm text-muted-foreground">Acompanhe seu progresso em cada topico do edital</p>
         </div>
         <Dialog open={isAddingTopic} onOpenChange={setIsAddingTopic}>
           <DialogTrigger asChild>
-            <Button>
+            <Button size="sm" className="rounded-lg shadow-sm">
               <Plus className="w-4 h-4 mr-2" />
-              Novo Tópico
+              Novo Topico
             </Button>
           </DialogTrigger>
           <DialogContent>
@@ -144,19 +145,23 @@ export function EditalControlTab() {
         </Dialog>
       </div>
 
-      {/* Progress Overview */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg">Progresso Geral</CardTitle>
-          <CardDescription>
-            {completedTopics} de {totalTopics} tópicos concluídos
-          </CardDescription>
+      {/* Progress Overview Card */}
+      <Card className="border-0 shadow-sm bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl overflow-hidden">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <CardTitle className="text-base font-medium text-foreground">Progresso Geral</CardTitle>
+              <CardDescription className="text-sm">
+                {completedTopics} de {totalTopics} topicos concluidos
+              </CardDescription>
+            </div>
+            <div className="text-2xl font-bold text-primary">
+              {progressPercentage.toFixed(0)}%
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
-          <Progress value={progressPercentage} className="h-3" />
-          <p className="text-sm text-muted-foreground mt-2 text-right">
-            {progressPercentage.toFixed(1)}%
-          </p>
+        <CardContent className="pt-0">
+          <Progress value={progressPercentage} className="h-2.5 bg-primary/20" />
         </CardContent>
       </Card>
 
@@ -169,67 +174,70 @@ export function EditalControlTab() {
 
           return (
             <Collapsible key={subject} open={isExpanded} onOpenChange={() => toggleSubject(subject)}>
-              <Card>
+              <Card className="border shadow-sm rounded-xl overflow-hidden">
                 <CollapsibleTrigger asChild>
-                  <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
+                  <CardHeader className="cursor-pointer hover:bg-muted/30 transition-colors py-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        {isExpanded ? (
-                          <ChevronDown className="w-5 h-5 text-muted-foreground" />
-                        ) : (
-                          <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                        )}
+                        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted">
+                          {isExpanded ? (
+                            <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                          ) : (
+                            <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                          )}
+                        </div>
                         <div>
-                          <CardTitle className="text-base">{subject}</CardTitle>
-                          <CardDescription>
-                            {completed}/{total} tópicos • {subjectProgress.toFixed(0)}%
+                          <CardTitle className="text-sm font-medium text-foreground">{subject}</CardTitle>
+                          <CardDescription className="text-xs">
+                            {completed}/{total} topicos - {subjectProgress.toFixed(0)}%
                           </CardDescription>
                         </div>
                       </div>
-                      <Progress value={subjectProgress} className="w-24 h-2" />
+                      <Progress value={subjectProgress} className="w-20 h-1.5" />
                     </div>
                   </CardHeader>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
-                  <CardContent className="pt-0">
+                  <CardContent className="pt-0 pb-4">
                     <div className="space-y-2">
                       {subjectTopics.map((topic) => (
                         <div
                           key={topic.id}
-                          className={`flex items-center justify-between p-3 rounded-lg border ${
-                            topic.is_completed ? 'bg-muted/50' : ''
+                          className={`flex items-center justify-between p-3 rounded-xl border transition-colors ${
+                            topic.is_completed ? 'bg-muted/30 border-muted' : 'bg-card hover:bg-muted/20'
                           }`}
                         >
                           <div className="flex items-center gap-3">
                             <button
                               onClick={() => toggleTopic.mutate({ id: topic.id, is_completed: !topic.is_completed })}
-                              className="focus:outline-none"
+                              className="focus:outline-none transition-transform hover:scale-110"
                             >
                               {topic.is_completed ? (
                                 <CheckCircle2 className="w-5 h-5 text-primary" />
                               ) : (
-                                <Circle className="w-5 h-5 text-muted-foreground" />
+                                <Circle className="w-5 h-5 text-muted-foreground hover:text-primary" />
                               )}
                             </button>
                             <div>
-                              <p className={`font-medium ${topic.is_completed ? 'line-through text-muted-foreground' : ''}`}>
+                              <p className={`text-sm font-medium ${topic.is_completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
                                 {topic.topic}
                               </p>
                               {topic.subtopic && (
-                                <p className="text-sm text-muted-foreground">{topic.subtopic}</p>
+                                <p className="text-xs text-muted-foreground mt-0.5">{topic.subtopic}</p>
                               )}
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
                             {topic.priority === 3 && (
-                              <span className="text-xs bg-destructive/10 text-destructive px-2 py-1 rounded">Alta</span>
+                              <span className="text-xs bg-destructive/10 text-destructive px-2 py-0.5 rounded-md font-medium">Alta</span>
                             )}
                             {topic.priority === 2 && (
-                              <span className="text-xs bg-yellow-500/10 text-yellow-600 px-2 py-1 rounded">Média</span>
+                              <span className="text-xs bg-yellow-500/10 text-yellow-600 px-2 py-0.5 rounded-md font-medium">Media</span>
                             )}
                             <Button
                               variant="ghost"
                               size="icon"
+                              className="h-8 w-8 rounded-lg hover:bg-destructive/10"
                               onClick={() => deleteTopic.mutate(topic.id)}
                             >
                               <Trash2 className="w-4 h-4 text-destructive" />
@@ -246,17 +254,20 @@ export function EditalControlTab() {
         })}
       </div>
 
+      {/* Empty State */}
       {topics.length === 0 && (
-        <Card className="border-dashed">
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <BookOpen className="w-12 h-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium mb-2">Nenhum tópico adicionado</h3>
-            <p className="text-muted-foreground text-center mb-4">
-              Adicione os tópicos do edital para acompanhar seu progresso de estudos.
+        <Card className="border-dashed border-2 bg-muted/20 rounded-xl">
+          <CardContent className="flex flex-col items-center justify-center py-14">
+            <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+              <BookOpen className="w-7 h-7 text-primary" />
+            </div>
+            <h3 className="text-lg font-semibold text-foreground mb-1">Nenhum topico adicionado</h3>
+            <p className="text-muted-foreground text-sm text-center mb-5 max-w-sm">
+              Adicione os topicos do edital para acompanhar seu progresso de estudos.
             </p>
-            <Button onClick={() => setIsAddingTopic(true)}>
+            <Button onClick={() => setIsAddingTopic(true)} className="rounded-lg shadow-sm">
               <Plus className="w-4 h-4 mr-2" />
-              Adicionar Primeiro Tópico
+              Adicionar Primeiro Topico
             </Button>
           </CardContent>
         </Card>

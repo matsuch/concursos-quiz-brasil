@@ -24,45 +24,71 @@ export default function Planner() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-6xl">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Planner de Estudos</h1>
-        <p className="text-muted-foreground">
-          Organize seu cronograma, controle o edital e agende revisões para maximizar seu aprendizado.
-        </p>
+    <div className="min-h-screen bg-muted/30">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-5xl">
+        {/* Header Section */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10">
+              <CalendarDays className="w-5 h-5 text-primary" />
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Planner de Estudos</h1>
+          </div>
+          <p className="text-muted-foreground text-sm sm:text-base max-w-2xl">
+            Organize seu cronograma, controle o edital e agende revisões para maximizar seu aprendizado.
+          </p>
+        </div>
+
+        {/* Main Content Card */}
+        <div className="bg-card rounded-2xl border shadow-sm overflow-hidden">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            {/* Tabs Navigation */}
+            <div className="border-b bg-muted/30 px-4 sm:px-6 pt-4">
+              <TabsList className="w-full h-auto p-1 bg-background/60 backdrop-blur-sm rounded-xl grid grid-cols-3 gap-1">
+                <TabsTrigger 
+                  value="cycle" 
+                  className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm transition-all"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  <span className="hidden sm:inline text-sm font-medium">Ciclo de Estudos</span>
+                  <span className="sm:hidden text-sm font-medium">Ciclo</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="edital" 
+                  className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm transition-all"
+                >
+                  <BookOpen className="w-4 h-4" />
+                  <span className="hidden sm:inline text-sm font-medium">Controle de Edital</span>
+                  <span className="sm:hidden text-sm font-medium">Edital</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="reviews" 
+                  className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm transition-all"
+                >
+                  <Bell className="w-4 h-4" />
+                  <span className="hidden sm:inline text-sm font-medium">Revisões</span>
+                  <span className="sm:hidden text-sm font-medium">Revisões</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            {/* Tab Content */}
+            <div className="p-4 sm:p-6">
+              <TabsContent value="cycle" className="mt-0 focus-visible:outline-none">
+                <StudyCycleTab />
+              </TabsContent>
+
+              <TabsContent value="edital" className="mt-0 focus-visible:outline-none">
+                <EditalControlTab />
+              </TabsContent>
+
+              <TabsContent value="reviews" className="mt-0 focus-visible:outline-none">
+                <ReviewsTab />
+              </TabsContent>
+            </div>
+          </Tabs>
+        </div>
       </div>
-
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="cycle" className="flex items-center gap-2">
-            <RotateCcw className="w-4 h-4" />
-            <span className="hidden sm:inline">Ciclo de Estudos</span>
-            <span className="sm:hidden">Ciclo</span>
-          </TabsTrigger>
-          <TabsTrigger value="edital" className="flex items-center gap-2">
-            <BookOpen className="w-4 h-4" />
-            <span className="hidden sm:inline">Controle de Edital</span>
-            <span className="sm:hidden">Edital</span>
-          </TabsTrigger>
-          <TabsTrigger value="reviews" className="flex items-center gap-2">
-            <Bell className="w-4 h-4" />
-            <span className="hidden sm:inline">Revisões</span>
-            <span className="sm:hidden">Revisões</span>
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="cycle">
-          <StudyCycleTab />
-        </TabsContent>
-
-        <TabsContent value="edital">
-          <EditalControlTab />
-        </TabsContent>
-
-        <TabsContent value="reviews">
-          <ReviewsTab />
-        </TabsContent>
-      </Tabs>
     </div>
   );
 }
