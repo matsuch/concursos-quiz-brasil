@@ -297,10 +297,6 @@ export default function PricingSection() {
                           )}
                         </Button>
                       )}
-                      
-                      <p className="text-xs text-center text-muted-foreground">
-                        Cancelamento a qualquer momento
-                      </p>
                     </div>
                   </div>
                 </div>
@@ -308,12 +304,6 @@ export default function PricingSection() {
             })}
           </div>
         )}
-
-        <div className="text-center mt-12 pt-8 border-t border-border">
-          <p className="text-sm text-muted-foreground">
-            Todos os planos incluem 7 dias grátis para teste • Suporte 24/7 • Garantia de 30 dias
-          </p>
-        </div>
       </div>
     </section>
   );
