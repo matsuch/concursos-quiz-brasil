@@ -47,28 +47,12 @@ export default function Planner() {
             <div className="border-b bg-muted/30 px-4 sm:px-6 pt-4">
               <TabsList className="w-full h-auto p-1 bg-background/60 backdrop-blur-sm rounded-xl grid grid-cols-3 gap-1">
                 <TabsTrigger 
-                  value="cycle" 
-                  className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm transition-all"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                  <span className="hidden sm:inline text-sm font-medium">Ciclo de Estudos</span>
-                  <span className="sm:hidden text-sm font-medium">Ciclo</span>
-                </TabsTrigger>
-                <TabsTrigger 
                   value="edital" 
                   className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm transition-all"
                 >
                   <BookOpen className="w-4 h-4" />
                   <span className="hidden sm:inline text-sm font-medium">Controle de Edital</span>
                   <span className="sm:hidden text-sm font-medium">Edital</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="reviews" 
-                  className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm transition-all"
-                >
-                  <Bell className="w-4 h-4" />
-                  <span className="hidden sm:inline text-sm font-medium">Revisões</span>
-                  <span className="sm:hidden text-sm font-medium">Revisões</span>
                 </TabsTrigger>
                 <TabsTrigger 
                 value="calendar" 
@@ -83,20 +67,12 @@ export default function Planner() {
 
             {/* Tab Content */}
             <div className="p-4 sm:p-6">
-              <TabsContent value="cycle" className="mt-0 focus-visible:outline-none">
-                <StudyCycleTab />
-              </TabsContent>
-
               <TabsContent value="edital" className="mt-0 focus-visible:outline-none">
                 <EditalControlTab />
               </TabsContent>
 
               <TabsContent value="calendar" className="mt-0 focus-visible:outline-none">
                 <CalendarTab />
-              </TabsContent>
-
-              <TabsContent value="reviews" className="mt-0 focus-visible:outline-none">
-                <ReviewsTab />
               </TabsContent>
             </div>
           </Tabs>
