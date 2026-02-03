@@ -100,9 +100,19 @@ export function ProtectedRoute({
   };
 
   const getPlanFromProduct = (productName: string): Exclude<PlanName, null> => {
-    if (productName.toLowerCase().includes('premium') || productName.toLowerCase().includes('premium')) return 'Premium';
-    if (productName.toLowerCase().includes('standard') || productName.toLowerCase().includes('padrão')) return 'Standard';
+    const nameLower = productName.toLowerCase();
+    if (nameLower.includes('avançado') || nameLower.includes('premium')) return 'Premium';
+    if (nameLower.includes('padrão') || nameLower.includes('standard')) return 'Standard';
     return 'Basic';
+  };
+
+  const getPlanDisplayName = (productName: string): string => {
+    const nameLower = productName.toLowerCase();
+    if (nameLower.includes('avançado')) return 'Avançado';
+    if (nameLower.includes('básico') || nameLower.includes('basico')) return 'Básico';
+    if (nameLower.includes('padrão') || nameLower.includes('standard')) return 'Padrão';
+    if (nameLower.includes('premium')) return 'Premium';
+    return productName;
   };
 
   const getFeaturesFromProduct = (product: StripeProduct): string[] => {
@@ -118,8 +128,12 @@ export function ProtectedRoute({
 
   const formatPrice = (price: StripePrice): string => {
     const amount = price.unit_amount / 100;
+    const formattedAmount = amount.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
     const interval = price.recurring?.interval === 'year' ? 'ano' : 'mês';
-    return `R$ ${amount.toFixed(2).replace('.', ',')}/${interval}`;
+    return `R$ ${formattedAmount}/${interval}`;
   };
 
   // Loading state
@@ -161,6 +175,7 @@ export function ProtectedRoute({
   // No access - show upgrade prompt
   if (!hasAccess) {
     const currentPlan = getCurrentPlan();
+    const currentPlanDisplayName = currentPlan ? getPlanDisplayName(currentPlan) : null;
     
     // Encontrar o produto correspondente ao plano requerido
     const requiredProduct = products.find(product => {
@@ -168,64 +183,74 @@ export function ProtectedRoute({
       return planFromProduct === requiredPlanName;
     });
 
-    // Produtos que são iguais ou superiores ao plano requerido
+    // Determinar quais produtos são elegíveis (igual ou superior ao plano requerido)
     const eligibleProducts = products.filter(product => {
       const planFromProduct = getPlanFromProduct(product.name);
-      const currentIndex = products.findIndex(p => 
-        getPlanFromProduct(p.name) === planFromProduct
-      );
-      const requiredIndex = products.findIndex(p => 
-        getPlanFromProduct(p.name) === requiredPlanName
-      );
-      return currentIndex >= requiredIndex;
+      
+      // Se não temos plano requerido, nenhum é elegível por padrão
+      if (!requiredPlanName) return false;
+      
+      // Mapear planos para hierarquia
+      const planHierarchy: Exclude<PlanName, null>[] = ['Basic', 'Standard', 'Premium'];
+      const productPlanLevel = planHierarchy.indexOf(planFromProduct);
+      const requiredPlanLevel = planHierarchy.indexOf(requiredPlanName);
+      
+      return productPlanLevel >= requiredPlanLevel;
+    });
+
+    // Filtrar apenas os produtos relevantes para mostrar
+    const productsToShow = products.filter(product => {
+      const planFromProduct = getPlanFromProduct(product.name);
+      return planFromProduct === 'Basic' || planFromProduct === 'Premium';
     });
 
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-secondary/5 flex items-center justify-center p-4">
-        <div className="max-w-6xl w-full">
+        <div className="max-w-4xl w-full">
           <Card className="shadow-2xl border-primary/20 overflow-hidden">
-            <CardContent className="p-8">
+            <CardContent className="p-6 md:p-8">
               {/* Header */}
               <div className="text-center mb-8">
-                <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Lock className="w-10 h-10 text-primary" />
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Lock className="w-8 h-8 md:w-10 md:h-10 text-primary" />
                 </div>
                 
-                <h2 className="text-3xl font-bold text-foreground mb-3">
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
                   Acesso Restrito
                 </h2>
                 
-                <p className="text-muted-foreground text-lg mb-2">
+                <p className="text-muted-foreground mb-4 md:mb-6 max-w-2xl mx-auto">
                   {requiredPlanName 
-                    ? `Esta funcionalidade está disponível apenas para assinantes do plano ${requiredPlanName} ou superior.`
+                    ? `Esta funcionalidade está disponível apenas para assinantes do plano ${getPlanDisplayName(requiredPlanName)} ou superior.`
                     : 'Esta funcionalidade está disponível apenas para assinantes.'
                   }
                 </p>
                 
                 {currentPlan && (
-                  <Badge variant="outline" className="mt-2 px-4 py-1.5">
-                    <Crown className="w-4 h-4 mr-2" />
-                    Plano atual: {currentPlan}
+                  <Badge variant="outline" className="mt-2 px-4 py-1.5 text-sm">
+                    <Crown className="w-3 h-3 md:w-4 md:h-4 mr-2" />
+                    Plano atual: {currentPlanDisplayName}
                   </Badge>
                 )}
               </div>
 
+              <Separator className="my-6" />
+              
               {/* Seção de comparação de planos */}
-              {products.length > 0 && (
+              {productsToShow.length > 0 && (
                 <>
-                  <Separator className="my-8" />
-                  
                   <div className="mb-8">
                     <h3 className="text-xl font-semibold text-center mb-6 text-foreground">
                       Compare os planos disponíveis
                     </h3>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      {products.map((product, index) => {
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                      {productsToShow.map((product) => {
                         const planType = getPlanFromProduct(product.name);
+                        const planDisplayName = getPlanDisplayName(product.name);
                         const features = getFeaturesFromProduct(product);
                         const price = getPriceForProduct(product.id);
-                        const isCurrentPlan = currentPlan === planType;
+                        const isCurrentPlanType = currentPlan === planType;
                         const isRequiredPlan = requiredPlanName === planType;
                         const isEligible = eligibleProducts.some(p => p.id === product.id);
                         
@@ -233,22 +258,22 @@ export function ProtectedRoute({
                           <Card 
                             key={product.id}
                             className={`relative border-2 transition-all duration-300 hover:shadow-lg ${
-                              isCurrentPlan 
+                              isCurrentPlanType 
                                 ? 'border-green-500 ring-2 ring-green-500/20' 
                                 : isRequiredPlan
                                 ? 'border-primary ring-2 ring-primary/20'
                                 : 'border-border'
-                            } ${isEligible ? 'opacity-100' : 'opacity-60'}`}
+                            } ${isEligible ? 'opacity-100' : 'opacity-70'}`}
                           >
                             {product.metadata?.popular === 'true' && (
-                              <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-secondary text-white px-4 py-1">
+                              <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-secondary text-white px-4 py-1 text-xs">
                                 <Sparkles className="w-3 h-3 mr-1" />
-                                Popular
+                                Mais Popular
                               </Badge>
                             )}
                             
-                            {isCurrentPlan && (
-                              <Badge className="absolute -top-3 right-4 bg-green-500 text-white px-3">
+                            {isCurrentPlanType && (
+                              <Badge className="absolute -top-3 right-4 bg-green-500 text-white px-3 py-1 text-xs">
                                 Seu Plano
                               </Badge>
                             )}
@@ -257,9 +282,9 @@ export function ProtectedRoute({
                               {/* Nome do plano */}
                               <div className="text-center mb-4">
                                 <h4 className="text-xl font-bold text-foreground mb-1">
-                                  {product.name}
+                                  {planDisplayName}
                                 </h4>
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-sm text-muted-foreground min-h-[40px]">
                                   {product.description}
                                 </p>
                               </div>
@@ -267,7 +292,7 @@ export function ProtectedRoute({
                               {/* Preço */}
                               {price && (
                                 <div className="text-center mb-6">
-                                  <div className="text-3xl font-bold text-foreground">
+                                  <div className="text-2xl md:text-3xl font-bold text-foreground mb-1">
                                     {formatPrice(price)}
                                   </div>
                                 </div>
@@ -275,7 +300,7 @@ export function ProtectedRoute({
 
                               {/* Features */}
                               <div className="space-y-3 mb-6">
-                                {features.slice(0, 5).map((feature, idx) => (
+                                {features.slice(0, 4).map((feature, idx) => (
                                   <div key={idx} className="flex items-start gap-3">
                                     {isEligible ? (
                                       <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
@@ -289,20 +314,21 @@ export function ProtectedRoute({
                                     </span>
                                   </div>
                                 ))}
-                                {features.length > 5 && (
+                                {features.length > 4 && (
                                   <div className="text-xs text-muted-foreground text-center pt-2">
-                                    + {features.length - 5} recursos adicionais
+                                    + {features.length - 4} recursos adicionais
                                   </div>
                                 )}
                               </div>
 
                               {/* Botão de ação */}
                               <div className="mt-auto">
-                                {isCurrentPlan ? (
+                                {isCurrentPlanType ? (
                                   <Button 
                                     className="w-full" 
                                     variant="outline" 
                                     disabled
+                                    size="lg"
                                   >
                                     <Check className="w-4 h-4 mr-2" />
                                     Plano Atual
@@ -337,7 +363,7 @@ export function ProtectedRoute({
               )}
 
               {/* Ações */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
                 <Button 
                   onClick={() => navigate('/planos')}
                   className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
@@ -385,6 +411,14 @@ export function FeatureGate({ children, feature, fallback }: FeatureGateProps) {
   const navigate = useNavigate();
   const { hasFeature, getRequiredPlan, getCurrentPlan, loading } = useSubscription();
 
+  const getPlanDisplayName = (planName: PlanName): string => {
+    if (!planName) return '';
+    if (planName.toLowerCase().includes('avançado') || planName === 'Premium') return 'Avançado';
+    if (planName.toLowerCase().includes('padrão') || planName === 'Standard') return 'Padrão';
+    if (planName.toLowerCase().includes('básico') || planName.toLowerCase().includes('basico') || planName === 'Basic') return 'Básico';
+    return planName;
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -398,6 +432,8 @@ export function FeatureGate({ children, feature, fallback }: FeatureGateProps) {
     
     const requiredPlan = getRequiredPlan(feature);
     const currentPlan = getCurrentPlan();
+    const requiredPlanDisplayName = requiredPlan ? getPlanDisplayName(requiredPlan) : '';
+    const currentPlanDisplayName = currentPlan ? getPlanDisplayName(currentPlan) : '';
     
     return (
       <div className="bg-gradient-to-br from-background to-muted/30 border-2 border-dashed border-primary/30 rounded-xl p-6 text-center">
@@ -410,8 +446,8 @@ export function FeatureGate({ children, feature, fallback }: FeatureGateProps) {
         </h3>
         
         <p className="text-muted-foreground mb-4">
-          {requiredPlan 
-            ? `"${feature}" está disponível apenas no plano ${requiredPlan}`
+          {requiredPlanDisplayName 
+            ? `"${feature}" está disponível apenas no plano ${requiredPlanDisplayName}`
             : 'Faça upgrade para acessar este recurso exclusivo'
           }
         </p>
@@ -419,7 +455,7 @@ export function FeatureGate({ children, feature, fallback }: FeatureGateProps) {
         {currentPlan && (
           <Badge variant="outline" className="mb-4">
             <Crown className="w-3 h-3 mr-1" />
-            Seu plano: {currentPlan}
+            Seu plano: {currentPlanDisplayName}
           </Badge>
         )}
 
@@ -449,6 +485,14 @@ export function PlanGate({ children, requiredPlan, fallback }: PlanGateProps) {
   const navigate = useNavigate();
   const { hasPlanOrHigher, getCurrentPlan, loading } = useSubscription();
 
+  const getPlanDisplayName = (planName: PlanName): string => {
+    if (!planName) return '';
+    if (planName.toLowerCase().includes('avançado') || planName === 'Premium') return 'Avançado';
+    if (planName.toLowerCase().includes('padrão') || planName === 'Standard') return 'Padrão';
+    if (planName.toLowerCase().includes('básico') || planName.toLowerCase().includes('basico') || planName === 'Basic') return 'Básico';
+    return planName;
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -461,6 +505,8 @@ export function PlanGate({ children, requiredPlan, fallback }: PlanGateProps) {
     if (fallback) return <>{fallback}</>;
     
     const currentPlan = getCurrentPlan();
+    const requiredPlanDisplayName = getPlanDisplayName(requiredPlan);
+    const currentPlanDisplayName = currentPlan ? getPlanDisplayName(currentPlan) : '';
     
     return (
       <div className="bg-gradient-to-br from-background to-muted/30 border-2 border-dashed border-accent/30 rounded-xl p-6 text-center">
@@ -469,13 +515,13 @@ export function PlanGate({ children, requiredPlan, fallback }: PlanGateProps) {
         </div>
         
         <h3 className="text-lg font-semibold text-foreground mb-2">
-          Plano {requiredPlan} Necessário
+          Plano {requiredPlanDisplayName} Necessário
         </h3>
         
         <p className="text-muted-foreground mb-4">
           {currentPlan 
-            ? `Seu plano atual (${currentPlan}) não possui este recurso. Faça upgrade para ${requiredPlan}.`
-            : `Assine o plano ${requiredPlan} para desbloquear esta funcionalidade.`
+            ? `Seu plano atual (${currentPlanDisplayName}) não possui este recurso. Faça upgrade para ${requiredPlanDisplayName}.`
+            : `Assine o plano ${requiredPlanDisplayName} para desbloquear esta funcionalidade.`
           }
         </p>
 
