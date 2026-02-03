@@ -20,6 +20,7 @@ import NotFound from "./pages/NotFound";
 import SimuladoPage from "./pages/Simulado";
 import MyAccount from "./pages/MyAccount";
 import Planos from "./pages/Planos";
+import Planner from "./pages/Planner";
 import { CanvasEditor } from "./pages/CanvasEditor"; // ajuste o import se necessário
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ const App = () => (
                     <Route path="/aulas" element={<Aulas />} />
                     <Route path="/estudo" element={<Estudo />} />
                     <Route path="/planos" element={<Planos />} />
+                    <Route path="/planner" element={<Planner />} />
                     <Route path="/auth" element={<Auth />} />
 
                     {/* <Route 

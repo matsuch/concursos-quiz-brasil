@@ -215,6 +215,48 @@ export type Database = {
         }
         Relationships: []
       }
+      edital_topics: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          is_completed: boolean | null
+          notes: string | null
+          priority: number | null
+          subject: string
+          subtopic: string | null
+          topic: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          is_completed?: boolean | null
+          notes?: string | null
+          priority?: number | null
+          subject: string
+          subtopic?: string | null
+          topic: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          is_completed?: boolean | null
+          notes?: string | null
+          priority?: number | null
+          subject?: string
+          subtopic?: string | null
+          topic?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       estatisticas: {
         Row: {
           id: string
@@ -591,6 +633,121 @@ export type Database = {
           total_questions?: number
         }
         Relationships: []
+      }
+      study_blocks: {
+        Row: {
+          color: string | null
+          created_at: string
+          cycle_id: string
+          duration_minutes: number
+          id: string
+          order_index: number
+          subject: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          cycle_id: string
+          duration_minutes?: number
+          id?: string
+          order_index: number
+          subject: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          cycle_id?: string
+          duration_minutes?: number
+          id?: string
+          order_index?: number
+          subject?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "study_blocks_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "study_cycles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      study_cycles: {
+        Row: {
+          created_at: string
+          duration_days: number
+          id: string
+          is_active: boolean | null
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_days?: number
+          id?: string
+          is_active?: boolean | null
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_days?: number
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      study_reviews: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          is_completed: boolean | null
+          review_type: string
+          scheduled_date: string
+          subject: string
+          topic_id: string | null
+          topic_name: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          is_completed?: boolean | null
+          review_type: string
+          scheduled_date: string
+          subject: string
+          topic_id?: string | null
+          topic_name: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          is_completed?: boolean | null
+          review_type?: string
+          scheduled_date?: string
+          subject?: string
+          topic_id?: string | null
+          topic_name?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "study_reviews_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "edital_topics"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subscriptions: {
         Row: {
