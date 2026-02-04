@@ -2,7 +2,7 @@ import { ReactNode, useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useSubscription, PlanName } from '@/hooks/useSubscription';
-import { Loader2, Lock, CreditCard, Crown, Sparkles, Check, X } from 'lucide-react';
+import { Loader2, Lock, CreditCard, Crown, Sparkles, Check, X, BookOpen, Users, Rocket, Brain, Zap, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -26,11 +26,17 @@ interface StripeProduct {
   id: string;
   name: string;
   description: string;
+  marketing_features?: Array<{
+    name: string;
+  }>;
   metadata?: {
-    features?: string;
     popular?: string;
     icon?: string;
-    order?: string;
+    color?: string;
+    bgColor?: string;
+    textColor?: string;
+    interval?: string;
+    features?: string;
   };
 }
 
@@ -42,6 +48,30 @@ interface StripePrice {
     interval: string;
   };
 }
+
+const ICON_MAP: Record<string, typeof Zap | typeof Star | typeof Crown> = {
+  zap: Zap,
+  star: Star,
+  crown: Crown,
+};
+
+const COLOR_MAP: Record<string, { color: string; bgColor: string; textColor: string }> = {
+  basic: {
+    color: "from-blue-500 to-blue-600",
+    bgColor: "bg-blue-500/10",
+    textColor: "text-blue-500"
+  },
+  standard: {
+    color: "from-primary to-secondary",
+    bgColor: "bg-primary/10",
+    textColor: "text-primary"
+  },
+  premium: {
+    color: "from-amber-500 to-orange-500",
+    bgColor: "bg-amber-500/10",
+    textColor: "text-amber-500"
+  }
+};
 
 export function ProtectedRoute({ 
   children, 
@@ -81,14 +111,22 @@ export function ProtectedRoute({
       if (error) throw error;
       
       if (data?.products && data?.prices) {
-        // Ordenar produtos pela ordem definida no metadata
-        const sortedProducts = data.products.sort((a: StripeProduct, b: StripeProduct) => {
-          const orderA = parseInt(a.metadata?.order || '0');
-          const orderB = parseInt(b.metadata?.order || '0');
-          return orderA - orderB;
+        // Filtrar apenas produtos ativos e ordenar pelo preço
+        const activeProducts = data.products.filter((product: StripeProduct) => 
+          product.name.toLowerCase().includes('básico') || 
+          product.name.toLowerCase().includes('avançado') ||
+          product.name.toLowerCase().includes('basic') ||
+          product.name.toLowerCase().includes('premium')
+        );
+
+        // Ordenar por preço (do mais barato para o mais caro)
+        activeProducts.sort((a: StripeProduct, b: StripeProduct) => {
+          const priceA = data.prices.find((p: StripePrice) => p.product === a.id)?.unit_amount || 0;
+          const priceB = data.prices.find((p: StripePrice) => p.product === b.id)?.unit_amount || 0;
+          return priceA - priceB;
         });
-        
-        setProducts(sortedProducts);
+
+        setProducts(activeProducts);
         setPrices(data.prices);
       }
     } catch (error) {
@@ -99,11 +137,11 @@ export function ProtectedRoute({
     }
   };
 
-  const getPlanFromProduct = (productName: string): Exclude<PlanName, null> => {
+  const getPlanIdFromProduct = (productName: string): string => {
     const nameLower = productName.toLowerCase();
-    if (nameLower.includes('avançado') || nameLower.includes('premium')) return 'Premium';
-    if (nameLower.includes('padrão') || nameLower.includes('standard')) return 'Standard';
-    return 'Basic';
+    if (nameLower.includes('avançado') || nameLower.includes('premium')) return 'premium';
+    if (nameLower.includes('básico') || nameLower.includes('basico')) return 'basic';
+    return 'standard';
   };
 
   const getPlanDisplayName = (productName: string): string => {
@@ -116,10 +154,36 @@ export function ProtectedRoute({
   };
 
   const getFeaturesFromProduct = (product: StripeProduct): string[] => {
+    if (product.marketing_features && product.marketing_features.length > 0) {
+      return product.marketing_features.map(f => f.name);
+    }
+    
+    // Fallback para metadata se não houver marketing_features
     if (product.metadata?.features) {
       return product.metadata.features.split(';').map(f => f.trim());
     }
-    return [];
+    
+    // Fallback baseado no tipo de plano
+    const planId = getPlanIdFromProduct(product.name);
+    if (planId === 'premium') {
+      return [
+        'Simulados completos',
+        'Duelos online',
+        'Flashcards personalizados',
+        'Ranking e estatísticas',
+        'IA para correção de redação',
+        'Acesso a todas as matérias'
+      ];
+    } else if (planId === 'basic') {
+      return [
+        'Flashcards básicos',
+        'Quizzes',
+        'Acesso a matérias básicas',
+        'Estatísticas simples'
+      ];
+    }
+    
+    return ['Recursos básicos de estudo'];
   };
 
   const getPriceForProduct = (productId: string): StripePrice | undefined => {
@@ -134,6 +198,18 @@ export function ProtectedRoute({
     });
     const interval = price.recurring?.interval === 'year' ? 'ano' : 'mês';
     return `R$ ${formattedAmount}/${interval}`;
+  };
+
+  const getPlanIcon = (product: StripeProduct) => {
+    const planId = getPlanIdFromProduct(product.name);
+    const iconName = product.metadata?.icon || 
+      (planId === 'premium' ? 'crown' : planId === 'basic' ? 'star' : 'zap');
+    return ICON_MAP[iconName] || Star;
+  };
+
+  const getPlanColors = (product: StripeProduct) => {
+    const planId = getPlanIdFromProduct(product.name);
+    return COLOR_MAP[planId] || COLOR_MAP.basic;
   };
 
   // Loading state
@@ -177,31 +253,25 @@ export function ProtectedRoute({
     const currentPlan = getCurrentPlan();
     const currentPlanDisplayName = currentPlan ? getPlanDisplayName(currentPlan) : null;
     
-    // Encontrar o produto correspondente ao plano requerido
-    const requiredProduct = products.find(product => {
-      const planFromProduct = getPlanFromProduct(product.name);
-      return planFromProduct === requiredPlanName;
-    });
-
     // Determinar quais produtos são elegíveis (igual ou superior ao plano requerido)
     const eligibleProducts = products.filter(product => {
-      const planFromProduct = getPlanFromProduct(product.name);
+      const planId = getPlanIdFromProduct(product.name);
+      const planHierarchy = ['basic', 'standard', 'premium'];
       
       // Se não temos plano requerido, nenhum é elegível por padrão
       if (!requiredPlanName) return false;
       
-      // Mapear planos para hierarquia
-      const planHierarchy: Exclude<PlanName, null>[] = ['Basic', 'Standard', 'Premium'];
-      const productPlanLevel = planHierarchy.indexOf(planFromProduct);
-      const requiredPlanLevel = planHierarchy.indexOf(requiredPlanName);
+      const requiredPlanId = requiredPlanName.toLowerCase();
+      const productPlanLevel = planHierarchy.indexOf(planId);
+      const requiredPlanLevel = planHierarchy.indexOf(requiredPlanId);
       
       return productPlanLevel >= requiredPlanLevel;
     });
 
-    // Filtrar apenas os produtos relevantes para mostrar
+    // Filtrar apenas os produtos relevantes para mostrar (Básico e Avançado)
     const productsToShow = products.filter(product => {
-      const planFromProduct = getPlanFromProduct(product.name);
-      return planFromProduct === 'Basic' || planFromProduct === 'Premium';
+      const planId = getPlanIdFromProduct(product.name);
+      return planId === 'basic' || planId === 'premium';
     });
 
     return (
@@ -219,7 +289,7 @@ export function ProtectedRoute({
                   Acesso Restrito
                 </h2>
                 
-                <p className="text-muted-foreground mb-4 md:mb-6 max-w-2xl mx-auto">
+                <p className="text-muted-foreground mb-4 md:mb-6 max-w-2xl mx-auto text-lg">
                   {requiredPlanName 
                     ? `Esta funcionalidade está disponível apenas para assinantes do plano ${getPlanDisplayName(requiredPlanName)} ou superior.`
                     : 'Esta funcionalidade está disponível apenas para assinantes.'
@@ -246,22 +316,24 @@ export function ProtectedRoute({
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
                       {productsToShow.map((product) => {
-                        const planType = getPlanFromProduct(product.name);
+                        const planId = getPlanIdFromProduct(product.name);
                         const planDisplayName = getPlanDisplayName(product.name);
                         const features = getFeaturesFromProduct(product);
                         const price = getPriceForProduct(product.id);
-                        const isCurrentPlanType = currentPlan === planType;
-                        const isRequiredPlan = requiredPlanName === planType;
+                        const isCurrentPlanType = currentPlan?.toLowerCase() === planId;
+                        const isRequiredPlan = requiredPlanName?.toLowerCase() === planId;
                         const isEligible = eligibleProducts.some(p => p.id === product.id);
+                        const colors = getPlanColors(product);
+                        const Icon = getPlanIcon(product);
                         
                         return (
                           <Card 
                             key={product.id}
-                            className={`relative border-2 transition-all duration-300 hover:shadow-lg ${
+                            className={`relative border-2 transition-all duration-300 hover:shadow-xl ${
                               isCurrentPlanType 
-                                ? 'border-green-500 ring-2 ring-green-500/20' 
+                                ? 'border-green-500 ring-2 ring-green-500/20 shadow-lg' 
                                 : isRequiredPlan
-                                ? 'border-primary ring-2 ring-primary/20'
+                                ? 'border-primary ring-2 ring-primary/20 shadow-md'
                                 : 'border-border'
                             } ${isEligible ? 'opacity-100' : 'opacity-70'}`}
                           >
@@ -274,16 +346,22 @@ export function ProtectedRoute({
                             
                             {isCurrentPlanType && (
                               <Badge className="absolute -top-3 right-4 bg-green-500 text-white px-3 py-1 text-xs">
+                                <Check className="w-3 h-3 mr-1" />
                                 Seu Plano
                               </Badge>
                             )}
 
                             <CardContent className="pt-8 pb-6">
-                              {/* Nome do plano */}
+                              {/* Nome do plano com ícone */}
                               <div className="text-center mb-4">
-                                <h4 className="text-xl font-bold text-foreground mb-1">
-                                  {planDisplayName}
-                                </h4>
+                                <div className="flex items-center justify-center gap-2 mb-2">
+                                  <div className={`w-10 h-10 ${colors.bgColor} rounded-full flex items-center justify-center`}>
+                                    <Icon className={`w-5 h-5 ${colors.textColor}`} />
+                                  </div>
+                                  <h4 className="text-xl font-bold text-foreground">
+                                    {planDisplayName}
+                                  </h4>
+                                </div>
                                 <p className="text-sm text-muted-foreground min-h-[40px]">
                                   {product.description}
                                 </p>
@@ -295,28 +373,33 @@ export function ProtectedRoute({
                                   <div className="text-2xl md:text-3xl font-bold text-foreground mb-1">
                                     {formatPrice(price)}
                                   </div>
+                                  {price.recurring?.interval === "year" && (
+                                    <p className="text-sm text-green-600">
+                                      Economize 20% comparado ao mensal
+                                    </p>
+                                  )}
                                 </div>
                               )}
 
-                              {/* Features */}
+                              {/* Lista de features - IGUAL À PÁGINA DE PLANOS */}
                               <div className="space-y-3 mb-6">
-                                {features.slice(0, 4).map((feature, idx) => (
+                                {features.slice(0, 5).map((feature, idx) => (
                                   <div key={idx} className="flex items-start gap-3">
                                     {isEligible ? (
-                                      <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                                      <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-1" />
                                     ) : (
-                                      <X className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+                                      <X className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-1" />
                                     )}
-                                    <span className={`text-sm ${
+                                    <span className={`text-sm text-left ${
                                       isEligible ? 'text-foreground' : 'text-muted-foreground'
                                     }`}>
                                       {feature}
                                     </span>
                                   </div>
                                 ))}
-                                {features.length > 4 && (
+                                {features.length > 5 && (
                                   <div className="text-xs text-muted-foreground text-center pt-2">
-                                    + {features.length - 4} recursos adicionais
+                                    + {features.length - 5} recursos adicionais
                                   </div>
                                 )}
                               </div>
@@ -336,11 +419,11 @@ export function ProtectedRoute({
                                 ) : isEligible ? (
                                   <Button 
                                     onClick={() => navigate('/planos')}
-                                    className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
+                                    className={`w-full bg-gradient-to-r ${colors.color} hover:opacity-90`}
                                     size="lg"
                                   >
                                     <CreditCard className="w-4 h-4 mr-2" />
-                                    {price ? 'Assinar Agora' : 'Ver Detalhes'}
+                                    Assinar Agora
                                   </Button>
                                 ) : (
                                   <Button 
@@ -357,6 +440,50 @@ export function ProtectedRoute({
                           </Card>
                         );
                       })}
+                    </div>
+                  </div>
+
+                  {/* Seção de Diferenciais - IGUAL À PÁGINA DE PLANOS */}
+                  <div className="mb-8 max-w-2xl mx-auto">
+                    <div className="text-center mb-6">
+                      <h3 className="text-lg font-semibold text-foreground mb-2">
+                        Diferenciais da Plataforma
+                      </h3>
+                      <p className="text-muted-foreground text-sm">
+                        Recursos que fazem a diferença na sua preparação
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="bg-muted/50 rounded-lg p-4">
+                        <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mb-3">
+                          <BookOpen className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <h4 className="font-medium text-foreground mb-1">Questões Reais</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Milhares de questões de exames anteriores
+                        </p>
+                      </div>
+
+                      <div className="bg-muted/50 rounded-lg p-4">
+                        <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center mb-3">
+                          <Users className="w-5 h-5 text-green-600" />
+                        </div>
+                        <h4 className="font-medium text-foreground mb-1">Comunidade</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Conecte-se com outros estudantes
+                        </p>
+                      </div>
+
+                      <div className="bg-muted/50 rounded-lg p-4">
+                        <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center mb-3">
+                          <Rocket className="w-5 h-5 text-purple-600" />
+                        </div>
+                        <h4 className="font-medium text-foreground mb-1">Progresso</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Acompanhe seu desenvolvimento
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </>
@@ -387,6 +514,9 @@ export function ProtectedRoute({
                 <p>
                   Todos os planos incluem 7 dias gratuitos para teste. 
                   Cancele a qualquer momento sem taxas.
+                </p>
+                <p className="mt-1">
+                  Acesso imediato após a confirmação do pagamento.
                 </p>
               </div>
             </CardContent>
