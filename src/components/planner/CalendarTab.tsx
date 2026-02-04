@@ -29,18 +29,7 @@ const SUBJECTS = [
   'Contabilidade',
 ];
 
-const COLORS = [
-  { name: 'Azul Suave', value: '#3b82f6' },
-  { name: 'Verde Suave', value: '#22c55e' },
-  { name: 'Roxo Suave', value: '#a855f7' },
-  { name: 'Laranja Suave', value: '#f97316' },
-  { name: 'Rosa Suave', value: '#ec4899' },
-  { name: 'Amarelo Suave', value: '#eab308' },
-  { name: 'Vermelho Suave', value: '#ef4444' },
-  { name: 'Ciano Suave', value: '#06b6d4' },
-];
-
-// Novas cores com melhor contraste - versões mais escuras para texto branco legível
+// Cores com melhor contraste - versões mais escuras para texto branco legível
 const CONTRAST_COLORS = [
   { name: 'Azul Profundo', value: '#2563eb' },
   { name: 'Verde Floresta', value: '#15803d' },
@@ -50,6 +39,18 @@ const CONTRAST_COLORS = [
   { name: 'Amarelo Dourado', value: '#ca8a04' },
   { name: 'Vermelho Bordeaux', value: '#dc2626' },
   { name: 'Ciano Profundo', value: '#0891b2' },
+];
+
+// Cores mais claras para bordas (variantes mais claras das cores principais)
+const BORDER_COLORS = [
+  { name: 'Azul Claro', value: '#93c5fd' },
+  { name: 'Verde Claro', value: '#86efac' },
+  { name: 'Roxo Claro', value: '#c4b5fd' },
+  { name: 'Laranja Claro', value: '#fdba74' },
+  { name: 'Rosa Claro', value: '#f9a8d4' },
+  { name: 'Amarelo Claro', value: '#fde047' },
+  { name: 'Vermelho Claro', value: '#fca5a5' },
+  { name: 'Ciano Claro', value: '#67e8f9' },
 ];
 
 export function CalendarTab() {
@@ -163,6 +164,15 @@ export function CalendarTab() {
     return <MobileCalendarView />;
   }
 
+  // Função para obter cor de borda correspondente à cor principal
+  const getBorderColor = (mainColor: string) => {
+    const colorIndex = CONTRAST_COLORS.findIndex(color => color.value === mainColor);
+    if (colorIndex >= 0 && colorIndex < BORDER_COLORS.length) {
+      return BORDER_COLORS[colorIndex].value;
+    }
+    return BORDER_COLORS[0].value; // Fallback
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -233,7 +243,7 @@ export function CalendarTab() {
                     <button
                       key={color.value}
                       type="button"
-                      className={`w-8 h-8 rounded-full border-2 ${formData.color === color.value ? 'border-foreground' : 'border-transparent'} transition-transform hover:scale-110`}
+                      className={`w-8 h-8 rounded-full border-2 ${formData.color === color.value ? 'border-white ring-2 ring-foreground/20' : 'border-transparent'} transition-transform hover:scale-110`}
                       style={{ backgroundColor: color.value }}
                       onClick={() => setFormData({ ...formData, color: color.value })}
                       title={color.name}
@@ -294,16 +304,18 @@ export function CalendarTab() {
               noEventsInRange: 'Nenhum evento neste intervalo.',
             }}
             eventPropGetter={(event) => {
-              const color = (event as any).color || CONTRAST_COLORS[0].value;
+              const mainColor = (event as any).color || CONTRAST_COLORS[0].value;
+              const borderColor = getBorderColor(mainColor);
               return {
                 style: {
-                  backgroundColor: color,
-                  borderColor: color,
-                  color: '#fff',
+                  backgroundColor: mainColor,
+                  border: `2px solid ${borderColor}`,
+                  color: '#ffffff',
                   fontWeight: 500,
                   fontSize: '13px',
-                  borderRadius: '6px',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                  borderRadius: '8px',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                  textShadow: '0 1px 2px rgba(0,0,0,0.2)',
                 },
               };
             }}
