@@ -34,28 +34,14 @@ const App = () => (
                 <main style={{ flex: 1, overflow: "auto" }}>
                   <Routes>
                     <Route path="/" element={<Home />} />
+                    
+                    {/* Rotas públicas */}
                     <Route path="/quiz" element={<Quiz />} />
-                    <Route path="/estudo" element={<Estudo />} />
                     <Route path="/planos" element={<Planos />} />
                     <Route path="/planner" element={<Planner />} />
                     <Route path="/auth" element={<Auth />} />
                     
-                    <Route 
-                      path="/quiz" 
-                      element={
-                        <ProtectedRoute requiredPlan="Basic">
-                          <Quiz />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    <Route 
-                      path="/planner" 
-                      element={
-                        <ProtectedRoute requiredPlan="Basic">
-                          <Planner />
-                        </ProtectedRoute>
-                      } 
-                    />
+                    {/* Rotas protegidas */}
                     <Route 
                       path="/estudo" 
                       element={
@@ -81,6 +67,7 @@ const App = () => (
                       } 
                     />
 
+                    {/* Rota 404 */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </main>
