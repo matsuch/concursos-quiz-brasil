@@ -30,14 +30,26 @@ const SUBJECTS = [
 ];
 
 const COLORS = [
-  { name: 'Azul', value: '#3b82f6' },
-  { name: 'Verde', value: '#22c55e' },
-  { name: 'Roxo', value: '#a855f7' },
-  { name: 'Laranja', value: '#f97316' },
-  { name: 'Rosa', value: '#ec4899' },
-  { name: 'Amarelo', value: '#eab308' },
-  { name: 'Vermelho', value: '#ef4444' },
-  { name: 'Ciano', value: '#06b6d4' },
+  { name: 'Azul Suave', value: '#3b82f6' },
+  { name: 'Verde Suave', value: '#22c55e' },
+  { name: 'Roxo Suave', value: '#a855f7' },
+  { name: 'Laranja Suave', value: '#f97316' },
+  { name: 'Rosa Suave', value: '#ec4899' },
+  { name: 'Amarelo Suave', value: '#eab308' },
+  { name: 'Vermelho Suave', value: '#ef4444' },
+  { name: 'Ciano Suave', value: '#06b6d4' },
+];
+
+// Novas cores com melhor contraste - versões mais escuras para texto branco legível
+const CONTRAST_COLORS = [
+  { name: 'Azul Profundo', value: '#2563eb' },
+  { name: 'Verde Floresta', value: '#15803d' },
+  { name: 'Roxo Profundo', value: '#7c3aed' },
+  { name: 'Laranja Queimado', value: '#ea580c' },
+  { name: 'Rosa Profundo', value: '#db2777' },
+  { name: 'Amarelo Dourado', value: '#ca8a04' },
+  { name: 'Vermelho Bordeaux', value: '#dc2626' },
+  { name: 'Ciano Profundo', value: '#0891b2' },
 ];
 
 export function CalendarTab() {
@@ -53,7 +65,7 @@ export function CalendarTab() {
     topic: '',
     start_time: '',
     end_time: '',
-    color: COLORS[0].value,
+    color: CONTRAST_COLORS[0].value,
     notes: '',
   });
 
@@ -65,7 +77,7 @@ export function CalendarTab() {
       topic: '',
       start_time: start,
       end_time: end,
-      color: COLORS[0].value,
+      color: CONTRAST_COLORS[0].value,
       notes: '',
     });
     setSelectedEvent(null);
@@ -77,10 +89,10 @@ export function CalendarTab() {
     setSelectedEvent(event);
     setFormData({
       subject: event.subject,
-      topic: event.topic,
+      topic: event.title,
       start_time: moment(event.start_time).format('YYYY-MM-DDTHH:mm'),
       end_time: moment(event.end_time).format('YYYY-MM-DDTHH:mm'),
-      color: event.color || COLORS[0].value,
+      color: event.color || CONTRAST_COLORS[0].value,
       notes: event.notes || '',
     });
     setIsEditing(true);
@@ -103,6 +115,9 @@ export function CalendarTab() {
     } else {
       await createCalendarEvent.mutateAsync({
         ...formData,
+        title: formData.topic,
+        is_recurring: false,
+        recurrence_rule: null,
         start_time: moment(formData.start_time).toISOString(),
         end_time: moment(formData.end_time).toISOString(),
       });
@@ -128,7 +143,7 @@ export function CalendarTab() {
       topic: '',
       start_time: '',
       end_time: '',
-      color: COLORS[0].value,
+      color: CONTRAST_COLORS[0].value,
       notes: '',
     });
     setSelectedEvent(null);
@@ -139,7 +154,7 @@ export function CalendarTab() {
     ...event,
     start: new Date(event.start_time),
     end: new Date(event.end_time),
-    title: `${event.subject}: ${event.topic}`,
+    title: `${event.subject}: ${event.title}`,
   })) || [];
 
   const isMobile = useMediaQuery('(max-width: 640px)');
@@ -214,7 +229,7 @@ export function CalendarTab() {
               <div>
                 <Label>Cor</Label>
                 <div className="flex gap-2 flex-wrap mt-2">
-                  {COLORS.map((color) => (
+                  {CONTRAST_COLORS.map((color) => (
                     <button
                       key={color.value}
                       type="button"
@@ -279,12 +294,23 @@ export function CalendarTab() {
               noEventsInRange: 'Nenhum evento neste intervalo.',
             }}
             eventPropGetter={(event) => {
-              const color = (event as any).color || COLORS[0].value;
+              const color = (event as any).color || CONTRAST_COLORS[0].value;
               return {
                 style: {
                   backgroundColor: color,
                   borderColor: color,
                   color: '#fff',
+                  fontWeight: 500,
+                  fontSize: '13px',
+                  borderRadius: '6px',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                },
+              };
+            }}
+            dayPropGetter={(date) => {
+              return {
+                style: {
+                  backgroundColor: 'hsl(var(--card))',
                 },
               };
             }}
