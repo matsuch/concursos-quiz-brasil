@@ -10,11 +10,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import Navbar from "@/components/Navbar";
 import Home from "./pages/Home";
 import Quiz from "./pages/Quiz";
-import Aulas from "./pages/Aulas";
-import Duelo from "./pages/Duelo";
-import Ranking from "./pages/Ranking";
 import Estudo from "./pages/Estudo";
-import Conquistas from "./pages/Conquistas";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import SimuladoPage from "./pages/Simulado";
@@ -39,7 +35,6 @@ const App = () => (
                   <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/quiz" element={<Quiz />} />
-                    <Route path="/aulas" element={<Aulas />} />
                     <Route path="/estudo" element={<Estudo />} />
                     <Route path="/planos" element={<Planos />} />
                     <Route path="/planner" element={<Planner />} />
@@ -49,7 +44,7 @@ const App = () => (
                       path="/quiz" 
                       element={
                         <ProtectedRoute requiredPlan="Basic">
-                          <SimuladoPage />
+                          <Quiz />
                         </ProtectedRoute>
                       } 
                     />
@@ -57,7 +52,7 @@ const App = () => (
                       path="/planner" 
                       element={
                         <ProtectedRoute requiredPlan="Basic">
-                          <SimuladoPage />
+                          <Planner />
                         </ProtectedRoute>
                       } 
                     />
@@ -65,7 +60,7 @@ const App = () => (
                       path="/estudo" 
                       element={
                         <ProtectedRoute requiredPlan="Standard">
-                          <SimuladoPage />
+                          <Estudo />
                         </ProtectedRoute>
                       } 
                     />
