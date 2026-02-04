@@ -345,6 +345,91 @@ export function CalendarTab() {
                 },
               };
             }}
+            // Estilos customizados para o header do calendário
+            components={{
+              toolbar: (props) => {
+                return (
+                  <div className="rbc-toolbar mb-4">
+                    <span className="rbc-btn-group">
+                      <button
+                        type="button"
+                        onClick={() => props.onNavigate('PREV')}
+                        className="rbc-btn text-foreground hover:text-primary transition-colors"
+                      >
+                        {props.localizer.messages.previous}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => props.onNavigate('TODAY')}
+                        className="rbc-btn rbc-btn-today text-foreground hover:text-primary transition-colors"
+                      >
+                        {props.localizer.messages.today}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => props.onNavigate('NEXT')}
+                        className="rbc-btn text-foreground hover:text-primary transition-colors"
+                      >
+                        {props.localizer.messages.next}
+                      </button>
+                    </span>
+                    <span className="rbc-toolbar-label text-lg font-semibold text-foreground">
+                      {props.label}
+                    </span>
+                    <span className="rbc-btn-group">
+                      <button
+                        type="button"
+                        onClick={() => props.onView('month')}
+                        className={cn(
+                          "rbc-btn text-sm font-medium transition-colors",
+                          props.view === 'month'
+                            ? "rbc-active bg-primary text-primary-foreground"
+                            : "text-foreground hover:text-primary hover:bg-muted"
+                        )}
+                      >
+                        {props.localizer.messages.month}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => props.onView('week')}
+                        className={cn(
+                          "rbc-btn text-sm font-medium transition-colors",
+                          props.view === 'week'
+                            ? "rbc-active bg-primary text-primary-foreground"
+                            : "text-foreground hover:text-primary hover:bg-muted"
+                        )}
+                      >
+                        {props.localizer.messages.week}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => props.onView('day')}
+                        className={cn(
+                          "rbc-btn text-sm font-medium transition-colors",
+                          props.view === 'day'
+                            ? "rbc-active bg-primary text-primary-foreground"
+                            : "text-foreground hover:text-primary hover:bg-muted"
+                        )}
+                      >
+                        {props.localizer.messages.day}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => props.onView('agenda')}
+                        className={cn(
+                          "rbc-btn text-sm font-medium transition-colors",
+                          props.view === 'agenda'
+                            ? "rbc-active bg-primary text-primary-foreground"
+                            : "text-foreground hover:text-primary hover:bg-muted"
+                        )}
+                      >
+                        {props.localizer.messages.agenda}
+                      </button>
+                    </span>
+                  </div>
+                );
+              },
+            }}
           />
         </div>
       </div>
