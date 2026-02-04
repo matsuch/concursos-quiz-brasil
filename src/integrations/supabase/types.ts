@@ -140,51 +140,6 @@ export type Database = {
         }
         Relationships: []
       }
-      study_calendar_events: {
-        Row: {
-          id: string;
-          user_id: string;
-          title: string;
-          subject: string | null;
-          start_time: string;
-          end_time: string;
-          color: string | null;
-          notes: string | null;
-          is_recurring: boolean | null;
-          recurrence_rule: string | null;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          title: string;
-          subject?: string | null;
-          start_time: string;
-          end_time: string;
-          color?: string | null;
-          notes?: string | null;
-          is_recurring?: boolean | null;
-          recurrence_rule?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          title?: string;
-          subject?: string | null;
-          start_time?: string;
-          end_time?: string;
-          color?: string | null;
-          notes?: string | null;
-          is_recurring?: boolean | null;
-          recurrence_rule?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Relationships: [];
-      }
       duel_questions: {
         Row: {
           duel_id: string
@@ -716,6 +671,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      study_calendar_events: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          end_time: string
+          id: string
+          is_recurring: boolean | null
+          notes: string | null
+          recurrence_rule: string | null
+          start_time: string
+          subject: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          end_time: string
+          id?: string
+          is_recurring?: boolean | null
+          notes?: string | null
+          recurrence_rule?: string | null
+          start_time: string
+          subject?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          end_time?: string
+          id?: string
+          is_recurring?: boolean | null
+          notes?: string | null
+          recurrence_rule?: string | null
+          start_time?: string
+          subject?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       study_cycles: {
         Row: {

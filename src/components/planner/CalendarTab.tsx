@@ -326,13 +326,13 @@ export function CalendarTab() {
           toolbar: props => {
             return <div className="rbc-toolbar mb-4">
                     <span className="rbc-btn-group">
-                      <button type="button" onClick={() => props.onNavigate('PREV')} className="rbc-btn transition-colors text-primary-foreground">
+                      <button type="button" onClick={() => props.onNavigate('PREV')} className="rbc-btn transition-colors text-foreground dark:text-foreground hover:text-primary">
                         {props.localizer.messages.previous}
                       </button>
-                      <button type="button" onClick={() => props.onNavigate('TODAY')} className="rbc-btn rbc-btn-today transition-colors text-primary-foreground">
+                      <button type="button" onClick={() => props.onNavigate('TODAY')} className="rbc-btn rbc-btn-today transition-colors text-foreground dark:text-foreground hover:text-primary">
                         {props.localizer.messages.today}
                       </button>
-                      <button type="button" onClick={() => props.onNavigate('NEXT')} className="rbc-btn transition-colors text-primary-foreground">
+                      <button type="button" onClick={() => props.onNavigate('NEXT')} className="rbc-btn transition-colors text-foreground dark:text-foreground hover:text-primary">
                         {props.localizer.messages.next}
                       </button>
                     </span>
@@ -340,16 +340,16 @@ export function CalendarTab() {
                       {props.label}
                     </span>
                     <span className="rbc-btn-group">
-                      <button type="button" onClick={() => props.onView('month')} className={cn("rbc-btn text-sm font-medium transition-colors text-primary-foreground", props.view === 'month' ? "rbc-active bg-primary text-primary-foreground" : "text-foreground hover:text-primary hover:bg-muted")}>
+                      <button type="button" onClick={() => props.onView('month')} className={cn("rbc-btn text-sm font-medium transition-colors", props.view === 'month' ? "rbc-active bg-primary text-primary-foreground" : "text-foreground dark:text-foreground hover:text-primary hover:bg-muted")}>
                         {props.localizer.messages.month}
                       </button>
-                      <button type="button" onClick={() => props.onView('week')} className={cn("rbc-btn text-sm font-medium transition-colors text-sidebar-accent", props.view === 'week' ? "rbc-active bg-primary text-primary-foreground" : "text-foreground hover:text-primary hover:bg-muted")}>
+                      <button type="button" onClick={() => props.onView('week')} className={cn("rbc-btn text-sm font-medium transition-colors", props.view === 'week' ? "rbc-active bg-primary text-primary-foreground" : "text-foreground dark:text-foreground hover:text-primary hover:bg-muted")}>
                         {props.localizer.messages.week}
                       </button>
-                      <button type="button" onClick={() => props.onView('day')} className={cn("rbc-btn text-sm font-medium transition-colors text-primary-foreground", props.view === 'day' ? "rbc-active bg-primary text-primary-foreground" : "text-foreground hover:text-primary hover:bg-muted")}>
+                      <button type="button" onClick={() => props.onView('day')} className={cn("rbc-btn text-sm font-medium transition-colors", props.view === 'day' ? "rbc-active bg-primary text-primary-foreground" : "text-foreground dark:text-foreground hover:text-primary hover:bg-muted")}>
                         {props.localizer.messages.day}
                       </button>
-                      <button type="button" onClick={() => props.onView('agenda')} className={cn("rbc-btn text-sm font-medium transition-colors text-primary-foreground", props.view === 'agenda' ? "rbc-active bg-primary text-primary-foreground" : "text-foreground hover:text-primary hover:bg-muted")}>
+                      <button type="button" onClick={() => props.onView('agenda')} className={cn("rbc-btn text-sm font-medium transition-colors", props.view === 'agenda' ? "rbc-active bg-primary text-primary-foreground" : "text-foreground dark:text-foreground hover:text-primary hover:bg-muted")}>
                         {props.localizer.messages.agenda}
                       </button>
                     </span>
