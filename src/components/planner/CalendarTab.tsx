@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Calendar, momentLocalizer, View, SlotInfo } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { Plus, Trash2, Edit2, Clock, BookOpen } from 'lucide-react';
+import { Plus, Trash2, Edit2, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -29,28 +29,28 @@ const SUBJECTS = [
   'Contabilidade',
 ];
 
-// Cores com melhor contraste - versões mais escuras para texto branco legível
-const CONTRAST_COLORS = [
-  { name: 'Azul Profundo', value: '#2563eb' },
-  { name: 'Verde Floresta', value: '#15803d' },
-  { name: 'Roxo Profundo', value: '#7c3aed' },
-  { name: 'Laranja Queimado', value: '#ea580c' },
-  { name: 'Rosa Profundo', value: '#db2777' },
-  { name: 'Amarelo Dourado', value: '#ca8a04' },
-  { name: 'Vermelho Bordeaux', value: '#dc2626' },
-  { name: 'Ciano Profundo', value: '#0891b2' },
+// Usando as cores do tema Tailwind com melhor contraste
+const THEME_COLORS = [
+  { name: 'Primary', value: 'hsl(var(--primary))' },
+  { name: 'Secondary', value: 'hsl(var(--secondary))' },
+  { name: 'Destructive', value: 'hsl(var(--destructive))' },
+  { name: 'Success', value: 'hsl(var(--success))' },
+  { name: 'Accent', value: 'hsl(var(--accent))' },
+  { name: 'Muted', value: 'hsl(var(--muted))' },
+  { name: 'Blue', value: 'hsl(217 91% 48%)' },
+  { name: 'Purple', value: 'hsl(270 95% 60%)' },
 ];
 
-// Cores mais claras para bordas (variantes mais claras das cores principais)
+// Cores de borda correspondentes (versões mais claras)
 const BORDER_COLORS = [
-  { name: 'Azul Claro', value: '#93c5fd' },
-  { name: 'Verde Claro', value: '#86efac' },
-  { name: 'Roxo Claro', value: '#c4b5fd' },
-  { name: 'Laranja Claro', value: '#fdba74' },
-  { name: 'Rosa Claro', value: '#f9a8d4' },
-  { name: 'Amarelo Claro', value: '#fde047' },
-  { name: 'Vermelho Claro', value: '#fca5a5' },
-  { name: 'Ciano Claro', value: '#67e8f9' },
+  { name: 'Primary Light', value: 'hsl(var(--primary) / 0.8)' },
+  { name: 'Secondary Light', value: 'hsl(var(--secondary) / 0.8)' },
+  { name: 'Destructive Light', value: 'hsl(var(--destructive) / 0.8)' },
+  { name: 'Success Light', value: 'hsl(var(--success) / 0.8)' },
+  { name: 'Accent Light', value: 'hsl(var(--accent) / 0.8)' },
+  { name: 'Muted Light', value: 'hsl(var(--muted) / 0.8)' },
+  { name: 'Blue Light', value: 'hsl(217 91% 60%)' },
+  { name: 'Purple Light', value: 'hsl(270 95% 70%)' },
 ];
 
 export function CalendarTab() {
@@ -66,7 +66,7 @@ export function CalendarTab() {
     topic: '',
     start_time: '',
     end_time: '',
-    color: CONTRAST_COLORS[0].value,
+    color: THEME_COLORS[0].value,
     notes: '',
   });
 
@@ -78,7 +78,7 @@ export function CalendarTab() {
       topic: '',
       start_time: start,
       end_time: end,
-      color: CONTRAST_COLORS[0].value,
+      color: THEME_COLORS[0].value,
       notes: '',
     });
     setSelectedEvent(null);
@@ -93,7 +93,7 @@ export function CalendarTab() {
       topic: event.title,
       start_time: moment(event.start_time).format('YYYY-MM-DDTHH:mm'),
       end_time: moment(event.end_time).format('YYYY-MM-DDTHH:mm'),
-      color: event.color || CONTRAST_COLORS[0].value,
+      color: event.color || THEME_COLORS[0].value,
       notes: event.notes || '',
     });
     setIsEditing(true);
@@ -144,7 +144,7 @@ export function CalendarTab() {
       topic: '',
       start_time: '',
       end_time: '',
-      color: CONTRAST_COLORS[0].value,
+      color: THEME_COLORS[0].value,
       notes: '',
     });
     setSelectedEvent(null);
@@ -164,13 +164,25 @@ export function CalendarTab() {
     return <MobileCalendarView />;
   }
 
-  // Função para obter cor de borda correspondente à cor principal
+  // Função para obter cor de borda correspondente
   const getBorderColor = (mainColor: string) => {
-    const colorIndex = CONTRAST_COLORS.findIndex(color => color.value === mainColor);
+    const colorIndex = THEME_COLORS.findIndex(color => color.value === mainColor);
     if (colorIndex >= 0 && colorIndex < BORDER_COLORS.length) {
       return BORDER_COLORS[colorIndex].value;
     }
-    return BORDER_COLORS[0].value; // Fallback
+    return BORDER_COLORS[0].value;
+  };
+
+  // Função para determinar cor de texto baseada no brilho da cor de fundo
+  const getTextColor = (bgColor: string) => {
+    // Para cores do tema, assumimos que as cores primárias têm foreground claro
+    if (bgColor.includes('var(--primary)') || 
+        bgColor.includes('var(--secondary)') || 
+        bgColor.includes('var(--destructive)') ||
+        bgColor.includes('var(--success)')) {
+      return 'hsl(var(--primary-foreground))';
+    }
+    return 'hsl(var(--foreground))';
   };
 
   return (
@@ -239,11 +251,16 @@ export function CalendarTab() {
               <div>
                 <Label>Cor</Label>
                 <div className="flex gap-2 flex-wrap mt-2">
-                  {CONTRAST_COLORS.map((color) => (
+                  {THEME_COLORS.map((color) => (
                     <button
                       key={color.value}
                       type="button"
-                      className={`w-8 h-8 rounded-full border-2 ${formData.color === color.value ? 'border-white ring-2 ring-foreground/20' : 'border-transparent'} transition-transform hover:scale-110`}
+                      className={cn(
+                        "w-8 h-8 rounded-full border-2 transition-transform hover:scale-110",
+                        formData.color === color.value 
+                          ? "border-foreground ring-2 ring-primary/30" 
+                          : "border-transparent"
+                      )}
                       style={{ backgroundColor: color.value }}
                       onClick={() => setFormData({ ...formData, color: color.value })}
                       title={color.name}
@@ -304,18 +321,19 @@ export function CalendarTab() {
               noEventsInRange: 'Nenhum evento neste intervalo.',
             }}
             eventPropGetter={(event) => {
-              const mainColor = (event as any).color || CONTRAST_COLORS[0].value;
+              const mainColor = (event as any).color || THEME_COLORS[0].value;
               const borderColor = getBorderColor(mainColor);
+              const textColor = getTextColor(mainColor);
+              
               return {
                 style: {
                   backgroundColor: mainColor,
                   border: `2px solid ${borderColor}`,
-                  color: '#ffffff',
+                  color: textColor,
                   fontWeight: 500,
                   fontSize: '13px',
-                  borderRadius: '8px',
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-                  textShadow: '0 1px 2px rgba(0,0,0,0.2)',
+                  borderRadius: '6px',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                 },
               };
             }}
@@ -323,6 +341,7 @@ export function CalendarTab() {
               return {
                 style: {
                   backgroundColor: 'hsl(var(--card))',
+                  borderColor: 'hsl(var(--border))',
                 },
               };
             }}
