@@ -60,11 +60,11 @@ export function QuestionNoteButton({ questionId }: QuestionNoteButtonProps) {
         <Button
           variant="ghost"
           size="sm"
-          className="gap-2 text-blue-600 border border-blue-600 hover:text-yellow-500 hover:border-yellow-500 hover:bg-yellow-50/70"
+          className={`gap-2 ${hasNote ? 'text-primary' : 'text-muted-foreground'}`}
         >
-          <StickyNote className="w-4 h-4" />
+          <StickyNote className={`w-4 h-4 ${hasNote ? 'fill-primary/20' : ''}`} />
           <span className="hidden sm:inline">
-            {hasNote ? 'Ver Anotação' : 'Anotar'}
+            {hasNote ? 'Ver Anotação' : 'Clique para anotar'}
           </span>
         </Button>
       </PopoverTrigger>

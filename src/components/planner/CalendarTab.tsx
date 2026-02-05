@@ -16,7 +16,6 @@ import { MobileCalendarView } from './MobileCalendarView';
 const localizer = momentLocalizer(moment);
 const SUBJECTS = ['Direito Constitucional', 'Direito Administrativo', 'Português', 'Raciocínio Lógico', 'Atualidades', 'Informática', 'Direito Penal', 'Direito Civil', 'AFO', 'Contabilidade'];
 
-// Usando as cores do tema Tailwind com melhor contraste
 const THEME_COLORS = [{
   name: 'Primary',
   value: 'hsl(var(--primary))'
@@ -43,7 +42,6 @@ const THEME_COLORS = [{
   value: 'hsl(270 95% 60%)'
 }];
 
-// Cores de borda correspondentes (versões mais claras)
 const BORDER_COLORS = [{
   name: 'Primary Light',
   value: 'hsl(var(--primary) / 0.8)'
@@ -167,14 +165,13 @@ export function CalendarTab() {
     ...event,
     start: new Date(event.start_time),
     end: new Date(event.end_time),
-    title: `${event.subject}`
+    title: event.subject
   })) || [];
   const isMobile = useMediaQuery('(max-width: 640px)');
   if (isMobile) {
     return <MobileCalendarView />;
   }
 
-  // Função para obter cor de borda correspondente
   const getBorderColor = (mainColor: string) => {
     const colorIndex = THEME_COLORS.findIndex(color => color.value === mainColor);
     if (colorIndex >= 0 && colorIndex < BORDER_COLORS.length) {
@@ -183,9 +180,7 @@ export function CalendarTab() {
     return BORDER_COLORS[0].value;
   };
 
-  // Função para determinar cor de texto baseada no brilho da cor de fundo
   const getTextColor = (bgColor: string) => {
-    // Para cores do tema, assumimos que as cores primárias têm foreground claro
     if (bgColor.includes('var(--primary)') || bgColor.includes('var(--secondary)') || bgColor.includes('var(--destructive)') || bgColor.includes('var(--success)')) {
       return 'hsl(var(--primary-foreground))';
     }
@@ -321,13 +316,17 @@ export function CalendarTab() {
             }
           };
         }}
-        // Estilos customizados para o header do calendário
+        formats={{
+          eventTimeRangeFormat: () => '',
+          timeGutterFormat: (date, culture, localizer) => 
+            localizer.format(date, 'HH:mm', culture),
+        }}
         components={{
           event: ({ event }) => (
-            <div className="rbc-event-content">
-              <div className="font-medium truncate">
+            <div className="w-full h-full flex items-center justify-center">
+              <span className="font-medium text-center truncate px-1">
                 {event.title}
-              </div>
+              </span>
             </div>
           ),
           toolbar: props => {
@@ -366,7 +365,6 @@ export function CalendarTab() {
         </div>
       </div>
 
-      {/* Instruções */}
       <div className="text-sm text-muted-foreground">
         <p className="flex items-center gap-2">
           <BookOpen className="w-4 h-4" />
