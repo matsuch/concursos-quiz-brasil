@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <circle cx="256" cy="256" r="206" fill="rgb(37, 99, 235)"/>
+  <text x="256" y="330" font-family="Arial, sans-serif" font-size="180" font-weight="bold" fill="white" text-anchor="middle">PC</text>
+  <polygon points="400,100 415,130 445,135 420,155 430,185 400,165 370,185 380,155 355,135 385,130" fill="rgb(250, 204, 21)"/>
+</svg>

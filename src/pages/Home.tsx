@@ -6,8 +6,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookOpen, Notebook, Loader2, ChevronLeft, ChevronRight, Crown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth"; // Adicionado
-import { useSubscription } from "@/hooks/useSubscription"; // Adicionado
+import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
+import { Helmet } from 'react-helmet-async';
 
 interface Concurso {
   id: string;
@@ -181,7 +182,14 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <Helmet>
+        <title>Passar Concursos - Questões Oficiais e Flashcards para Concursos Públicos</title>
+        <meta name="description" content="Treine com questões oficiais, revise com flashcards personalizados e organize seu plano de estudos. Editais recentes, simulados e muito mais." />
+        <link rel="canonical" href="https://passar-concursos.vercel.app/" />
+      </Helmet>
+    
+      <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-secondary/5 to-background py-12 sm:py-20">
         <div className="container mx-auto px-4">
@@ -275,7 +283,8 @@ const Home = () => {
       {/* Pricing Section - só aparece se necessário */}
       {showPricingSection && <PricingSection />}
       
-    </div>
+      </div>
+    </>
   );
 };
 

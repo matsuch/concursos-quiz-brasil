@@ -1,14 +1,15 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
 Allow: /
+
+# Bloquear arquivos e diretórios que não devem ser indexados
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /admin/
+Disallow: /_next/static/
+
+# Sitemap
+Sitemap: https://passar-concursos.vercel.app/sitemap.xml
+
+# Crawl-delay para bots específicos
+User-agent: *
+Crawl-delay: 1

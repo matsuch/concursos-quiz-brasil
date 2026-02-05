@@ -18,67 +18,70 @@ import MyAccount from "./pages/MyAccount";
 import Planos from "./pages/Planos";
 import Planner from "./pages/Planner";
 import Anotacoes from "./pages/Anotacoes";
+import { HelmetProvider } from 'react-helmet-async';
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter> 
-          <AuthProvider>
-            <SubscriptionProvider>
-              <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-                <Navbar />
-                <main style={{ flex: 1, overflow: "auto" }}>
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    
-                    {/* Rotas públicas */}
-                    <Route path="/quiz" element={<Quiz />} />
-                    <Route path="/planos" element={<Planos />} />
-                    <Route path="/planner" element={<Planner />} />
-                    <Route path="/anotacoes" element={<Anotacoes />} />
-                    <Route path="/auth" element={<Auth />} />
-                    
-                    {/* Rotas protegidas */}
-                    <Route 
-                      path="/estudo" 
-                      element={
-                        <ProtectedRoute requiredPlan="Standard">
-                          <Estudo />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    <Route 
-                      path="/simulado" 
-                      element={
-                        <ProtectedRoute requiredPlan="Standard">
-                          <SimuladoPage />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    <Route 
-                      path="/minha-conta" 
-                      element={
-                        <ProtectedRoute>
-                          <MyAccount />
-                        </ProtectedRoute>
-                      } 
-                    />
+    <HelmetProvider>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter> 
+            <AuthProvider>
+              <SubscriptionProvider>
+                <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+                  <Navbar />
+                  <main style={{ flex: 1, overflow: "auto" }}>
+                    <Routes>
+                      <Route path="/" element={<Home />} />
+                      
+                      {/* Rotas públicas */}
+                      <Route path="/quiz" element={<Quiz />} />
+                      <Route path="/planos" element={<Planos />} />
+                      <Route path="/planner" element={<Planner />} />
+                      <Route path="/anotacoes" element={<Anotacoes />} />
+                      <Route path="/auth" element={<Auth />} />
+                      
+                      {/* Rotas protegidas */}
+                      <Route 
+                        path="/estudo" 
+                        element={
+                          <ProtectedRoute requiredPlan="Standard">
+                            <Estudo />
+                          </ProtectedRoute>
+                        } 
+                      />
+                      <Route 
+                        path="/simulado" 
+                        element={
+                          <ProtectedRoute requiredPlan="Standard">
+                            <SimuladoPage />
+                          </ProtectedRoute>
+                        } 
+                      />
+                      <Route 
+                        path="/minha-conta" 
+                        element={
+                          <ProtectedRoute>
+                            <MyAccount />
+                          </ProtectedRoute>
+                        } 
+                      />
 
-                    {/* Rota 404 */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </main>
-              </div>
-            </SubscriptionProvider>
-          </AuthProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </ThemeProvider>
+                      {/* Rota 404 */}
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </main>
+                </div>
+              </SubscriptionProvider>
+            </AuthProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </ThemeProvider>
+    </HelmetProvider>
   </QueryClientProvider>
 );
 
