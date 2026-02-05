@@ -60,7 +60,7 @@ export function QuestionNoteButton({ questionId }: QuestionNoteButtonProps) {
         <Button
           variant="ghost"
           size="sm"
-          className="gap-2 text-blue-600 hover:text-yellow-500 hover:bg-yellow-100/70"
+          className="gap-2 text-blue-600 border border-blue-600 hover:text-yellow-500 hover:border-yellow-500 hover:bg-yellow-50/70"
         >
           <StickyNote className="w-4 h-4" />
           <span className="hidden sm:inline">
