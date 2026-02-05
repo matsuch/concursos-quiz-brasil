@@ -16,6 +16,7 @@ import { useStudyNotes, StudyNote } from '@/hooks/useStudyNotes';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { Helmet } from 'react-helmet-async';
 
 const SUBJECTS = [
   'Direito Constitucional',
@@ -326,6 +327,15 @@ export default function Anotacoes() {
   }
 
   return (
+  <>
+    <Helmet>
+      <title>Anotações de Estudo | Organize seus Resumos para Concursos</title>
+      <meta name="description" content="Crie e organize suas anotações de estudo. Mantenha todos os seus resumos e materiais importantes em um só lugar." />
+      <link rel="canonical" href="https://passar-concursos.vercel.app/anotacoes" />
+      <meta property="og:title" content="Anotações - Passar Concursos" />
+      <meta property="og:description" content="Organize seus resumos e materiais de estudo." />
+      <meta property="og:url" content="https://passar-concursos.vercel.app/anotacoes" />
+    </Helmet>
     <div className="min-h-screen bg-muted/30">
       <div className="container mx-auto px-4 py-6 max-w-6xl">
         {/* Header */}
@@ -528,5 +538,6 @@ export default function Anotacoes() {
         </Dialog>
       </div>
     </div>
+  </>
   );
 }

@@ -25,6 +25,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { Helmet } from 'react-helmet-async';
 
 interface Plan {
   id: string;
@@ -273,6 +274,16 @@ export default function Planos() {
   }
 
   return (
+  <>
+    <Helmet>
+      <title>Planos e Preços | Passar Concursos - Escolha seu Plano de Estudos</title>
+      <meta name="description" content="Conheça nossos planos: Gratuito com questões ilimitadas, Standard com flashcards e simulados, e Premium com plano de estudos personalizado. Escolha o melhor para sua aprovação." />
+      <link rel="canonical" href="https://passar-concursos.vercel.app/planos" />
+      <meta property="og:title" content="Planos e Preços - Passar Concursos" />
+      <meta property="og:description" content="Planos a partir de R$ 0. Questões oficiais, flashcards e plano de estudos." />
+      <meta property="og:url" content="https://passar-concursos.vercel.app/planos" />
+    </Helmet>
+
     <div className="min-h-screen bg-background">
       
       {/* Header */}
@@ -504,5 +515,6 @@ export default function Planos() {
         )}
       </div>
     </div>
+  </>
   );
 }

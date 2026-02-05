@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { Brain, Loader2 } from "lucide-react";
 import { z } from "zod";
+import { Helmet } from 'react-helmet-async';
 
 const authSchema = z.object({
   email: z.string().email("Email inválido"),
@@ -97,6 +98,14 @@ const Auth = () => {
   }
 
   return (
+    <>
+    <Helmet>
+      <title>{isLogin ? 'Entrar' : 'Criar Conta'} | Passar Concursos</title>
+      <meta name="description" content={isLogin ? 'Entre na sua conta para acessar questões, flashcards e plano de estudos personalizado.' : 'Crie sua conta grátis e comece a estudar para concursos públicos com questões oficiais.'} />
+      <link rel="canonical" href="https://passar-concursos.vercel.app/auth" />
+      <meta name="robots" content="noindex, nofollow" />
+    </Helmet>
+
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-secondary/5 to-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="text-center space-y-4">
@@ -212,6 +221,7 @@ const Auth = () => {
         </CardContent>
       </Card>
     </div>
+  </>
   );
 };
 

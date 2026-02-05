@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { EditalControlTab } from '@/components/planner/EditalControlTab';
 import { useAuth } from '@/hooks/useAuth';
 import { CalendarTab } from '@/components/planner/CalendarTab';
+import { Helmet } from 'react-helmet-async';
 
 export default function Planner() {
   const { user, loading } = useAuth();
@@ -22,6 +23,16 @@ export default function Planner() {
   // }
 
   return (
+  <>
+    <Helmet>
+      <title>Planner de Estudos para Concursos | Organize seu Cronograma e Edital</title>
+      <meta name="description" content="Organize seu cronograma de estudos, controle o edital do concurso e agende revisões. Planner inteligente para maximizar seu aprendizado e aprovação." />
+      <link rel="canonical" href="https://passar-concursos.vercel.app/planner" />
+      <meta property="og:title" content="Planner de Estudos - Passar Concursos" />
+      <meta property="og:description" content="Organize seu cronograma e controle seu edital de forma eficiente." />
+      <meta property="og:url" content="https://passar-concursos.vercel.app/planner" />
+    </Helmet>
+
     <div className="min-h-screen bg-muted/30 flex flex-col">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-5xl flex-grow">
         {/* Header Section */}
@@ -76,5 +87,6 @@ export default function Planner() {
         </div>
       </div>
     </div>
+    </>
   );
 }

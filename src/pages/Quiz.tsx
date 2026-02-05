@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from 'react-helmet-async';
 import { QuizFilters } from "@/components/quiz/QuizFilters";
 import { QuizQuestion } from "@/components/quiz/QuizQuestion";
 import { useQuizData } from "@/hooks/useQuizData";
@@ -36,12 +37,10 @@ const Quiz = () => {
   const { questions, loading, error, fetchQuestions } = useQuizData();
   const { user, loading: authLoading } = useAuth();
 
-  // Carrega todas as questões ao montar o componente
   useEffect(() => {
     fetchQuestions(filters);
   }, []);
 
-  // Recarrega questões quando filtros mudam
   useEffect(() => {
     fetchQuestions(filters);
     setCurrentQuestionIndex(0);
@@ -57,15 +56,12 @@ const Quiz = () => {
   const handleSubmitAnswer = () => {
     if (selectedAnswer === null || answered) return;
     
-    // Verifica se o usuário está logado
     if (!user) {
       console.log("Usuário não logado, redirecionando para /auth");
-      // Redireciona para a página de login
       navigate("/auth");
       return;
     }
     
-    // Se estiver logado, segue o fluxo normal
     console.log("Usuário logado, processando resposta...");
     setAnswered(true);
     if (selectedAnswer === questions[currentQuestionIndex].correct_answer) {
@@ -89,7 +85,6 @@ const Quiz = () => {
     }
   };
 
-  // Se estiver carregando autenticação, mostra loading
   if (authLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -99,56 +94,109 @@ const Quiz = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8 pb-24 sm:pb-8">
-        <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
-          <QuizFilters
-            filters={filters}
-            onFilterChange={setFilters}
-            loading={loading}
-          />
-          
-          {error && (
-            <Alert variant="destructive">
-              <AlertTitle>Erro</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-
-          {loading ? (
-            <div className="text-center py-8 sm:py-12">
-              <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 animate-spin mx-auto mb-4 text-primary" />
-              <p className="text-sm sm:text-base text-muted-foreground">Carregando questões...</p>
-            </div>
-          ) : questions.length === 0 ? (
-            <Alert>
-              <AlertTitle>Nenhuma questão encontrada</AlertTitle>
-              <AlertDescription>
-                Tente ajustar os filtros ou aguarde enquanto carregamos o conteúdo.
-              </AlertDescription>
-            </Alert>
-          ) : (
-            <div className="space-y-3 sm:space-y-4">
-              <div className="text-xs sm:text-sm text-muted-foreground px-1">
-                Mostrando {currentQuestionIndex + 1} de {questions.length} questões
-              </div>
-              
-              <QuizQuestion
-                question={questions[currentQuestionIndex]}
-                selectedAnswer={selectedAnswer}
-                answered={answered}
-                onSelectOption={handleSelectOption}
-                onSubmitAnswer={handleSubmitAnswer}
-                onNext={handleNext}
-                onPrevious={handlePrevious}
-                hasPrevious={currentQuestionIndex > 0}
-                hasNext={currentQuestionIndex < questions.length - 1}
+    <>
+      <Helmet>
+        <title>Questões de Concursos Públicos | Banco com Milhares de Questões Oficiais</title>
+        <meta name="description" content="Treine com questões oficiais de concursos públicos. Filtros por banca, matéria, dificuldade e assunto. Prepare-se com questões reais de provas anteriores." />
+        <meta name="keywords" content="questões concurso, questões oficiais, banco de questões, treinar concurso, provas anteriores, questões por banca, questões por matéria" />
+        <link rel="canonical" href="https://passar-concursos.vercel.app/quiz" />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content="Questões de Concursos - Treine com Questões Oficiais" />
+        <meta property="og:description" content="Milhares de questões oficiais de concursos públicos para você treinar." />
+        <meta property="og:url" content="https://passar-concursos.vercel.app/quiz" />
+        <meta property="og:type" content="website" />
+        
+        {/* Twitter */}
+        <meta name="twitter:title" content="Questões de Concursos - Passar Concursos" />
+        <meta name="twitter:description" content="Treine com questões oficiais de concursos públicos." />
+        
+        {/* Schema.org - FAQ Page */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": "Questões de Concursos Públicos",
+            "description": "Banco de questões oficiais de concursos públicos",
+            "url": "https://passar-concursos.vercel.app/quiz",
+            "breadcrumb": {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://passar-concursos.vercel.app"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Questões",
+                  "item": "https://passar-concursos.vercel.app/quiz"
+                }
+              ]
+            }
+          })}
+        </script>
+      </Helmet>
+    
+      <main className="min-h-screen bg-background">
+        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8 pb-24 sm:pb-8">
+          <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
+            
+            {/* SEO: Título H1 visível apenas para screen readers */}
+            <h1 className="sr-only">Questões de Concursos Públicos - Banco de Questões Oficiais</h1>
+            
+            <section aria-label="Filtros de questões">
+              <QuizFilters
+                filters={filters}
+                onFilterChange={setFilters}
+                loading={loading}
               />
-            </div>
-          )}
+            </section>
+            
+            {error && (
+              <Alert variant="destructive" role="alert">
+                <AlertTitle>Erro</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {loading ? (
+              <div className="text-center py-8 sm:py-12" role="status" aria-live="polite">
+                <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 animate-spin mx-auto mb-4 text-primary" />
+                <p className="text-sm sm:text-base text-muted-foreground">Carregando questões...</p>
+              </div>
+            ) : questions.length === 0 ? (
+              <Alert>
+                <AlertTitle>Nenhuma questão encontrada</AlertTitle>
+                <AlertDescription>
+                  Tente ajustar os filtros ou aguarde enquanto carregamos o conteúdo.
+                </AlertDescription>
+              </Alert>
+            ) : (
+              <section aria-label="Questão atual" className="space-y-3 sm:space-y-4">
+                <div className="text-xs sm:text-sm text-muted-foreground px-1" role="status" aria-live="polite">
+                  Mostrando {currentQuestionIndex + 1} de {questions.length} questões
+                </div>
+                
+                <QuizQuestion
+                  question={questions[currentQuestionIndex]}
+                  selectedAnswer={selectedAnswer}
+                  answered={answered}
+                  onSelectOption={handleSelectOption}
+                  onSubmitAnswer={handleSubmitAnswer}
+                  onNext={handleNext}
+                  onPrevious={handlePrevious}
+                  hasPrevious={currentQuestionIndex > 0}
+                  hasNext={currentQuestionIndex < questions.length - 1}
+                />
+              </section>
+            )}
+          </div>
         </div>
-      </div>
-    </div>
+      </main>
+    </>
   );
 };
 

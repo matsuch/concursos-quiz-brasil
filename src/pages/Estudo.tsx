@@ -41,6 +41,7 @@ import {
   Pencil,
   Trash2
 } from "lucide-react";
+import { Helmet } from 'react-helmet-async';
 
 const subjectConfig: Record<string, { icon: LucideIcon; color: string; summary: string }> = {
   "Direito Constitucional": {
@@ -354,6 +355,16 @@ export default function Estudo() {
   }
 
   return (
+    <>
+    <Helmet>
+      <title>Flashcards para Concursos | Sistema de Revisão Espaçada</title>
+      <meta name="description" content="Revise com flashcards personalizados usando repetição espaçada. Memorize conteúdos importantes para concursos públicos de forma eficiente." />
+      <link rel="canonical" href="https://passar-concursos.vercel.app/estudo" />
+      <meta property="og:title" content="Flashcards - Passar Concursos" />
+      <meta property="og:description" content="Sistema de revisão espaçada para memorização eficiente." />
+      <meta property="og:url" content="https://passar-concursos.vercel.app/estudo" />
+    </Helmet>
+
     <div className="min-h-screen bg-background">
       
       <main className="container mx-auto px-4 py-8">
@@ -594,5 +605,6 @@ export default function Estudo() {
         )}
       </main>
     </div>
+  </>
   );
 }

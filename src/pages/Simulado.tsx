@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { Helmet } from 'react-helmet-async';
 
 interface SimuladoQuestion {
   id: string;
@@ -427,6 +428,17 @@ const SimuladoPage = () => {
   }
 
   return (
+
+    <>
+    <Helmet>
+      <title>Simulados de Concursos Públicos | Teste seus Conhecimentos</title>
+      <meta name="description" content="Faça simulados completos de concursos públicos. Teste seus conhecimentos com questões oficiais em condições reais de prova." />
+      <link rel="canonical" href="https://passar-concursos.vercel.app/simulado" />
+      <meta property="og:title" content="Simulados - Passar Concursos" />
+      <meta property="og:description" content="Simulados com questões oficiais em condições reais de prova." />
+      <meta property="og:url" content="https://passar-concursos.vercel.app/simulado" />
+    </Helmet>
+
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6 sm:py-12">
         <div className="max-w-4xl mx-auto">
@@ -534,6 +546,7 @@ const SimuladoPage = () => {
         </div>
       </div>
     </div>
+  </>
   );
 };
 

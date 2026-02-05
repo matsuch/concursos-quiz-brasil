@@ -40,7 +40,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-
+import { Helmet } from 'react-helmet-async';
 
 // Mapeamento de strings para componentes de ícones Lucide
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -393,9 +393,15 @@ const MyAccount = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Minha Conta | Passar Concursos - Gerenciar Perfil e Assinatura</title>
+        <meta name="description" content="Gerencie sua conta, visualize seu plano atual e atualize suas informações pessoais." />
+        <link rel="canonical" href="https://passar-concursos.vercel.app/minha-conta" />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className="min-h-screen bg-background py-6 px-4 md:py-10">
         <div className="max-w-4xl mx-auto space-y-6">
-          
+
           {/* Header com Avatar */}
           <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
             <Avatar className="w-20 h-20 md:w-24 md:h-24 border-4 border-primary/20">
