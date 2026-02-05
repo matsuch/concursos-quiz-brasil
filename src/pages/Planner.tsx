@@ -1,16 +1,13 @@
 import { useState } from 'react';
 import { CalendarDays, BookOpen, Bell, RotateCcw, Calendar } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { StudyCycleTab } from '@/components/planner/StudyCycleTab';
 import { EditalControlTab } from '@/components/planner/EditalControlTab';
-import { ReviewsTab } from '@/components/planner/ReviewsTab';
 import { useAuth } from '@/hooks/useAuth';
-import { Navigate } from 'react-router-dom';
 import { CalendarTab } from '@/components/planner/CalendarTab';
 
 export default function Planner() {
   const { user, loading } = useAuth();
-  const [activeTab, setActiveTab] = useState('cycle');
+  const [activeTab, setActiveTab] = useState('calendar');
 
   if (loading) {
     return (
