@@ -747,6 +747,39 @@ export type Database = {
         }
         Relationships: []
       }
+      study_notes: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_pinned: boolean | null
+          subject: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_pinned?: boolean | null
+          subject: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_pinned?: boolean | null
+          subject?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       study_reviews: {
         Row: {
           completed_at: string | null
