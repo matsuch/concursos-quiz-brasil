@@ -323,6 +323,13 @@ export function CalendarTab() {
         }}
         // Estilos customizados para o header do calendário
         components={{
+          event: ({ event }) => (
+            <div className="rbc-event-content">
+              <div className="font-medium truncate">
+                {event.title}
+              </div>
+            </div>
+          ),
           toolbar: props => {
             return <div className="rbc-toolbar mb-4">
                     <span className="rbc-btn-group">
