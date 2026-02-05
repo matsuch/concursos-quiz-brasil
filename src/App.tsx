@@ -17,6 +17,7 @@ import SimuladoPage from "./pages/Simulado";
 import MyAccount from "./pages/MyAccount";
 import Planos from "./pages/Planos";
 import Planner from "./pages/Planner";
+import Anotacoes from "./pages/Anotacoes";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => (
                     <Route path="/quiz" element={<Quiz />} />
                     <Route path="/planos" element={<Planos />} />
                     <Route path="/planner" element={<Planner />} />
+                    <Route path="/anotacoes" element={<Anotacoes />} />
                     <Route path="/auth" element={<Auth />} />
                     
                     {/* Rotas protegidas */}
