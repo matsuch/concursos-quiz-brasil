@@ -83,7 +83,7 @@ export function CalendarTab() {
   const [date, setDate] = useState(new Date());
   const [formData, setFormData] = useState({
     subject: '',
-    topic: '',
+    title: '',
     start_time: '',
     end_time: '',
     color: THEME_COLORS[0].value,
@@ -94,7 +94,7 @@ export function CalendarTab() {
     const end = moment(slotInfo.end).format('YYYY-MM-DDTHH:mm');
     setFormData({
       subject: '',
-      topic: '',
+      title: '',
       start_time: start,
       end_time: end,
       color: THEME_COLORS[0].value,
@@ -108,7 +108,7 @@ export function CalendarTab() {
     setSelectedEvent(event);
     setFormData({
       subject: event.subject,
-      topic: event.title,
+      title: event.title,
       start_time: moment(event.start_time).format('YYYY-MM-DDTHH:mm'),
       end_time: moment(event.end_time).format('YYYY-MM-DDTHH:mm'),
       color: event.color || THEME_COLORS[0].value,
@@ -118,7 +118,7 @@ export function CalendarTab() {
     setIsDialogOpen(true);
   };
   const handleSubmit = async () => {
-    if (!formData.subject || !formData.topic || !formData.start_time || !formData.end_time) {
+    if (!formData.subject || !formData.title || !formData.start_time || !formData.end_time) {
       alert('Preencha todos os campos obrigatórios.');
       return;
     }
@@ -132,7 +132,7 @@ export function CalendarTab() {
     } else {
       await createCalendarEvent.mutateAsync({
         ...formData,
-        title: formData.topic,
+        title: formData.title,
         is_recurring: false,
         recurrence_rule: null,
         start_time: moment(formData.start_time).toISOString(),
@@ -154,7 +154,7 @@ export function CalendarTab() {
   const resetForm = () => {
     setFormData({
       subject: '',
-      topic: '',
+      title: '',
       start_time: '',
       end_time: '',
       color: THEME_COLORS[0].value,
@@ -230,9 +230,9 @@ export function CalendarTab() {
               </div>
               <div>
                 <Label>Tópico *</Label>
-                <Input value={formData.topic} onChange={e => setFormData({
+                <Input value={formData.title} onChange={e => setFormData({
                 ...formData,
-                topic: e.target.value
+                title: e.target.value
               })} placeholder="Ex: Princípios Fundamentais" />
               </div>
               <div className="grid grid-cols-2 gap-4">
