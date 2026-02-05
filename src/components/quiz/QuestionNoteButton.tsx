@@ -60,9 +60,9 @@ export function QuestionNoteButton({ questionId }: QuestionNoteButtonProps) {
         <Button
           variant="ghost"
           size="sm"
-          className={`gap-2 text-blue-600 hover:text-yellow-500 hover:bg-yellow-50/80 ${hasNote ? 'text-blue-600' : 'text-muted-foreground'}`}
+          className="gap-2 text-blue-600 hover:text-yellow-500 hover:bg-yellow-100/70"
         >
-          <StickyNote className={`w-4 h-4 ${hasNote ? 'fill-blue-500/20' : ''}`} />
+          <StickyNote className="w-4 h-4" />
           <span className="hidden sm:inline">
             {hasNote ? 'Ver Anotação' : 'Anotar'}
           </span>

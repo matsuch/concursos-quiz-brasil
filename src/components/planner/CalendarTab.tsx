@@ -165,10 +165,9 @@ export function CalendarTab() {
   };
   const events = calendarEvents?.map(event => ({
     ...event,
-    // start: new Date(event.start_time),
-    // end: new Date(event.end_time),
+    start: new Date(event.start_time),
+    end: new Date(event.end_time),
     title: `${event.subject}`
-    // title: `${event.subject} : ${event.title}`
   })) || [];
   const isMobile = useMediaQuery('(max-width: 640px)');
   if (isMobile) {
