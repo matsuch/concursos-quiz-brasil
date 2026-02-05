@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { QuestionNoteButton } from "./QuestionNoteButton";
 
 interface Question {
   id: string;
@@ -101,6 +102,7 @@ export function QuizQuestion({
               <span className="text-primary font-medium">{question.prova}</span>
             </span>
           )}
+          <QuestionNoteButton questionId={question.id} />
         </div>
 
         <div className="flex items-center gap-2 mt-2 sm:mt-3 flex-wrap">
