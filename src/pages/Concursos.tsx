@@ -423,7 +423,7 @@ const ConcursosPage = () => {
                         {/* Filtro por Órgão */}
                         <div>
                           <h3 className="font-medium mb-3 text-foreground">
-                            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                            <span className="p-1.5 bg-emerald-100 dark:bg-emerald-900/30 rounded">
                               Órgão
                             </span>
                           </h3>
