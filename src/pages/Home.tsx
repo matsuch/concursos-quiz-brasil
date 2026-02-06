@@ -338,9 +338,9 @@ const Home = () => {
             ) : (
               <Tabs defaultValue="destaque" className="w-full">
                 <TabsList className="grid w-full grid-cols-3 max-w-md mx-auto mb-8">
-                  <TabsTrigger value="destaque">Concursos em Destaque</TabsTrigger>
-                  <TabsTrigger value="aberto">Concursos Abertos</TabsTrigger>
-                  <TabsTrigger value="breve">Concursos em Breve</TabsTrigger>
+                  <TabsTrigger value="destaque">Destaque</TabsTrigger>
+                  <TabsTrigger value="aberto">Abertos</TabsTrigger>
+                  <TabsTrigger value="breve">Em Breve</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="destaque" className="mt-0">
