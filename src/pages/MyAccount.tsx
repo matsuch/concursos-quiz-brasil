@@ -275,11 +275,11 @@ const MyAccount = () => {
                 </p>
               </div>
             </div>
-          )}
+          )} 
 
           {/* Main Tabs */}
           <Tabs defaultValue="dashboard" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 max-w-md">
+            <TabsList className="grid w-full grid-cols-2 max-w-md">
               <TabsTrigger value="dashboard">Desempenho</TabsTrigger>
             { /* <TabsTrigger value="overview">Resumo</TabsTrigger> */}
               <TabsTrigger value="subscription">Assinatura</TabsTrigger>
