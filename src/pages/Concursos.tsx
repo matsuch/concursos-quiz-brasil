@@ -277,7 +277,6 @@ const ConcursosPage = () => {
               
               <p className="text-lg text-muted-foreground mb-8 max-w-3xl">
                 Explore nossa lista completa de concursos públicos filtrados por estado, órgão, salário e nível. 
-                <span className="font-semibold text-foreground"> {concursos.length} oportunidades</span> disponíveis.
               </p>
 
               {/* Barra de busca principal */}

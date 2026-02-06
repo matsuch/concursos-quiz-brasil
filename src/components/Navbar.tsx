@@ -10,7 +10,6 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 const publicNavItems = [
   { to: "/", icon: Home, label: "Início" },
   { to: "/quiz", icon: Notebook, label: "Questões" },
-  { to: "/concursos", icon: Map, label: "Concursos" },
 ];
 
 const guestOnlyNavItems = [
