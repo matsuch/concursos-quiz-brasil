@@ -106,47 +106,72 @@ export function PerformanceDashboard({ userId }: Props) {
           <TabsTrigger value="xp">XP</TabsTrigger>
         </TabsList>
 
-        {/* XP evolution */}
-        <TabsContent value="xp">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground">Evolução de XP ao Longo do Tempo</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {daily.length < 2 ? (
-                <p className="text-center text-muted-foreground text-sm py-8">Precisa de pelo menos 2 dias de dados.</p>
-              ) : (
+        {/* By subject */}
+        <TabsContent value="subjects">
+          <div className="grid md:grid-cols-2 gap-4">
+            {/* Accuracy by subject bar chart */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm text-muted-foreground">Acerto por Matéria</CardTitle>
+              </CardHeader>
+              <CardContent>
                 <div className="h-64">
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={daily}>
-                      <defs>
-                        <linearGradient id="xpGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="hsl(45, 93%, 58%)" stopOpacity={0.4} />
-                          <stop offset="95%" stopColor="hsl(45, 93%, 58%)" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
+                    <BarChart data={bySubject.slice(0, 8)} layout="vertical">
                       <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                      <XAxis dataKey="label" tick={{ fontSize: 11 }} className="fill-muted-foreground" />
-                      <YAxis tick={{ fontSize: 11 }} className="fill-muted-foreground" />
+                      <XAxis type="number" domain={[0, 100]} unit="%" tick={{ fontSize: 11 }} />
+                      <YAxis
+                        type="category"
+                        dataKey="subject"
+                        tick={{ fontSize: 10 }}
+                        width={100}
+                        tickFormatter={(v: string) => v.length > 14 ? v.slice(0, 14) + '…' : v}
+                      />
                       <Tooltip
                         contentStyle={{ borderRadius: '0.5rem', border: '1px solid hsl(var(--border))' }}
-                        formatter={(v: number) => [`${v} XP`, 'XP Acumulado']}
+                        formatter={(v: number) => [`${v}%`, 'Acerto']}
                       />
-                      <Area
-                        type="monotone"
-                        dataKey="cumulativeXp"
-                        stroke="hsl(45, 93%, 58%)"
-                        strokeWidth={2}
-                        fill="url(#xpGradient)"
-                        dot={{ r: 3, fill: 'hsl(45, 93%, 58%)' }}
-                        activeDot={{ r: 5 }}
-                      />
-                    </AreaChart>
+                      <Bar dataKey="accuracy" radius={[0, 4, 4, 0]}>
+                        {bySubject.slice(0, 8).map((_, i) => (
+                          <Cell key={i} fill={SUBJECT_COLORS[i % SUBJECT_COLORS.length]} />
+                        ))}
+                      </Bar>
+                    </BarChart>
                   </ResponsiveContainer>
                 </div>
-              )}
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+
+            {/* Distribution pie chart */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm text-muted-foreground">Distribuição por Matéria</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={pieData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={50}
+                        outerRadius={80}
+                        dataKey="value"
+                        paddingAngle={2}
+                      >
+                        {pieData.map((entry, i) => (
+                          <Cell key={i} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(v: number) => [`${v} sessões`, 'Qtd']} />
+                      <Legend wrapperStyle={{ fontSize: '11px' }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         {/* Accuracy over time */}
@@ -214,72 +239,47 @@ export function PerformanceDashboard({ userId }: Props) {
           </Card>
         </TabsContent>
 
-        {/* By subject */}
-        <TabsContent value="subjects">
-          <div className="grid md:grid-cols-2 gap-4">
-            {/* Accuracy by subject bar chart */}
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-muted-foreground">Acerto por Matéria</CardTitle>
-              </CardHeader>
-              <CardContent>
+        {/* XP evolution */}
+        <TabsContent value="xp">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm text-muted-foreground">Evolução de XP ao Longo do Tempo</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {daily.length < 2 ? (
+                <p className="text-center text-muted-foreground text-sm py-8">Precisa de pelo menos 2 dias de dados.</p>
+              ) : (
                 <div className="h-64">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={bySubject.slice(0, 8)} layout="vertical">
+                    <AreaChart data={daily}>
+                      <defs>
+                        <linearGradient id="xpGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="hsl(45, 93%, 58%)" stopOpacity={0.4} />
+                          <stop offset="95%" stopColor="hsl(45, 93%, 58%)" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
                       <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                      <XAxis type="number" domain={[0, 100]} unit="%" tick={{ fontSize: 11 }} />
-                      <YAxis
-                        type="category"
-                        dataKey="subject"
-                        tick={{ fontSize: 10 }}
-                        width={100}
-                        tickFormatter={(v: string) => v.length > 14 ? v.slice(0, 14) + '…' : v}
-                      />
+                      <XAxis dataKey="label" tick={{ fontSize: 11 }} className="fill-muted-foreground" />
+                      <YAxis tick={{ fontSize: 11 }} className="fill-muted-foreground" />
                       <Tooltip
                         contentStyle={{ borderRadius: '0.5rem', border: '1px solid hsl(var(--border))' }}
-                        formatter={(v: number) => [`${v}%`, 'Acerto']}
+                        formatter={(v: number) => [`${v} XP`, 'XP Acumulado']}
                       />
-                      <Bar dataKey="accuracy" radius={[0, 4, 4, 0]}>
-                        {bySubject.slice(0, 8).map((_, i) => (
-                          <Cell key={i} fill={SUBJECT_COLORS[i % SUBJECT_COLORS.length]} />
-                        ))}
-                      </Bar>
-                    </BarChart>
+                      <Area
+                        type="monotone"
+                        dataKey="cumulativeXp"
+                        stroke="hsl(45, 93%, 58%)"
+                        strokeWidth={2}
+                        fill="url(#xpGradient)"
+                        dot={{ r: 3, fill: 'hsl(45, 93%, 58%)' }}
+                        activeDot={{ r: 5 }}
+                      />
+                    </AreaChart>
                   </ResponsiveContainer>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Distribution pie chart */}
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-muted-foreground">Distribuição por Matéria</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={pieData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={50}
-                        outerRadius={80}
-                        dataKey="value"
-                        paddingAngle={2}
-                      >
-                        {pieData.map((entry, i) => (
-                          <Cell key={i} fill={entry.fill} />
-                        ))}
-                      </Pie>
-                      <Tooltip formatter={(v: number) => [`${v} sessões`, 'Qtd']} />
-                      <Legend wrapperStyle={{ fontSize: '11px' }} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
