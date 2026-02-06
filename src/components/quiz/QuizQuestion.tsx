@@ -4,9 +4,11 @@ import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sparkles, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { QuestionNoteButton } from "./QuestionNoteButton";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useNavigate } from "react-router-dom";
 
 interface Question {
   id: string;
@@ -46,6 +48,19 @@ export function QuizQuestion({
   hasNext,
 }: QuizQuestionProps) {
   const [showAiExplanation, setShowAiExplanation] = useState(false);
+  const navigate = useNavigate();
+  const { hasPlanOrHigher } = useSubscription();
+  
+  const hasAccessToAIExplanation = hasPlanOrHigher("Standard");
+  
+  const handleAIExplanationClick = () => {
+    if (!hasAccessToAIExplanation) {
+      // Redirecionar para a página de planos
+      navigate("/planos");
+      return;
+    }
+    setShowAiExplanation(!showAiExplanation);
+  };
 
   const getOptionStyle = (index: number) => {
     const isCorrect = index === question.correct_answer;
@@ -208,17 +223,39 @@ export function QuizQuestion({
         </div>
       </Card>
 
-      {/* AI Explanation */}
+      {/* AI Explanation - COM VERIFICAÇÃO DE PLANO */}
       {answered && (
-        <Card className="p-4 sm:p-6 border-primary/30 bg-primary/5">
+        <Card className={`p-4 sm:p-6 ${hasAccessToAIExplanation ? 'border-primary/30 bg-primary/5' : 'border-yellow-500/30 bg-yellow-500/5'}`}>
           <button
-            onClick={() => setShowAiExplanation(!showAiExplanation)}
-            className="flex items-center gap-2 text-primary font-medium text-sm sm:text-base w-full text-left"
+            onClick={handleAIExplanationClick}
+            className="flex items-center gap-2 w-full text-left group"
           >
-            <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-            Explicação da IA
+            <div className={`flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center ${
+              hasAccessToAIExplanation 
+                ? 'bg-primary/10 text-primary' 
+                : 'bg-yellow-500/10 text-yellow-600'
+            }`}>
+              {hasAccessToAIExplanation ? (
+                <Sparkles className="h-4 w-4 sm:h-5 sm:w-5" />
+              ) : (
+                <Lock className="h-4 w-4 sm:h-5 sm:w-5" />
+              )}
+            </div>
+            <div className="flex-1">
+              <span className={`font-medium text-sm sm:text-base ${
+                hasAccessToAIExplanation ? 'text-primary' : 'text-yellow-600'
+              }`}>
+                {hasAccessToAIExplanation ? 'Explicação da IA' : 'Desbloqueie a Explicação da IA'}
+              </span>
+              {!hasAccessToAIExplanation && (
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                  Para ver comentários das questões assine o plano Avançado
+                </p>
+              )}
+            </div>
           </button>
-          {showAiExplanation && (
+          
+          {showAiExplanation && hasAccessToAIExplanation && (
             <div className="mt-3 sm:mt-4 text-xs sm:text-sm text-foreground leading-relaxed">
               {question.ai_explanation ? (
                 <p className="whitespace-pre-wrap">{question.ai_explanation}</p>

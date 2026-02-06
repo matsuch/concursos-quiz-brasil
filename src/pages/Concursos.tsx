@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, MapPin, Calendar, Banknote, Users, ChevronRight, Loader2 } from "lucide-react";
+import { Search, Filter, MapPin, Calendar, Banknote, Users, ChevronRight, Loader2, Sparkles, AlertCircle, Clock } from "lucide-react";
 import ConcursoCard from "@/components/ConcursoCard";
 import { SeoHead } from "@/components/SeoHead";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,7 +21,7 @@ interface Concurso {
   nivel: string;
   status: "destaque" | "breve" | "aberto";
   urlEdital?: string | null;
-  salario: number | null;
+  salario?: number | null;
 }
 
 interface Filters {
@@ -64,7 +64,7 @@ const ConcursosPage = () => {
       const { data: concursosData, error } = await supabase
         .from("concursos")
         .select("*")
-        .order("inscricoes_ate", { ascending: true }) // Ordenar por data mais próxima
+        .order("inscricoes_ate", { ascending: true })
         .order("salario", { ascending: false, nullsFirst: false });
 
       if (error) {
@@ -256,40 +256,72 @@ const ConcursosPage = () => {
       </Helmet>
 
       <div className="min-h-screen bg-background">
-        {/* Hero Section */}
-        <section className="bg-gradient-to-br from-primary/5 via-secondary/5 to-background py-12 md:py-16">
+        {/* Hero Section melhorada */}
+        <section className="bg-gradient-to-br from-primary/10 via-primary/5 to-background dark:from-primary/5 dark:via-primary/10 dark:to-gray-900 py-12 md:py-16 border-b border-border">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
               <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6" aria-label="Navegação">
-                <button onClick={() => navigate("/")} className="hover:text-primary transition-colors">
+                <button 
+                  onClick={() => navigate("/")} 
+                  className="hover:text-primary transition-colors hover:underline flex items-center gap-1"
+                >
+                  <ChevronRight className="w-3 h-3 rotate-180" />
                   Home
                 </button>
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-3 h-3 text-muted-foreground/50" />
                 <span className="text-foreground font-medium">Concursos Públicos</span>
               </nav>
 
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-foreground">
-                Concursos Públicos
-                <span className="block text-xl md:text-2xl text-primary mt-2">
-                  Encontre a oportunidade ideal para sua carreira
-                </span>
-              </h1>
-              
-              <p className="text-lg text-muted-foreground mb-8 max-w-3xl">
-                Explore nossa lista completa de concursos públicos filtrados por estado, órgão, salário e nível. 
-              </p>
+              <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
+                <div>
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-foreground">
+                    Concursos Públicos
+                    <span className="block text-xl md:text-2xl text-primary mt-2 font-semibold">
+                      Encontre a oportunidade ideal para sua carreira
+                    </span>
+                  </h1>
+                  
+                  <p className="text-lg text-muted-foreground mb-2 max-w-3xl">
+                    Explore nossa lista completa de concursos públicos filtrados por estado, órgão, salário e nível. 
+                  </p>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Sparkles className="w-4 h-4 text-primary" />
+                      <span className="font-semibold text-foreground">{concursos.length} oportunidades</span> disponíveis
+                    </div>
+                    <span className="text-border">•</span>
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4 text-primary" />
+                      Atualizado em {new Date().toLocaleDateString('pt-BR')}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/5 dark:to-secondary/5 p-4 rounded-xl border border-primary/20 dark:border-primary/10">
+                  <div className="flex items-center gap-3 mb-2">
+                    <AlertCircle className="w-5 h-5 text-primary" />
+                    <span className="font-semibold text-foreground">Dica importante</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Filtre os concursos por estado e nível para encontrar as vagas mais relevantes para você.
+                  </p>
+                </div>
+              </div>
 
               {/* Barra de busca principal */}
-              <div className="relative mb-8">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                <Input
-                  type="search"
-                  placeholder="Buscar concursos por título, órgão ou localidade..."
-                  className="pl-12 py-6 text-base"
-                  value={filters.search}
-                  onChange={(e) => handleFilterChange("search", e.target.value)}
-                  aria-label="Buscar concursos públicos"
-                />
+              <div className="relative mb-4 group">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 dark:from-primary/10 dark:to-secondary/10 rounded-xl blur-xl group-hover:blur-2xl transition-all duration-300 opacity-70" />
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                  <Input
+                    type="search"
+                    placeholder="Buscar concursos por título, órgão ou localidade..."
+                    className="pl-12 py-6 text-base bg-card/80 backdrop-blur-sm border-primary/20 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    value={filters.search}
+                    onChange={(e) => handleFilterChange("search", e.target.value)}
+                    aria-label="Buscar concursos públicos"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -300,47 +332,61 @@ const ConcursosPage = () => {
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                {/* Sidebar de Filtros */}
+                {/* Sidebar de Filtros melhorada */}
                 <div className="lg:col-span-1">
-                  <Card className="sticky top-24">
+                  <Card className="sticky top-24 border-border shadow-sm hover:shadow-md transition-shadow duration-300">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-lg font-semibold flex items-center gap-2">
-                          <Filter className="w-5 h-5" />
-                          Filtros
-                        </h2>
+                        <div className="flex items-center gap-2">
+                          <div className="p-2 bg-primary/10 rounded-lg">
+                            <Filter className="w-5 h-5 text-primary" />
+                          </div>
+                          <h2 className="text-lg font-semibold">
+                            Filtros
+                          </h2>
+                        </div>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={clearFilters}
-                          className="text-sm"
+                          className="text-sm text-muted-foreground hover:text-primary"
                         >
-                          Limpar
+                          Limpar tudo
                         </Button>
                       </div>
 
                       <div className="space-y-6">
                         {/* Filtro por Status */}
                         <div>
-                          <h3 className="font-medium mb-3">Status do Concurso</h3>
+                          <h3 className="font-medium mb-3 text-foreground">Status do Concurso</h3>
                           <div className="space-y-2">
                             {[
-                              { value: "todos", label: "Todos", count: concursos.length },
-                              { value: "aberto", label: "Abertos", count: getStatusCount("aberto") },
-                              { value: "destaque", label: "Destaque", count: getStatusCount("destaque") },
-                              { value: "breve", label: "Em Breve", count: getStatusCount("breve") }
+                              { value: "todos", label: "Todos", count: concursos.length, icon: null },
+                              { value: "aberto", label: "Abertos", count: getStatusCount("aberto"), icon: "🔴" },
+                              { value: "destaque", label: "Destaque", count: getStatusCount("destaque"), icon: "⭐" },
+                              { value: "breve", label: "Em Breve", count: getStatusCount("breve"), icon: "⏳" }
                             ].map((item) => (
                               <button
                                 key={item.value}
                                 onClick={() => handleFilterChange("status", item.value)}
-                                className={`flex items-center justify-between w-full p-2 rounded-md text-sm transition-colors ${
+                                className={`flex items-center justify-between w-full p-3 rounded-lg text-sm transition-all duration-200 ${
                                   filters.status === item.value
-                                    ? "bg-primary/10 text-primary"
-                                    : "hover:bg-muted"
+                                    ? "bg-primary/10 text-primary border border-primary/20"
+                                    : "hover:bg-muted border border-transparent"
                                 }`}
                               >
-                                <span>{item.label}</span>
-                                <Badge variant="outline" className="text-xs">
+                                <div className="flex items-center gap-2">
+                                  {item.icon && <span>{item.icon}</span>}
+                                  <span>{item.label}</span>
+                                </div>
+                                <Badge 
+                                  variant="outline" 
+                                  className={`text-xs ${
+                                    filters.status === item.value 
+                                      ? "border-primary/30 bg-primary/5" 
+                                      : "bg-muted"
+                                  }`}
+                                >
                                   {item.count}
                                 </Badge>
                               </button>
@@ -350,15 +396,17 @@ const ConcursosPage = () => {
 
                         {/* Filtro por Estado */}
                         <div>
-                          <h3 className="font-medium mb-3 flex items-center gap-2">
-                            <MapPin className="w-4 h-4" />
+                          <h3 className="font-medium mb-3 text-foreground flex items-center gap-2">
+                            <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded">
+                              <MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                            </div>
                             Estado
                           </h3>
                           <Select
                             value={filters.estado}
                             onValueChange={(value) => handleFilterChange("estado", value)}
                           >
-                            <SelectTrigger>
+                            <SelectTrigger className="bg-background border-border hover:border-primary/50 transition-colors">
                               <SelectValue placeholder="Selecione um estado" />
                             </SelectTrigger>
                             <SelectContent>
@@ -374,12 +422,16 @@ const ConcursosPage = () => {
 
                         {/* Filtro por Órgão */}
                         <div>
-                          <h3 className="font-medium mb-3">Órgão</h3>
+                          <h3 className="font-medium mb-3 text-foreground">
+                            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                              Órgão
+                            </span>
+                          </h3>
                           <Select
                             value={filters.orgao}
                             onValueChange={(value) => handleFilterChange("orgao", value)}
                           >
-                            <SelectTrigger>
+                            <SelectTrigger className="bg-background border-border hover:border-primary/50 transition-colors">
                               <SelectValue placeholder="Selecione um órgão" />
                             </SelectTrigger>
                             <SelectContent>
@@ -395,15 +447,17 @@ const ConcursosPage = () => {
 
                         {/* Filtro por Salário */}
                         <div>
-                          <h3 className="font-medium mb-3 flex items-center gap-2">
-                            <Banknote className="w-4 h-4" />
+                          <h3 className="font-medium mb-3 text-foreground flex items-center gap-2">
+                            <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/30 rounded">
+                              <Banknote className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                            </div>
                             Salário Mínimo
                           </h3>
                           <Select
                             value={filters.salarioMin}
                             onValueChange={(value) => handleFilterChange("salarioMin", value)}
                           >
-                            <SelectTrigger>
+                            <SelectTrigger className="bg-background border-border hover:border-primary/50 transition-colors">
                               <SelectValue placeholder="Salário mínimo" />
                             </SelectTrigger>
                             <SelectContent>
@@ -419,12 +473,14 @@ const ConcursosPage = () => {
 
                         {/* Filtro por Nível */}
                         <div>
-                          <h3 className="font-medium mb-3">Nível</h3>
+                          <h3 className="font-medium mb-3 text-foreground">
+                            Nível de Escolaridade
+                          </h3>
                           <Select
                             value={filters.nivel}
                             onValueChange={(value) => handleFilterChange("nivel", value)}
                           >
-                            <SelectTrigger>
+                            <SelectTrigger className="bg-background border-border hover:border-primary/50 transition-colors">
                               <SelectValue placeholder="Selecione o nível" />
                             </SelectTrigger>
                             <SelectContent>
@@ -440,17 +496,24 @@ const ConcursosPage = () => {
                     </CardContent>
                   </Card>
 
-                  {/* Call to Action */}
-                  <div className="mt-6 p-6 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg">
-                    <h3 className="font-semibold mb-2">Não encontrou o que procura?</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Receba alertas de novos concursos por email.
-                    </p>
+                  {/* Call to Action melhorado */}
+                  <div className="mt-6 p-6 bg-gradient-to-br from-primary/10 via-primary/5 to-secondary/5 dark:from-primary/5 dark:via-primary/10 dark:to-secondary/10 rounded-xl border border-primary/20 dark:border-primary/10">
+                    <div className="flex items-start gap-3 mb-4">
+                      <div className="p-2 bg-primary/20 rounded-lg">
+                        <Clock className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold mb-1 text-foreground">Não encontrou o que procura?</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Configure alertas personalizados e receba novas oportunidades por email.
+                        </p>
+                      </div>
+                    </div>
                     <Button 
-                      className="w-full"
+                      className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white shadow-lg hover:shadow-xl transition-all duration-300"
                       onClick={() => navigate("/planos")}
                     >
-                      Criar Alertas
+                      Criar Alertas Personalizados
                     </Button>
                   </div>
                 </div>
@@ -459,63 +522,79 @@ const ConcursosPage = () => {
                 <div className="lg:col-span-3">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
                     <div>
-                      <h2 className="text-2xl font-bold">
+                      <h2 className="text-2xl font-bold text-foreground">
                         {filteredConcursos.length} Concursos Encontrados
                       </h2>
                       {filters.search && (
-                        <p className="text-muted-foreground">
-                          Resultados para: <span className="font-medium">{filters.search}</span>
+                        <p className="text-muted-foreground mt-1">
+                          Resultados para: <span className="font-medium text-primary">"{filters.search}"</span>
                         </p>
                       )}
                     </div>
-                    <div className="text-sm text-muted-foreground flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
-                      Atualizado em {new Date().toLocaleDateString('pt-BR')}
+                    <div className="flex items-center gap-2 px-4 py-2 bg-muted rounded-lg">
+                      <Users className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">
+                        <span className="font-semibold text-foreground">{filteredConcursos.length}</span> resultados
+                      </span>
                     </div>
                   </div>
 
-                  {/* Estatísticas */}
+                  {/* Estatísticas melhoradas */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-                    <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 p-4 rounded-xl border border-blue-200 dark:border-blue-800/30">
                       <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 rounded-full bg-blue-500" />
+                        <div className="w-3 h-3 rounded-full bg-blue-500 animate-pulse" />
                         <div>
                           <p className="text-sm text-muted-foreground">Concursos Abertos</p>
-                          <p className="text-2xl font-bold">{getStatusCount("aberto")}</p>
+                          <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{getStatusCount("aberto")}</p>
                         </div>
                       </div>
+                      <div className="mt-2 text-xs text-muted-foreground">
+                        Inscrições em andamento
+                      </div>
                     </div>
-                    <div className="bg-emerald-50 p-4 rounded-lg">
+                    <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-900/10 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/30">
                       <div className="flex items-center gap-3">
                         <div className="w-3 h-3 rounded-full bg-emerald-500" />
                         <div>
                           <p className="text-sm text-muted-foreground">Em Destaque</p>
-                          <p className="text-2xl font-bold">{getStatusCount("destaque")}</p>
+                          <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{getStatusCount("destaque")}</p>
                         </div>
                       </div>
+                      <div className="mt-2 text-xs text-muted-foreground">
+                        Vagas prioritárias
+                      </div>
                     </div>
-                    <div className="bg-amber-50 p-4 rounded-lg">
+                    <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-900/10 p-4 rounded-xl border border-amber-200 dark:border-amber-800/30">
                       <div className="flex items-center gap-3">
                         <div className="w-3 h-3 rounded-full bg-amber-500" />
                         <div>
                           <p className="text-sm text-muted-foreground">Em Breve</p>
-                          <p className="text-2xl font-bold">{getStatusCount("breve")}</p>
+                          <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{getStatusCount("breve")}</p>
                         </div>
+                      </div>
+                      <div className="mt-2 text-xs text-muted-foreground">
+                        Futuras oportunidades
                       </div>
                     </div>
                   </div>
 
                   {/* Lista de Concursos */}
                   {filteredConcursos.length === 0 ? (
-                    <div className="text-center py-12">
+                    <div className="text-center py-16">
                       <div className="max-w-md mx-auto">
-                        <Search className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                        <h3 className="text-xl font-semibold mb-2">Nenhum concurso encontrado</h3>
-                        <p className="text-muted-foreground mb-6">
-                          Tente ajustar os filtros ou busque por outras palavras-chave.
+                        <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 flex items-center justify-center">
+                          <Search className="w-10 h-10 text-primary" />
+                        </div>
+                        <h3 className="text-xl font-semibold mb-2 text-foreground">Nenhum concurso encontrado</h3>
+                        <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                          Tente ajustar os filtros, buscar por outras palavras-chave ou limpar todos os filtros.
                         </p>
-                        <Button onClick={clearFilters}>
-                          Limpar Filtros
+                        <Button 
+                          onClick={clearFilters}
+                          className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white px-8"
+                        >
+                          Limpar Todos os Filtros
                         </Button>
                       </div>
                     </div>
@@ -523,58 +602,101 @@ const ConcursosPage = () => {
                     <>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {filteredConcursos.map((concurso) => (
-                          <ConcursoCard
+                          <div 
                             key={concurso.id}
-                            {...concurso}
-                          />
+                            className="transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                          >
+                            <ConcursoCard
+                              {...concurso}
+                              salario={concurso.salario ?? 0}
+                            />
+                          </div>
                         ))}
                       </div>
 
-                      {/* Paginação (se necessário) */}
+                      {/* Paginação */}
                       {filteredConcursos.length > 12 && (
                         <div className="flex justify-center mt-12">
-                          <Button variant="outline" className="gap-2">
+                          <Button 
+                            variant="outline" 
+                            className="gap-2 border-border hover:border-primary hover:bg-primary/5 transition-all duration-300 group"
+                          >
                             Carregar mais concursos
-                            <ChevronRight className="w-4 h-4" />
+                            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                           </Button>
                         </div>
                       )}
                     </>
                   )}
 
-                  {/* FAQ para SEO */}
-                  <div className="mt-12 pt-8 border-t">
-                    <h2 className="text-2xl font-bold mb-6">
+                  {/* FAQ melhorada para SEO */}
+                  <div className="mt-12 pt-8 border-t border-border">
+                    <h2 className="text-2xl font-bold mb-6 text-foreground">
                       Perguntas Frequentes sobre Concursos Públicos
                     </h2>
                     <div className="space-y-4">
-                      <details className="bg-muted/50 p-4 rounded-lg">
-                        <summary className="font-medium cursor-pointer">
-                          Como saber se um concurso é confiável?
+                      <details className="group bg-card p-6 rounded-xl border border-border hover:border-primary/30 transition-all duration-300">
+                        <summary className="font-semibold text-lg mb-2 text-foreground cursor-pointer flex justify-between items-center list-none">
+                          <span>Como saber se um concurso é confiável?</span>
+                          <svg 
+                            className="w-5 h-5 text-muted-foreground group-open:rotate-180 transition-transform duration-300"
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
                         </summary>
-                        <p className="mt-2 text-muted-foreground">
-                          Verifique sempre se o edital foi publicado no Diário Oficial da União, Estado ou Município. 
-                          Em nosso site, todos os editais são verificados e possuem link oficial.
-                        </p>
+                        <div className="pt-4 mt-4 border-t border-border">
+                          <p className="text-muted-foreground">
+                            Verifique sempre se o edital foi publicado no Diário Oficial da União, Estado ou Município. 
+                            Em nosso site, todos os editais são verificados e possuem link oficial. Recomendamos também 
+                            confirmar as informações diretamente no site do órgão organizador.
+                          </p>
+                        </div>
                       </details>
-                      <details className="bg-muted/50 p-4 rounded-lg">
-                        <summary className="font-medium cursor-pointer">
-                          Posso me inscrever em mais de um concurso?
+                      
+                      <details className="group bg-card p-6 rounded-xl border border-border hover:border-primary/30 transition-all duration-300">
+                        <summary className="font-semibold text-lg mb-2 text-foreground cursor-pointer flex justify-between items-center list-none">
+                          <span>Posso me inscrever em mais de um concurso?</span>
+                          <svg 
+                            className="w-5 h-5 text-muted-foreground group-open:rotate-180 transition-transform duration-300"
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
                         </summary>
-                        <p className="mt-2 text-muted-foreground">
-                          Sim, desde que as datas das provas não coincidam. Recomendamos focar em concursos 
-                          com conteúdos programáticos similares para otimizar seus estudos.
-                        </p>
+                        <div className="pt-4 mt-4 border-t border-border">
+                          <p className="text-muted-foreground">
+                            Sim, desde que as datas das provas não coincidam. Recomendamos focar em concursos 
+                            com conteúdos programáticos similares para otimizar seus estudos. Fique atento às 
+                            datas de inscrição e às taxas de participação.
+                          </p>
+                        </div>
                       </details>
-                      <details className="bg-muted/50 p-4 rounded-lg">
-                        <summary className="font-medium cursor-pointer">
-                          Como se preparar para concursos públicos?
+                      
+                      <details className="group bg-card p-6 rounded-xl border border-border hover:border-primary/30 transition-all duration-300">
+                        <summary className="font-semibold text-lg mb-2 text-foreground cursor-pointer flex justify-between items-center list-none">
+                          <span>Como se preparar para concursos públicos?</span>
+                          <svg 
+                            className="w-5 h-5 text-muted-foreground group-open:rotate-180 transition-transform duration-300"
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
                         </summary>
-                        <p className="mt-2 text-muted-foreground">
-                          Utilize nossas questões oficiais, flashcards e plano de estudos personalizado. 
-                          Comece pelo edital, identifique os temas mais cobrados e pratique com questões 
-                          anteriores do mesmo órgão.
-                        </p>
+                        <div className="pt-4 mt-4 border-t border-border">
+                          <p className="text-muted-foreground">
+                            Utilize nossas questões oficiais, flashcards e plano de estudos personalizado. 
+                            Comece pelo edital, identifique os temas mais cobrados e pratique com questões 
+                            anteriores do mesmo órgão. Mantenha uma rotina constante de estudos e faça revisões 
+                            periódicas com nossos flashcards inteligentes.
+                          </p>
+                        </div>
                       </details>
                     </div>
                   </div>

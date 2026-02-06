@@ -9,8 +9,8 @@ export type PlanName = 'Basic' | 'Standard' | 'Premium' | null;
 
 export const PLAN_FEATURES: Record<Exclude<PlanName, null>, string[]> = {
   Basic: ['flashcards', 'quiz'],
-  Standard: ['flashcards', 'quiz', 'flashcardsCustom', 'duelo'],
-  Premium: ['flashcards', 'quiz', 'flashcardsCustom', 'duelo', 'simulado', 'ranking'],
+  Standard: ['flashcards', 'quiz', 'flashcardsCustom', 'duelo', 'ai_explanation'],
+  Premium: ['flashcards', 'quiz', 'flashcardsCustom', 'duelo', 'simulado', 'ranking', 'ai_explanation'],
 };
 
 // Hierarquia de planos (índice maior = plano superior)
