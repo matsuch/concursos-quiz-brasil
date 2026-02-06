@@ -100,10 +100,10 @@ export function PerformanceDashboard({ userId }: Props) {
       {/* Charts */}
       <Tabs defaultValue="xp" className="w-full">
         <TabsList className="grid w-full grid-cols-4 max-w-lg">
-          <TabsTrigger value="xp">XP</TabsTrigger>
           <TabsTrigger value="accuracy">Acertos</TabsTrigger>
-          <TabsTrigger value="time">Tempo</TabsTrigger>
           <TabsTrigger value="subjects">Matérias</TabsTrigger>
+          <TabsTrigger value="time">Tempo</TabsTrigger>
+          <TabsTrigger value="xp">XP</TabsTrigger>
         </TabsList>
 
         {/* XP evolution */}
