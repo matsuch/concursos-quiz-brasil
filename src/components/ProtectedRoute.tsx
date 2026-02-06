@@ -2,7 +2,7 @@ import { ReactNode, useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useSubscription, PlanName } from '@/hooks/useSubscription';
-import { Loader2, Lock, CreditCard, Crown, Sparkles, Check, X, BookOpen, Users, Rocket, Brain, Zap, Star } from 'lucide-react';
+import { Loader2, Lock, CreditCard, Crown, Sparkles, Check, X, BookOpen, Users, Rocket, Brain, Zap, Star, BookmarkCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -467,11 +467,11 @@ export function ProtectedRoute({
 
                       <div className="bg-muted/50 rounded-lg p-4">
                         <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center mb-3">
-                          <Users className="w-5 h-5 text-green-600" />
+                          <BookmarkCheck className="w-5 h-5 text-green-600" />
                         </div>
-                        <h4 className="font-medium text-foreground mb-1">Comunidade</h4>
+                        <h4 className="font-medium text-foreground mb-1">Planejamento</h4>
                         <p className="text-xs text-muted-foreground">
-                          Conecte-se com outros estudantes
+                          Estudos organizados para você nunca perder um prazo
                         </p>
                       </div>
 
