@@ -35,7 +35,7 @@ const ConcursoCard = ({
     },
     aberto: {
       label: "Abertos",
-      className: "bg-accent/10 text-accent-foreground border-accent/20",
+      className: "bg-yellow-500/15 text-yellow-900 dark:text-yellow-100 border-yellow-500/30 dark:bg-yellow-500/10",
       schemaType: "JobPosting" as const,
     },
     breve: {
@@ -118,8 +118,8 @@ const ConcursoCard = ({
           "@type": "QuantitativeValue",
           "value": salario,
           "unitText": "MONTH",
-          "minValue": salario * 0.9, // Estimativa conservadora
-          "maxValue": salario * 1.1  // Estimativa liberal
+          "minValue": salario * 0.9,
+          "maxValue": salario * 1.1
         }
       } : undefined,
       "jobBenefits": "Conforme previsto em edital de concurso público",
