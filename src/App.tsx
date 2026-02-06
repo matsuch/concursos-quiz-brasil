@@ -58,7 +58,7 @@ const App = () => (
                       <Route 
                         path="/estudo" 
                         element={
-                          <ProtectedRoute requiredPlan="Standard">
+                          <ProtectedRoute requiredPlan="Basic">
                             <Estudo />
                           </ProtectedRoute>
                         } 
