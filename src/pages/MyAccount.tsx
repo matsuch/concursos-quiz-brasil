@@ -417,7 +417,7 @@ const MyAccount = () => {
                       </div>
                       <h3 className="text-lg font-semibold text-foreground mb-2">Sem Assinatura Ativa</h3>
                       <p className="text-muted-foreground mb-4">Assine um plano para desbloquear todos os recursos.</p>
-                      <Button onClick={() => navigate('/#pricing')} className="w-full sm:w-auto">Ver Planos</Button>
+                      <Button onClick={() => navigate('/planos')} className="w-full sm:w-auto">Ver Planos</Button>
                     </div>
                   )}
                 </CardContent>
