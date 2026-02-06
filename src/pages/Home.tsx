@@ -269,7 +269,7 @@ const Home = () => {
             <div className="flex flex-col items-center justify-center text-center">
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold mb-4 sm:mb-6 text-blue-600 leading-tight">
                 Conquiste sua aprovação
-                <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-gray-700 mt-2">
+                <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-foreground/80 mt-2">
                   em concursos públicos
                 </span>
               </h1>
