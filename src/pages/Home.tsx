@@ -371,28 +371,28 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Adicionado: FAQ Section para SEO */}
-        <section className="py-12 bg-gray-50">
+        {/* FAQ Section para SEO - Versão simplificada com dark mode */}
+        <section className="py-12 bg-gray-50 dark:bg-gray-900">
           <div className="container mx-auto px-4">
-            <h2 className="text-2xl font-bold text-center mb-8">
+            <h2 className="text-2xl font-bold text-center mb-8 text-foreground">
               Perguntas Frequentes sobre Concursos Públicos
             </h2>
             <div className="max-w-3xl mx-auto space-y-4">
-              <div className="bg-white p-6 rounded-lg shadow">
-                <h3 className="font-semibold text-lg mb-2">Como funciona o treino com questões oficiais?</h3>
-                <p className="text-gray-600">
+              <div className="bg-card dark:bg-gray-800 p-6 rounded-lg shadow border dark:border-gray-700">
+                <h3 className="font-semibold text-lg mb-2 text-foreground">Como funciona o treino com questões oficiais?</h3>
+                <p className="text-muted-foreground dark:text-gray-300">
                   Oferecemos questões retiradas diretamente de provas anteriores de concursos públicos, permitindo que você pratique com conteúdo real e atualizado.
                 </p>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow">
-                <h3 className="font-semibold text-lg mb-2">Os flashcards são personalizados?</h3>
-                <p className="text-gray-600">
+              <div className="bg-card dark:bg-gray-800 p-6 rounded-lg shadow border dark:border-gray-700">
+                <h3 className="font-semibold text-lg mb-2 text-foreground">Os flashcards são personalizados?</h3>
+                <p className="text-muted-foreground dark:text-gray-300">
                   Sim, nossos flashcards se adaptam ao seu desempenho, focando nos tópicos onde você mais precisa revisar para concursos públicos.
                 </p>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow">
-                <h3 className="font-semibold text-lg mb-2">Como acompanhar os editais mais recentes?</h3>
-                <p className="text-gray-600">
+              <div className="bg-card dark:bg-gray-800 p-6 rounded-lg shadow border dark:border-gray-700">
+                <h3 className="font-semibold text-lg mb-2 text-foreground">Como acompanhar os editais mais recentes?</h3>
+                <p className="text-muted-foreground dark:text-gray-300">
                   Mantemos uma lista atualizada de concursos públicos em destaque, abertos e em breve, com informações sobre vagas, salários e prazos.
                 </p>
               </div>
