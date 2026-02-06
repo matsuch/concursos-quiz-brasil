@@ -511,10 +511,6 @@ export function ProtectedRoute({
 
               {/* Observações */}
               <div className="mt-8 text-center text-sm text-muted-foreground">
-                <p>
-                  Todos os planos incluem 7 dias gratuitos para teste. 
-                  Cancele a qualquer momento sem taxas.
-                </p>
                 <p className="mt-1">
                   Acesso imediato após a confirmação do pagamento.
                 </p>

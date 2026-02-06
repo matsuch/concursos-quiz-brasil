@@ -12,7 +12,7 @@ import {
   Sparkles,
   Shield,
   Clock,
-  Users,
+  BookmarkCheck,
   Rocket,
   TrendingUp,
   Wallet,
@@ -425,11 +425,11 @@ export default function Planos() {
                 <Card className="border-primary/20 hover:border-primary/40 transition-all">
                   <CardContent className="pt-6">
                     <div className="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center mb-4">
-                      <Users className="w-6 h-6 text-green-600" />
+                      <BookmarkCheck className="w-6 h-6 text-green-600" />
                     </div>
-                    <h3 className="font-semibold text-lg mb-2">Forúm de comunidade</h3>
+                    <h3 className="font-semibold text-lg mb-2">Planejamento</h3>
                     <p className="text-sm text-muted-foreground">
-                      Conecte-se com outros estudantes e compartilhe experiências e dicas
+                      Organize seus estudos de maneira personalizada.
                     </p>
                   </CardContent>
                 </Card>
