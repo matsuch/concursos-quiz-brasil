@@ -504,7 +504,7 @@ const Home = () => {
                       "name": "Como funciona o treino com questões oficiais?",
                       "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "Oferecemos questões retiradas diretamente de provas anteriores de concursos públicos, permitindo que você pratique com conteúdo real e atualizado. Nosso sistema se adapta ao seu desempenho, sugerindo questões nas áreas que você mais precisa melhorar."
+                        "text": "Oferecemos questões retiradas diretamente de provas anteriores de concursos públicos, permitindo que você pratique com conteúdo real e atualizado."
                       }
                     },
                     {
@@ -512,7 +512,7 @@ const Home = () => {
                       "name": "Os flashcards são personalizados?",
                       "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "Sim, nossos flashcards utilizam algoritmos de repetição espaçada que se adaptam ao seu desempenho, focando nos tópicos onde você mais precisa revisar para concursos públicos. Quanto mais você erra um conceito, mais ele aparece nos seus ciclos de revisão."
+                        "text": "Sim, existem flashcards prontos para diversos temas e áreas. Além disso, você pode criar seus próprios flashcards personalizados para revisar os tópicos que achar mais importantes."
                       }
                     },
                     {
@@ -520,7 +520,7 @@ const Home = () => {
                       "name": "Como acompanhar os editais mais recentes?",
                       "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "Mantemos uma lista atualizada diariamente de concursos públicos em destaque, abertos e em breve, com informações completas sobre vagas, salários, prazos e links oficiais. Você também pode configurar alertas personalizados para receber notificações sobre concursos do seu interesse."
+                        "text": "Mantemos uma lista atualizada de concursos públicos em destaque, abertos e em breve, com informações completas sobre vagas, salários, prazos e links oficiais."
                       }
                     },
                     {
@@ -528,15 +528,15 @@ const Home = () => {
                       "name": "É necessário pagar para usar a plataforma?",
                       "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "Oferecemos acesso gratuito a questões básicas e listas de concursos. Nossos planos premium desbloqueiam funcionalidades avançadas como flashcards ilimitados, plano de estudos personalizado, simulados completos e estatísticas detalhadas do seu desempenho."
+                        "text": "Oferecemos acesso gratuito a questões básicas e listas de concursos. Temos dois planos 'Basico' e 'Avançado' que desbloqueiam funcionalidades avançadas como questões comentadas por IA, flashcards personalizaveis, Planner de estudos, simulados completos e estatísticas detalhadas do seu desempenho."
                       }
                     },
                     {
                       "@type": "Question",
-                      "name": "Como o plano de estudos funciona?",
+                      "name": "Como funciona a subscrição?",
                       "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Nosso sistema cria um plano de estudos personalizado baseado no edital do concurso, no tempo disponível até a prova e no seu histórico de desempenho. O plano se ajusta automaticamente conforme você avança, garantindo que todos os tópicos sejam revisados no momento ideal."
+                          "@type": "Answer",
+                          "text": "Você pode assinar a subscrição mensal através da nossa página de planos. Oferecemos duas opções de subscrição para atender às suas necessidades de estudo."
                       }
                     }
                   ]
