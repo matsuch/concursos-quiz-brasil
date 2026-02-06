@@ -397,9 +397,6 @@ const ConcursosPage = () => {
                         {/* Filtro por Estado */}
                         <div>
                           <h3 className="font-medium mb-3 text-foreground flex items-center gap-2">
-                            <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded">
-                              <MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                            </div>
                             Estado
                           </h3>
                           <Select
@@ -448,9 +445,6 @@ const ConcursosPage = () => {
                         {/* Filtro por Salário */}
                         <div>
                           <h3 className="font-medium mb-3 text-foreground flex items-center gap-2">
-                            <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/30 rounded">
-                              <Banknote className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                            </div>
                             Salário Mínimo
                           </h3>
                           <Select
