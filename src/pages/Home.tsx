@@ -293,7 +293,7 @@ const Home = () => {
                     size="lg"
                     variant="outline"
                     onClick={() => navigate("/planos")}
-                    className="w-full sm:w-auto bg-[#FACC15] hover:bg-[#EAB308] transition-colors text-base lg:text-lg px-6 lg:px-8 py-6 lg:py-7"
+                    className="w-full sm:w-auto bg-[#10b981] hover:bg-[#059669] transition-colors text-base lg:text-lg px-6 lg:px-8 py-6 lg:py-7"
                     aria-label="Assinar planos premium para concursos"
                   >
                     <Crown className="w-5 h-5 lg:w-6 lg:h-6 mr-2" />
