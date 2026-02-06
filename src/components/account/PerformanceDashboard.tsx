@@ -98,7 +98,7 @@ export function PerformanceDashboard({ userId }: Props) {
       </div>
 
       {/* Charts */}
-      <Tabs defaultValue="xp" className="w-full">
+      <Tabs defaultValue="accuracy" className="w-full">
         <TabsList className="grid w-full grid-cols-4 max-w-lg">
           <TabsTrigger value="accuracy">Acertos</TabsTrigger>
           <TabsTrigger value="subjects">Matérias</TabsTrigger>
