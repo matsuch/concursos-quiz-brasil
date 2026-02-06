@@ -12,6 +12,7 @@ import Home from "./pages/Home";
 import Quiz from "./pages/Quiz";
 import Estudo from "./pages/Estudo";
 import Auth from "./pages/Auth";
+import ConcursosPage from "@/pages/Concursos";
 import NotFound from "./pages/NotFound";
 import SimuladoPage from "./pages/Simulado";
 import MyAccount from "./pages/MyAccount";
@@ -39,6 +40,7 @@ const App = () => (
                       <Route path="/" element={<Home />} />
                       
                       {/* Rotas públicas */}
+                      <Route path="/concursos" element={<ConcursosPage />} />
                       <Route path="/quiz" element={<Quiz />} />
                       <Route path="/planos" element={<Planos />} />
                       <Route path="/planner" element={<Planner />} />
