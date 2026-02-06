@@ -324,7 +324,7 @@ const ConcursosPage = () => {
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 {/* Sidebar de Filtros melhorada */}
                 <div className="lg:col-span-1">
-                  <Card className="sticky top-24 border-border shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <Card className="sticky top-6 border-border shadow-sm hover:shadow-md transition-shadow duration-300">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-2">
