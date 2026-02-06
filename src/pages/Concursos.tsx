@@ -479,27 +479,6 @@ const ConcursosPage = () => {
                       </div>
                     </CardContent>
                   </Card>
-
-                  {/* Call to Action melhorado */}
-                  <div className="mt-6 p-6 bg-gradient-to-br from-primary/10 via-primary/5 to-secondary/5 dark:from-primary/5 dark:via-primary/10 dark:to-secondary/10 rounded-xl border border-primary/20 dark:border-primary/10">
-                    <div className="flex items-start gap-3 mb-4">
-                      <div className="p-2 bg-primary/20 rounded-lg">
-                        <Clock className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold mb-1 text-foreground">Não encontrou o que procura?</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Configure alertas personalizados e receba novas oportunidades por email.
-                        </p>
-                      </div>
-                    </div>
-                    <Button 
-                      className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white shadow-lg hover:shadow-xl transition-all duration-300"
-                      onClick={() => navigate("/planos")}
-                    >
-                      Criar Alertas Personalizados
-                    </Button>
-                  </div>
                 </div>
 
                 {/* Lista de Concursos */}
