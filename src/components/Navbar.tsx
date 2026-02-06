@@ -17,8 +17,8 @@ const guestOnlyNavItems = [
 ];
 
 const authOnlyNavItems = [
-  { to: "/planner", icon: CalendarDays, label: "Planner" },
   { to: "/anotacoes", icon: FileText, label: "Anotações" },
+  { to: "/planner", icon: CalendarDays, label: "Planner" },
   { to: "/estudo", icon: BookOpen, label: "Flashcards" },
   { to: "/simulado", icon: BookOpen, label: "Simulado" },
   { to: "/minha-conta", icon: Landmark, label: "Minha Conta" },

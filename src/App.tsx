@@ -43,11 +43,18 @@ const App = () => (
                       <Route path="/concursos" element={<ConcursosPage />} />
                       <Route path="/quiz" element={<Quiz />} />
                       <Route path="/planos" element={<Planos />} />
-                      <Route path="/planner" element={<Planner />} />
                       <Route path="/anotacoes" element={<Anotacoes />} />
                       <Route path="/auth" element={<Auth />} />
                       
                       {/* Rotas protegidas */}
+                      <Route 
+                        path="/planner" 
+                        element={
+                          <ProtectedRoute requiredPlan="Basic">
+                            <Planner />
+                          </ProtectedRoute>
+                        } 
+                      />
                       <Route 
                         path="/estudo" 
                         element={
