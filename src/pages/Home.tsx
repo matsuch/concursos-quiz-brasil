@@ -394,8 +394,7 @@ const Home = () => {
                 <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-700">
                   <p className="text-gray-600 dark:text-gray-300">
                     Oferecemos questões retiradas diretamente de provas anteriores de concursos públicos, 
-                    permitindo que você pratique com conteúdo real e atualizado. Nosso sistema se adapta 
-                    ao seu desempenho, sugerindo questões nas áreas que você mais precisa melhorar.
+                    permitindo que você pratique com conteúdo real e atualizado.
                   </p>
                 </div>
               </details>
@@ -415,9 +414,7 @@ const Home = () => {
                 </summary>
                 <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-700">
                   <p className="text-gray-600 dark:text-gray-300">
-                    Sim, nossos flashcards utilizam algoritmos de repetição espaçada que se adaptam ao 
-                    seu desempenho, focando nos tópicos onde você mais precisa revisar para concursos públicos. 
-                    Quanto mais você erra um conceito, mais ele aparece nos seus ciclos de revisão.
+                    Sim, você pode criar flashcards personalizados com base nas questões que praticou, focando nos tópicos onde precisa de mais revisão para concursos públicos.
                   </p>
                 </div>
               </details>
@@ -437,10 +434,8 @@ const Home = () => {
                 </summary>
                 <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-700">
                   <p className="text-gray-600 dark:text-gray-300">
-                    Mantemos uma lista atualizada diariamente de concursos públicos em destaque, abertos e 
+                    Mantemos uma lista atualizada de concursos públicos em destaque, abertos e 
                     em breve, com informações completas sobre vagas, salários, prazos e links oficiais. 
-                    Você também pode configurar alertas personalizados para receber notificações sobre 
-                    concursos do seu interesse.
                   </p>
                 </div>
               </details>
@@ -461,15 +456,15 @@ const Home = () => {
                 <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-700">
                   <p className="text-gray-600 dark:text-gray-300">
                     Oferecemos acesso gratuito a questões básicas e listas de concursos. Nossos planos 
-                    premium desbloqueiam funcionalidades avançadas como flashcards ilimitados, plano de 
-                    estudos personalizado, simulados completos e estatísticas detalhadas do seu desempenho.
+                    premium desbloqueiam funcionalidades avançadas como flashcards ilimitados, planner de 
+                    estudos, simulados completos e estatísticas detalhadas do seu desempenho.
                   </p>
                 </div>
               </details>
 
               <details className="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:border-blue-500/50 dark:hover:border-blue-500/30 transition-all duration-300 ease-in-out">
                 <summary className="font-semibold text-lg mb-2 text-gray-900 dark:text-white cursor-pointer flex justify-between items-center list-none">
-                  <span>Como o plano de estudos funciona?</span>
+                  <span>Como funciona a subscrição?</span>
                   <svg 
                     className="w-5 h-5 text-gray-500 dark:text-gray-400 group-open:rotate-180 transition-transform duration-300"
                     fill="none" 
@@ -482,10 +477,8 @@ const Home = () => {
                 </summary>
                 <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-700">
                   <p className="text-gray-600 dark:text-gray-300">
-                    Nosso sistema cria um plano de estudos personalizado baseado no edital do concurso, 
-                    no tempo disponível até a prova e no seu histórico de desempenho. O plano se ajusta 
-                    automaticamente conforme você avança, garantindo que todos os tópicos sejam revisados 
-                    no momento ideal.
+                  Você pode assinar a subscrição mensal através da nossa página de planos.
+                  Oferecemos duas opções de subscrição para atender às suas necessidades de estudo.  
                   </p>
                 </div>
               </details>
