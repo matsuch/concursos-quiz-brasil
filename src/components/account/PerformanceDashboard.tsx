@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid,
-  ResponsiveContainer, Tooltip, Cell, PieChart, Pie, Legend,
+  ResponsiveContainer, Tooltip, Cell, PieChart, Pie, Legend, Area, AreaChart,
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { usePerformanceStats, TimeRange } from '@/hooks/usePerformanceStats';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
-  Target, Clock, TrendingUp, Brain, BarChart3, Activity,
+  Target, Clock, TrendingUp, Brain, BarChart3, Activity, Zap,
 } from 'lucide-react';
 
 const SUBJECT_COLORS = [
@@ -94,16 +94,60 @@ export function PerformanceDashboard({ userId }: Props) {
         <SummaryCard icon={Brain} label="Questões" value={totals.totalQuestions} color="primary" />
         <SummaryCard icon={Target} label="Taxa de Acerto" value={`${totals.overallAccuracy}%`} color="success" />
         <SummaryCard icon={Clock} label="Tempo Total" value={`${totals.totalTimeMinutes} min`} color="secondary" />
-        <SummaryCard icon={TrendingUp} label="Sessões" value={totals.totalAttempts} color="accent" />
+        <SummaryCard icon={Zap} label="XP Total" value={daily.reduce((s, d) => s + d.xp, 0)} color="accent" />
       </div>
 
       {/* Charts */}
-      <Tabs defaultValue="accuracy" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 max-w-md">
+      <Tabs defaultValue="xp" className="w-full">
+        <TabsList className="grid w-full grid-cols-4 max-w-lg">
+          <TabsTrigger value="xp">XP</TabsTrigger>
           <TabsTrigger value="accuracy">Acertos</TabsTrigger>
           <TabsTrigger value="time">Tempo</TabsTrigger>
           <TabsTrigger value="subjects">Matérias</TabsTrigger>
         </TabsList>
+
+        {/* XP evolution */}
+        <TabsContent value="xp">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm text-muted-foreground">Evolução de XP ao Longo do Tempo</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {daily.length < 2 ? (
+                <p className="text-center text-muted-foreground text-sm py-8">Precisa de pelo menos 2 dias de dados.</p>
+              ) : (
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={daily}>
+                      <defs>
+                        <linearGradient id="xpGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="hsl(45, 93%, 58%)" stopOpacity={0.4} />
+                          <stop offset="95%" stopColor="hsl(45, 93%, 58%)" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                      <XAxis dataKey="label" tick={{ fontSize: 11 }} className="fill-muted-foreground" />
+                      <YAxis tick={{ fontSize: 11 }} className="fill-muted-foreground" />
+                      <Tooltip
+                        contentStyle={{ borderRadius: '0.5rem', border: '1px solid hsl(var(--border))' }}
+                        formatter={(v: number) => [`${v} XP`, 'XP Acumulado']}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="cumulativeXp"
+                        stroke="hsl(45, 93%, 58%)"
+                        strokeWidth={2}
+                        fill="url(#xpGradient)"
+                        dot={{ r: 3, fill: 'hsl(45, 93%, 58%)' }}
+                        activeDot={{ r: 5 }}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         {/* Accuracy over time */}
         <TabsContent value="accuracy">

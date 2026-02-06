@@ -31,6 +31,8 @@ export interface DailyStats {
   correctAnswers: number;
   accuracy: number;
   timeMinutes: number;
+  xp: number;
+  cumulativeXp: number;
 }
 
 export function usePerformanceStats(userId: string | undefined, timeRange: TimeRange) {
@@ -94,14 +96,23 @@ function processStats(attempts: QuizAttempt[], timeRange: TimeRange) {
       correctAnswers: 0,
       accuracy: 0,
       timeMinutes: 0,
+      xp: 0,
+      cumulativeXp: 0,
     };
     existing.totalQuestions += a.total_questions;
     existing.correctAnswers += a.correct_answers;
     existing.timeMinutes += Math.round((a.time_spent_seconds || 0) / 60);
     existing.accuracy = Math.round((existing.correctAnswers / existing.totalQuestions) * 100);
+    existing.xp += a.points_earned;
     dayMap.set(dateKey, existing);
   }
   const daily = Array.from(dayMap.values()).sort((a, b) => a.date.localeCompare(b.date));
+  // Calculate cumulative XP
+  let cumXp = 0;
+  for (const d of daily) {
+    cumXp += d.xp;
+    d.cumulativeXp = cumXp;
+  }
 
   // Totals
   const totalQuestions = attempts.reduce((s, a) => s + a.total_questions, 0);
