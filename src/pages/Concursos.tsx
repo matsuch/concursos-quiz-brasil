@@ -296,16 +296,6 @@ const ConcursosPage = () => {
                     </div>
                   </div>
                 </div>
-
-                <div className="bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/5 dark:to-secondary/5 p-4 rounded-xl border border-primary/20 dark:border-primary/10">
-                  <div className="flex items-center gap-3 mb-2">
-                    <AlertCircle className="w-5 h-5 text-primary" />
-                    <span className="font-semibold text-foreground">Dica importante</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Filtre os concursos por estado e nível para encontrar as vagas mais relevantes para você.
-                  </p>
-                </div>
               </div>
 
               {/* Barra de busca principal */}
