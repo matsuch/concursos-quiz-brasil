@@ -281,7 +281,7 @@ const MyAccount = () => {
           <Tabs defaultValue="dashboard" className="w-full">
             <TabsList className="grid w-full grid-cols-3 max-w-md">
               <TabsTrigger value="dashboard">Desempenho</TabsTrigger>
-              <TabsTrigger value="overview">Resumo</TabsTrigger>
+            { /* <TabsTrigger value="overview">Resumo</TabsTrigger> */}
               <TabsTrigger value="subscription">Assinatura</TabsTrigger>
             </TabsList>
 
