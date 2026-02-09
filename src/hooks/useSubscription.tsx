@@ -5,16 +5,15 @@ import { useAuth } from '@/hooks/useAuth';
 type SubscriptionStatus = 'active' | 'canceled' | 'trialing' | 'past_due' | 'incomplete' | 'unpaid' | null;
 
 // Defina os planos disponíveis e suas features
-export type PlanName = 'Basic' | 'Standard' | 'Premium' | null;
+export type PlanName = 'Básico' | 'Avançado' | null;
 
 export const PLAN_FEATURES: Record<Exclude<PlanName, null>, string[]> = {
-  Basic: ['flashcards', 'quiz'],
-  Standard: ['flashcards', 'quiz', 'flashcardsCustom', 'duelo', 'ai_explanation'],
-  Premium: ['flashcards', 'quiz', 'flashcardsCustom', 'duelo', 'simulado', 'ranking', 'ai_explanation'],
+  'Básico': ['flashcards', 'quiz', 'planner'], // Recursos do plano Básico
+  'Avançado': ['flashcards', 'quiz', 'planner', 'flashcardsCustom', 'simulado', 'ai_explanation', 'ranking'], // Recursos do plano Avançado
 };
 
 // Hierarquia de planos (índice maior = plano superior)
-export const PLAN_HIERARCHY: Exclude<PlanName, null>[] = ['Basic', 'Standard', 'Premium'];
+export const PLAN_HIERARCHY: Exclude<PlanName, null>[] = ['Básico', 'Avançado'];
 
 interface Subscription {
   id: string;
@@ -152,15 +151,16 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     if (!isSubscriptionValid() || !subscription) return null;
     
     // Normaliza o nome do plano
-    const planName = subscription.plan_name?.toLowerCase();
-    if (planName?.includes('premium')) return 'Premium';
-    if (planName?.includes('standard')) return 'Standard';
-    if (planName?.includes('basic')) return 'Basic';
+    const planName = subscription.plan_name;
     
-    // Fallback baseado no valor
-    if (subscription.plan_amount >= 49) return 'Premium';
-    if (subscription.plan_amount >= 29) return 'Standard';
-    return 'Basic';
+    // Verifica por "Avançado" (com acento)
+    if (planName?.toLowerCase().includes('avançado')) return 'Avançado';
+    // Verifica por "Básico" (com acento) ou "Basico" (sem acento)
+    if (planName?.toLowerCase().includes('básico') || planName?.toLowerCase().includes('basico')) return 'Básico';
+    
+    // Fallback baseado no valor (ajuste conforme seus preços)
+    if (subscription.plan_amount >= 1960) return 'Avançado'; // R$ 19,60
+    return 'Básico'; // R$ 9,80
   };
 
   const hasFeature = (feature: string): boolean => {
@@ -175,6 +175,9 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     
     const currentIndex = PLAN_HIERARCHY.indexOf(currentPlan);
     const requiredIndex = PLAN_HIERARCHY.indexOf(requiredPlan);
+    
+    // Se algum plano não for encontrado, retorna false
+    if (currentIndex === -1 || requiredIndex === -1) return false;
     
     return currentIndex >= requiredIndex;
   };
