@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Calendar, momentLocalizer, View, SlotInfo } from 'react-big-calendar';
+import withDragAndDrop, { EventInteractionArgs } from 'react-big-calendar/lib/addons/dragAndDrop';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import { Plus, Trash2, Edit2, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -15,6 +17,7 @@ import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { MobileCalendarView } from './MobileCalendarView';
 
 const localizer = momentLocalizer(moment);
+const DnDCalendar = withDragAndDrop(Calendar);
 
 const SUBJECTS = ['Direito Constitucional', 'Direito Administrativo', 'Português', 'Raciocínio Lógico', 'Atualidades', 'Informática', 'Direito Penal', 'Direito Civil', 'AFO', 'Contabilidade'];
 
@@ -155,6 +158,32 @@ export function CalendarTab({ selectedDate, onDateChange, triggerNewEvent }: Cal
     resetForm();
   };
 
+  const handleEventDrop = async ({ event, start, end }: EventInteractionArgs<object>) => {
+    const e = event as any;
+    await updateCalendarEvent.mutateAsync({
+      id: e.id,
+      subject: e.subject,
+      title: e.title,
+      start_time: moment(start).toISOString(),
+      end_time: moment(end).toISOString(),
+      color: e.color || THEME_COLORS[0].value,
+      notes: e.notes || ''
+    });
+  };
+
+  const handleEventResize = async ({ event, start, end }: EventInteractionArgs<object>) => {
+    const e = event as any;
+    await updateCalendarEvent.mutateAsync({
+      id: e.id,
+      subject: e.subject,
+      title: e.title,
+      start_time: moment(start).toISOString(),
+      end_time: moment(end).toISOString(),
+      color: e.color || THEME_COLORS[0].value,
+      notes: e.notes || ''
+    });
+  };
+
   const handleDelete = async () => {
     if (selectedEvent) {
       if (window.confirm('Tem certeza que deseja excluir este evento?')) {
@@ -281,7 +310,7 @@ export function CalendarTab({ selectedDate, onDateChange, triggerNewEvent }: Cal
 
       {/* Calendar */}
       <div className="flex-1 min-h-[600px] bg-card rounded-xl border shadow-sm p-4">
-        <Calendar
+        <DnDCalendar
           localizer={localizer}
           events={events}
           startAccessor="start"
@@ -293,6 +322,9 @@ export function CalendarTab({ selectedDate, onDateChange, triggerNewEvent }: Cal
           onNavigate={handleNavigate}
           onSelectSlot={handleSelectSlot}
           onSelectEvent={handleSelectEvent}
+          onEventDrop={handleEventDrop}
+          onEventResize={handleEventResize}
+          resizable
           selectable
           messages={{
             next: 'Próximo',
