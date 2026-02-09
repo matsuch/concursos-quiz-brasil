@@ -14,7 +14,7 @@ interface ProtectedRouteProps {
   children: ReactNode;
   /** Se true, exige qualquer assinatura ativa */
   requiresPremium?: boolean;
-  /** Exige um plano específico ou superior (Basic, Standard, Premium) */
+  /** Exige um plano específico ou superior (Basic, Standard) */
   requiredPlan?: Exclude<PlanName, null>;
   /** Exige acesso a uma feature específica */
   requiredFeature?: string;
@@ -65,11 +65,6 @@ const COLOR_MAP: Record<string, { color: string; bgColor: string; textColor: str
     color: "from-primary to-secondary",
     bgColor: "bg-primary/10",
     textColor: "text-primary"
-  },
-  premium: {
-    color: "from-amber-500 to-orange-500",
-    bgColor: "bg-amber-500/10",
-    textColor: "text-amber-500"
   }
 };
 
@@ -115,8 +110,7 @@ export function ProtectedRoute({
         const activeProducts = data.products.filter((product: StripeProduct) => 
           product.name.toLowerCase().includes('básico') || 
           product.name.toLowerCase().includes('avançado') ||
-          product.name.toLowerCase().includes('basic') ||
-          product.name.toLowerCase().includes('premium')
+          product.name.toLowerCase().includes('basic')
         );
 
         // Ordenar por preço (do mais barato para o mais caro)
@@ -139,17 +133,15 @@ export function ProtectedRoute({
 
   const getPlanIdFromProduct = (productName: string): string => {
     const nameLower = productName.toLowerCase();
-    if (nameLower.includes('avançado') || nameLower.includes('premium')) return 'premium';
-    if (nameLower.includes('básico') || nameLower.includes('basico')) return 'basic';
-    return 'standard';
+    if (nameLower.includes('avançado') || nameLower.includes('premium')) return 'Avançado';
+    if (nameLower.includes('básico') || nameLower.includes('basico')) return 'Básico';
+    return 'Padrão';
   };
 
   const getPlanDisplayName = (productName: string): string => {
     const nameLower = productName.toLowerCase();
     if (nameLower.includes('avançado')) return 'Avançado';
     if (nameLower.includes('básico') || nameLower.includes('basico')) return 'Básico';
-    if (nameLower.includes('padrão') || nameLower.includes('standard')) return 'Padrão';
-    if (nameLower.includes('premium')) return 'Premium';
     return productName;
   };
 
@@ -162,27 +154,7 @@ export function ProtectedRoute({
     if (product.metadata?.features) {
       return product.metadata.features.split(';').map(f => f.trim());
     }
-    
-    // Fallback baseado no tipo de plano
-    const planId = getPlanIdFromProduct(product.name);
-    if (planId === 'premium') {
-      return [
-        'Simulados completos',
-        'Duelos online',
-        'Flashcards personalizados',
-        'Ranking e estatísticas',
-        'IA para correção de redação',
-        'Acesso a todas as matérias'
-      ];
-    } else if (planId === 'basic') {
-      return [
-        'Flashcards básicos',
-        'Quizzes',
-        'Acesso a matérias básicas',
-        'Estatísticas simples'
-      ];
-    }
-    
+       
     return ['Recursos básicos de estudo'];
   };
 
@@ -256,7 +228,7 @@ export function ProtectedRoute({
     // Determinar quais produtos são elegíveis (igual ou superior ao plano requerido)
     const eligibleProducts = products.filter(product => {
       const planId = getPlanIdFromProduct(product.name);
-      const planHierarchy = ['basic', 'standard', 'premium'];
+      const planHierarchy = ['basic', 'standard'];
       
       // Se não temos plano requerido, nenhum é elegível por padrão
       if (!requiredPlanName) return false;
@@ -271,7 +243,7 @@ export function ProtectedRoute({
     // Filtrar apenas os produtos relevantes para mostrar (Básico e Avançado)
     const productsToShow = products.filter(product => {
       const planId = getPlanIdFromProduct(product.name);
-      return planId === 'basic' || planId === 'premium';
+      return planId === 'basic' || planId === 'standard';
     });
 
     return (
@@ -539,7 +511,6 @@ export function FeatureGate({ children, feature, fallback }: FeatureGateProps) {
 
   const getPlanDisplayName = (planName: PlanName): string => {
     if (!planName) return '';
-    if (planName.toLowerCase().includes('avançado') || planName === 'Premium') return 'Avançado';
     if (planName.toLowerCase().includes('avançado') || planName === 'Standard') return 'Avançado';
     if (planName.toLowerCase().includes('básico') || planName.toLowerCase().includes('basico') || planName === 'Basic') return 'Básico';
     return planName;
@@ -613,8 +584,7 @@ export function PlanGate({ children, requiredPlan, fallback }: PlanGateProps) {
 
   const getPlanDisplayName = (planName: PlanName): string => {
     if (!planName) return '';
-    if (planName.toLowerCase().includes('avançado') || planName === 'Premium') return 'Avançado';
-    if (planName.toLowerCase().includes('padrão') || planName === 'Standard') return 'Padrão';
+    if (planName.toLowerCase().includes('avançado') || planName === 'Standard') return 'Avançado';
     if (planName.toLowerCase().includes('básico') || planName.toLowerCase().includes('basico') || planName === 'Basic') return 'Básico';
     return planName;
   };
