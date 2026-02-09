@@ -50,7 +50,7 @@ const App = () => (
                       <Route 
                         path="/planner" 
                         element={
-                          <ProtectedRoute requiredPlan="Basic">
+                          <ProtectedRoute requiredPlan="Básico">
                             <Planner />
                           </ProtectedRoute>
                         } 
@@ -58,7 +58,7 @@ const App = () => (
                       <Route 
                         path="/estudo" 
                         element={
-                          <ProtectedRoute requiredPlan="Basic">
+                          <ProtectedRoute requiredPlan="Básico">
                             <Estudo />
                           </ProtectedRoute>
                         } 
@@ -66,7 +66,7 @@ const App = () => (
                       <Route 
                         path="/simulado" 
                         element={
-                          <ProtectedRoute requiredPlan="Standard">
+                          <ProtectedRoute requiredPlan="Avançado">
                             <SimuladoPage />
                           </ProtectedRoute>
                         } 
