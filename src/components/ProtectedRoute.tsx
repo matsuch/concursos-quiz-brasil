@@ -540,7 +540,7 @@ export function FeatureGate({ children, feature, fallback }: FeatureGateProps) {
   const getPlanDisplayName = (planName: PlanName): string => {
     if (!planName) return '';
     if (planName.toLowerCase().includes('avançado') || planName === 'Premium') return 'Avançado';
-    if (planName.toLowerCase().includes('padrão') || planName === 'Standard') return 'Padrão';
+    if (planName.toLowerCase().includes('avançado') || planName === 'Standard') return 'Avançado';
     if (planName.toLowerCase().includes('básico') || planName.toLowerCase().includes('basico') || planName === 'Basic') return 'Básico';
     return planName;
   };
