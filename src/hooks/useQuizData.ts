@@ -62,7 +62,7 @@ export function useQuizData() {
         query = query.eq("prova", filters.prova);
       }
 
-      const { data, error: fetchError } = await query.limit(100);
+      const { data, error: fetchError } = await query;
 
       if (fetchError) throw fetchError;
 

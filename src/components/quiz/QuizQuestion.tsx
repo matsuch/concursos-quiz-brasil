@@ -51,7 +51,7 @@ export function QuizQuestion({
   const navigate = useNavigate();
   const { hasPlanOrHigher } = useSubscription();
   
-  const hasAccessToAIExplanation = hasPlanOrHigher("Standard");
+  const hasAccessToAIExplanation = hasPlanOrHigher("Avançado");
   
   const handleAIExplanationClick = () => {
     if (!hasAccessToAIExplanation) {
