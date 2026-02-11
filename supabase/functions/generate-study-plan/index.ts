@@ -150,10 +150,17 @@ Gere tópicos detalhados para cada matéria relevante para este tipo de concurso
       console.error("OpenAI error:", response.status, errText);
 
       return new Response(
-        JSON.stringify({ error: "Erro ao processar com IA." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ 
+          error: "OpenAI error",
+          status: response.status,
+          details: errText
+        }),
+        { status: response.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+  console.log("OPENAI_API_KEY exists:", !!OPENAI_API_KEY);
+
 
     const aiResult = await response.json();
     const toolCall = aiResult.choices?.[0]?.message?.tool_calls?.[0];
