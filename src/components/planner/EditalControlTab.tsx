@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Plus, Trash2, CheckCircle2, Circle, ChevronDown, ChevronRight, BookOpen } from 'lucide-react';
+import { AIStudyPlanGenerator } from './AIStudyPlanGenerator';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -81,14 +82,16 @@ export function EditalControlTab() {
           <h2 className="text-xl sm:text-2xl font-semibold text-foreground">Controle de Edital</h2>
           <p className="text-sm text-muted-foreground">Acompanhe seu progresso em cada tópico do edital</p>
         </div>
-        <Dialog open={isAddingTopic} onOpenChange={setIsAddingTopic}>
-          <DialogTrigger asChild>
-            <Button size="sm" className="rounded-lg shadow-sm text-sm px-3 py-2 h-auto">
-              <Plus className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Novo Tópico</span>
-              <span className="sm:hidden">Tópico</span>
-            </Button>
-          </DialogTrigger>
+        <div className="flex gap-2">
+          <AIStudyPlanGenerator />
+          <Dialog open={isAddingTopic} onOpenChange={setIsAddingTopic}>
+            <DialogTrigger asChild>
+              <Button size="sm" className="rounded-lg shadow-sm text-sm px-3 py-2 h-auto">
+                <Plus className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Novo Tópico</span>
+                <span className="sm:hidden">Tópico</span>
+              </Button>
+            </DialogTrigger>
           <DialogContent className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg max-h-[85vh] overflow-y-auto data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%]">
             <DialogHeader>
               <DialogTitle className="text-lg font-semibold text-center sm:text-left">
@@ -146,6 +149,7 @@ export function EditalControlTab() {
             </div>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {/* Progress Overview Card */}
