@@ -25,7 +25,7 @@ const systemPrompt = `Você é um especialista em concursos públicos brasileiro
 Regras:
 - Use APENAS estas matérias quando possível: ${SUBJECTS.join(", ")}. Se o edital mencionar uma matéria que não está na lista, use o nome exato do edital.
 - Atribua prioridade de 1 a 3 (1=baixa, 2=média, 3=alta) baseado na recorrência e peso típico em concursos.
-- Adicione subtópicos quando relevante (ex: artigos específicos, temas dentro do tópico).
+- Adicione subtópicos quando relevante.
 - Gere entre 10 e 50 tópicos dependendo da complexidade do edital.
 - Organize de forma clara e prática para o estudo.
 - Quando receber respostas de questionário (não texto de edital), sugira tópicos comuns para o tipo de concurso informado.`;
@@ -52,7 +52,9 @@ serve(async (req) => {
     );
 
     const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    const { data: claimsData, error: claimsError } =
+      await supabase.auth.getClaims(token);
+
     if (claimsError || !claimsData?.claims) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
@@ -63,6 +65,7 @@ serve(async (req) => {
     const { mode, editalText, questionnaire } = await req.json();
 
     let userMessage = "";
+
     if (mode === "edital") {
       userMessage = `Analise o seguinte texto de edital de concurso público e extraia os tópicos de estudo:\n\n${editalText}`;
     } else if (mode === "questionnaire") {
@@ -82,19 +85,21 @@ Gere tópicos detalhados para cada matéria relevante para este tipo de concurso
       });
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
+
+    if (!OPENAI_API_KEY) {
+      throw new Error("OPENAI_API_KEY is not configured");
     }
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "gpt-4o-mini", 
+        temperature: 0.3,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userMessage },
@@ -104,7 +109,8 @@ Gere tópicos detalhados para cada matéria relevante para este tipo de concurso
             type: "function",
             function: {
               name: "generate_study_topics",
-              description: "Generate a structured list of study topics from an edital or questionnaire.",
+              description:
+                "Generate a structured list of study topics from an edital or questionnaire.",
               parameters: {
                 type: "object",
                 properties: {
@@ -113,10 +119,13 @@ Gere tópicos detalhados para cada matéria relevante para este tipo de concurso
                     items: {
                       type: "object",
                       properties: {
-                        subject: { type: "string", description: "Subject/matéria name" },
-                        topic: { type: "string", description: "Main topic name" },
-                        subtopic: { type: "string", description: "Optional subtopic detail" },
-                        priority: { type: "number", enum: [1, 2, 3], description: "1=low, 2=medium, 3=high" },
+                        subject: { type: "string" },
+                        topic: { type: "string" },
+                        subtopic: { type: "string" },
+                        priority: {
+                          type: "number",
+                          enum: [1, 2, 3],
+                        },
                       },
                       required: ["subject", "topic", "priority"],
                       additionalProperties: false,
@@ -129,27 +138,19 @@ Gere tópicos detalhados para cada matéria relevante para este tipo de concurso
             },
           },
         ],
-        tool_choice: { type: "function", function: { name: "generate_study_topics" } },
+        tool_choice: {
+          type: "function",
+          function: { name: "generate_study_topics" },
+        },
       }),
     });
 
     if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Limite de requisições excedido. Tente novamente em alguns minutos." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Créditos insuficientes. Adicione créditos à sua workspace." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
       const errText = await response.text();
-      console.error("AI gateway error:", response.status, errText);
+      console.error("OpenAI error:", response.status, errText);
+
       return new Response(
-        JSON.stringify({ error: "Erro ao processar com IA. Tente novamente." }),
+        JSON.stringify({ error: "Erro ao processar com IA." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -160,7 +161,7 @@ Gere tópicos detalhados para cada matéria relevante para este tipo de concurso
     if (!toolCall?.function?.arguments) {
       console.error("No tool call in response:", JSON.stringify(aiResult));
       return new Response(
-        JSON.stringify({ error: "A IA não retornou dados estruturados. Tente novamente." }),
+        JSON.stringify({ error: "A IA não retornou dados estruturados." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
