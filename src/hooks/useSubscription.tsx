@@ -50,6 +50,14 @@ interface SubscriptionContextType {
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
 
+// Função auxiliar para normalizar strings removendo acentos
+function normalizeString(str: string): string {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, ''); // Remove acentos
+}
+
 export function SubscriptionProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [subscription, setSubscription] = useState<Subscription | null>(null);
@@ -116,6 +124,12 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
         }
       } else {
         setSubscription(data as Subscription);
+        console.log('📦 Assinatura carregada:', {
+          plan_name: data.plan_name,
+          status: data.status,
+          amount: data.plan_amount,
+          period_end: data.current_period_end
+        });
       }
     } catch (err) {
       console.error('Erro:', err);
@@ -140,7 +154,19 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     const now = new Date();
     const hasAccess = periodEnd > now;
     
-    return isStatusValid && hasAccess;
+    const isValid = isStatusValid && hasAccess;
+    
+    console.log('🔍 Validação de assinatura:', {
+      subscription: subscription.plan_name,
+      status: subscription.status,
+      isStatusValid,
+      periodEnd: periodEnd.toISOString(),
+      now: now.toISOString(),
+      hasAccess,
+      isValid
+    });
+    
+    return isValid;
   };
 
   const isPremium = (): boolean => {
@@ -148,38 +174,82 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
   };
 
   const getCurrentPlan = (): PlanName => {
-    if (!isSubscriptionValid() || !subscription) return null;
+    if (!isSubscriptionValid() || !subscription) {
+      console.log('❌ Assinatura não válida ou não existe');
+      return null;
+    }
     
-    // Normaliza o nome do plano
     const planName = subscription.plan_name;
+    const normalized = normalizeString(planName);
     
-    // Verifica por "Avançado" (com acento)
-    if (planName?.toLowerCase().includes('avançado')) return 'Avançado';
-    // Verifica por "Básico" (com acento) ou "Basico" (sem acento)
-    if (planName?.toLowerCase().includes('básico') || planName?.toLowerCase().includes('basico')) return 'Básico';
+    console.log('🔍 Detectando plano:', {
+      original: planName,
+      normalized,
+      amount: subscription.plan_amount
+    });
+    
+    // Verifica por "avançado" ou "avancado" (normalizado)
+    if (normalized.includes('avancado')) {
+      console.log('✅ Plano detectado: Avançado');
+      return 'Avançado';
+    }
+    
+    // Verifica por "básico" ou "basico" (normalizado)
+    if (normalized.includes('basico')) {
+      console.log('✅ Plano detectado: Básico');
+      return 'Básico';
+    }
     
     // Fallback baseado no valor (ajuste conforme seus preços)
-    if (subscription.plan_amount >= 1960) return 'Avançado'; // R$ 19,60
-    return 'Básico'; // R$ 9,80
+    // R$ 19,60 armazenado como 1960 centavos
+    if (subscription.plan_amount >= 1960) {
+      console.log('✅ Plano detectado por valor: Avançado (R$ 19,60+)');
+      return 'Avançado';
+    }
+    
+    console.log('✅ Plano detectado por valor: Básico (< R$ 19,60)');
+    return 'Básico';
   };
 
   const hasFeature = (feature: string): boolean => {
     const plan = getCurrentPlan();
-    if (!plan) return false;
-    return PLAN_FEATURES[plan]?.includes(feature) ?? false;
+    if (!plan) {
+      console.log(`❌ Sem plano ativo, feature "${feature}" não disponível`);
+      return false;
+    }
+    
+    const hasAccess = PLAN_FEATURES[plan]?.includes(feature) ?? false;
+    console.log(`🔍 Feature "${feature}" no plano "${plan}": ${hasAccess ? '✅' : '❌'}`);
+    
+    return hasAccess;
   };
 
   const hasPlanOrHigher = (requiredPlan: Exclude<PlanName, null>): boolean => {
     const currentPlan = getCurrentPlan();
-    if (!currentPlan) return false;
+    if (!currentPlan) {
+      console.log(`❌ Sem plano ativo, não possui "${requiredPlan}"`);
+      return false;
+    }
     
     const currentIndex = PLAN_HIERARCHY.indexOf(currentPlan);
     const requiredIndex = PLAN_HIERARCHY.indexOf(requiredPlan);
     
     // Se algum plano não for encontrado, retorna false
-    if (currentIndex === -1 || requiredIndex === -1) return false;
+    if (currentIndex === -1 || requiredIndex === -1) {
+      console.log(`❌ Plano não encontrado na hierarquia - Current: ${currentPlan} (${currentIndex}), Required: ${requiredPlan} (${requiredIndex})`);
+      return false;
+    }
     
-    return currentIndex >= requiredIndex;
+    const hasAccess = currentIndex >= requiredIndex;
+    console.log(`🔍 Verificação de plano:`, {
+      currentPlan,
+      requiredPlan,
+      currentIndex,
+      requiredIndex,
+      hasAccess: hasAccess ? '✅' : '❌'
+    });
+    
+    return hasAccess;
   };
 
   const getRequiredPlan = (feature: string): Exclude<PlanName, null> | null => {
