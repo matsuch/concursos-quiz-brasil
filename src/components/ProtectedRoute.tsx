@@ -1,5 +1,5 @@
-import { ReactNode, useState, useEffect } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { ReactNode, useState, useEffect, useRef } from 'react';
+import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useSubscription, PlanName } from '@/hooks/useSubscription';
 import { Loader2, Lock, CreditCard, Crown, Sparkles, Check, X, BookOpen, Users, Rocket, Brain, Zap, Star, BookmarkCheck } from 'lucide-react';
@@ -14,12 +14,14 @@ interface ProtectedRouteProps {
   children: ReactNode;
   /** Se true, exige qualquer assinatura ativa */
   requiresPremium?: boolean;
-  /** Exige um plano específico ou superior (Basic, Standard) */
+  /** Exige um plano específico ou superior (Básico, Avançado) */
   requiredPlan?: Exclude<PlanName, null>;
   /** Exige acesso a uma feature específica */
   requiredFeature?: string;
   /** Rota de fallback para usuários não autenticados */
   fallbackPath?: string;
+  /** Tempo de cache da validação em ms (padrão: 5 minutos) */
+  cacheTime?: number;
 }
 
 interface StripeProduct {
@@ -49,6 +51,12 @@ interface StripePrice {
   };
 }
 
+interface ValidationCache {
+  hasAccess: boolean;
+  timestamp: number;
+  requiredPlanName: Exclude<PlanName, null> | null;
+}
+
 const ICON_MAP: Record<string, typeof Zap | typeof Star | typeof Crown> = {
   zap: Zap,
   star: Star,
@@ -68,14 +76,19 @@ const COLOR_MAP: Record<string, { color: string; bgColor: string; textColor: str
   }
 };
 
+// Cache global para validações (persiste entre renderizações)
+const validationCache = new Map<string, ValidationCache>();
+
 export function ProtectedRoute({ 
   children, 
   requiresPremium = false,
   requiredPlan,
   requiredFeature,
-  fallbackPath = '/auth'
+  fallbackPath = '/auth',
+  cacheTime = 5 * 60 * 1000 // 5 minutos por padrão
 }: ProtectedRouteProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, loading: authLoading } = useAuth();
   const { 
     isPremium, 
@@ -89,15 +102,57 @@ export function ProtectedRoute({
   const [products, setProducts] = useState<StripeProduct[]>([]);
   const [prices, setPrices] = useState<StripePrice[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
+  
+  // Estados para validação otimizada
+  const [showContent, setShowContent] = useState(false);
+  const [validationComplete, setValidationComplete] = useState(false);
+  const [accessDenied, setAccessDenied] = useState(false);
+  const [denialReason, setDenialReason] = useState<Exclude<PlanName, null> | null>(null);
+  
+  const validationInProgress = useRef(false);
+  const initialLoadComplete = useRef(false);
 
   const needsSubscriptionCheck = requiresPremium || requiredPlan || requiredFeature;
 
-  // Buscar produtos do Stripe
+  // Gera chave única para cache baseada nos requisitos da rota
+  const getCacheKey = () => {
+    return `${location.pathname}-${user?.id}-${requiredPlan || ''}-${requiredFeature || ''}`;
+  };
+
+  // Verifica se o cache ainda é válido
+  const isCacheValid = (cache: ValidationCache): boolean => {
+    return Date.now() - cache.timestamp < cacheTime;
+  };
+
+  // Valida acesso do usuário
+  const validateAccess = (): { hasAccess: boolean; requiredPlanName: Exclude<PlanName, null> | null } => {
+    let hasAccess = true;
+    let requiredPlanName: Exclude<PlanName, null> | null = null;
+
+    if (requiresPremium && !isPremium()) {
+      hasAccess = false;
+      requiredPlanName = 'Básico';
+    }
+
+    if (requiredPlan && !hasPlanOrHigher(requiredPlan)) {
+      hasAccess = false;
+      requiredPlanName = requiredPlan;
+    }
+
+    if (requiredFeature && !hasFeature(requiredFeature)) {
+      hasAccess = false;
+      requiredPlanName = getRequiredPlan(requiredFeature);
+    }
+
+    return { hasAccess, requiredPlanName };
+  };
+
+  // Buscar produtos do Stripe (apenas quando necessário)
   useEffect(() => {
-    if (needsSubscriptionCheck && user && !authLoading) {
+    if (accessDenied && !loadingProducts && products.length === 0) {
       fetchProducts();
     }
-  }, [needsSubscriptionCheck, user, authLoading]);
+  }, [accessDenied]);
 
   const fetchProducts = async () => {
     setLoadingProducts(true);
@@ -106,13 +161,11 @@ export function ProtectedRoute({
       if (error) throw error;
       
       if (data?.products && data?.prices) {
-        // Filtrar apenas produtos ativos e ordenar pelo preço
         const activeProducts = data.products.filter((product: StripeProduct) => 
           product.name.toLowerCase().includes('básico') || 
           product.name.toLowerCase().includes('avançado')
         );
 
-        // Ordenar por preço (do mais barato para o mais caro)
         activeProducts.sort((a: StripeProduct, b: StripeProduct) => {
           const priceA = data.prices.find((p: StripePrice) => p.product === a.id)?.unit_amount || 0;
           const priceB = data.prices.find((p: StripePrice) => p.product === b.id)?.unit_amount || 0;
@@ -129,6 +182,81 @@ export function ProtectedRoute({
       setLoadingProducts(false);
     }
   };
+
+  // Validação otimizada com cache
+  useEffect(() => {
+    if (authLoading || !user) return;
+
+    const performValidation = async () => {
+      if (validationInProgress.current) return;
+      validationInProgress.current = true;
+
+      try {
+        const cacheKey = getCacheKey();
+        const cached = validationCache.get(cacheKey);
+
+        // Se tem cache válido, usa ele imediatamente
+        if (cached && isCacheValid(cached)) {
+          setShowContent(cached.hasAccess);
+          setAccessDenied(!cached.hasAccess);
+          setDenialReason(cached.requiredPlanName);
+          setValidationComplete(true);
+          initialLoadComplete.current = true;
+          return;
+        }
+
+        // Se não precisa verificar assinatura, libera imediatamente
+        if (!needsSubscriptionCheck) {
+          setShowContent(true);
+          setValidationComplete(true);
+          initialLoadComplete.current = true;
+          return;
+        }
+
+        // Se ainda está carregando a assinatura mas já teve uma validação antes
+        if (subLoading && initialLoadComplete.current && cached) {
+          // Mostra o último estado conhecido enquanto revalida
+          setShowContent(cached.hasAccess);
+          setAccessDenied(!cached.hasAccess);
+          setDenialReason(cached.requiredPlanName);
+          return;
+        }
+
+        // Aguarda a assinatura carregar completamente
+        if (subLoading) return;
+
+        // Realiza validação
+        const validation = validateAccess();
+        
+        // Atualiza cache
+        validationCache.set(cacheKey, {
+          hasAccess: validation.hasAccess,
+          timestamp: Date.now(),
+          requiredPlanName: validation.requiredPlanName
+        });
+
+        // Atualiza estado
+        setShowContent(validation.hasAccess);
+        setAccessDenied(!validation.hasAccess);
+        setDenialReason(validation.requiredPlanName);
+        setValidationComplete(true);
+        initialLoadComplete.current = true;
+
+      } finally {
+        validationInProgress.current = false;
+      }
+    };
+
+    performValidation();
+  }, [user, authLoading, subLoading, needsSubscriptionCheck, location.pathname]);
+
+  // Limpa cache quando usuário faz logout
+  useEffect(() => {
+    if (!user) {
+      validationCache.clear();
+      initialLoadComplete.current = false;
+    }
+  }, [user]);
 
   const getPlanIdFromProduct = (productName: string): string => {
     const nameLower = productName.toLowerCase();
@@ -149,7 +277,6 @@ export function ProtectedRoute({
       return product.marketing_features.map(f => f.name);
     }
     
-    // Fallback para metadata se não houver marketing_features
     if (product.metadata?.features) {
       return product.metadata.features.split(';').map(f => f.trim());
     }
@@ -183,8 +310,8 @@ export function ProtectedRoute({
     return COLOR_MAP[planId] || COLOR_MAP.basic;
   };
 
-  // Loading state
-  if (authLoading || (needsSubscriptionCheck && subLoading) || loadingProducts) {
+  // Loading inicial apenas na primeira carga
+  if (authLoading || (!initialLoadComplete.current && (needsSubscriptionCheck && subLoading))) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -200,221 +327,112 @@ export function ProtectedRoute({
     return <Navigate to={fallbackPath} replace />;
   }
 
-  // Check subscription requirements
-  let hasAccess = true;
-  let requiredPlanName: Exclude<PlanName, null> | null = null;
-
-  if (requiresPremium && !isPremium()) {
-    hasAccess = false;
-    requiredPlanName = 'Básico';
-  }
-
-  if (requiredPlan && !hasPlanOrHigher(requiredPlan)) {
-    hasAccess = false;
-    requiredPlanName = requiredPlan;
-  }
-
-  if (requiredFeature && !hasFeature(requiredFeature)) {
-    hasAccess = false;
-    requiredPlanName = getRequiredPlan(requiredFeature);
-  }
-
-  // No access - show upgrade prompt
-  if (!hasAccess) {
-    const currentPlan = getCurrentPlan();
-    const currentPlanDisplayName = currentPlan ? getPlanDisplayName(currentPlan) : null;
-    
-    // Determinar quais produtos são elegíveis (igual ou superior ao plano requerido)
-    const eligibleProducts = products.filter(product => {
-      const planId = getPlanIdFromProduct(product.name);
-      const planHierarchy = ['basic', 'advanced'];
-      
-      // Se não temos plano requerido, nenhum é elegível por padrão
-      if (!requiredPlanName) return false;
-      
-      const requiredPlanId = requiredPlanName.toLowerCase();
-      const productPlanLevel = planHierarchy.indexOf(planId);
-      const requiredPlanLevel = planHierarchy.indexOf(requiredPlanId);
-      
-      return productPlanLevel >= requiredPlanLevel;
-    });
-
-    // Filtrar apenas os produtos relevantes para mostrar (Básico e Avançado)
-    const productsToShow = products.filter(product => {
-      const planId = getPlanIdFromProduct(product.name);
-      return planId === 'basic' || planId === 'standard';
-    });
-
+  // Access denied - mostra tela de upgrade
+  if (accessDenied) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-background to-secondary/5 flex items-center justify-center p-4">
-        <div className="max-w-4xl w-full">
-          <Card className="shadow-2xl border-primary/20 overflow-hidden">
-            <CardContent className="p-6 md:p-8">
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background flex items-center justify-center p-4">
+        <div className="w-full max-w-4xl">
+          <Card className="border-2 shadow-2xl">
+            <CardContent className="pt-8 px-6 pb-8">
               {/* Header */}
               <div className="text-center mb-8">
-                <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Lock className="w-8 h-8 md:w-10 md:h-10 text-primary" />
+                <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                  <Lock className="w-10 h-10 text-primary" />
                 </div>
                 
-                <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
-                  Acesso Restrito
-                </h2>
+                <h1 className="text-3xl font-bold text-foreground mb-3">
+                  Conteúdo Exclusivo
+                </h1>
                 
-                <p className="text-muted-foreground mb-4 md:mb-6 max-w-2xl mx-auto text-lg">
-                  {requiredPlanName 
-                    ? `Esta funcionalidade está disponível apenas para assinantes do plano ${getPlanDisplayName(requiredPlanName)} ou superior.`
-                    : 'Esta funcionalidade está disponível apenas para assinantes.'
+                <p className="text-lg text-muted-foreground max-w-xl mx-auto">
+                  {denialReason 
+                    ? `Esta página requer o plano ${denialReason} ou superior`
+                    : 'Faça upgrade para acessar este conteúdo exclusivo'
                   }
                 </p>
-                
-                {currentPlan && (
-                  <Badge variant="outline" className="mt-2 px-4 py-1.5 text-sm">
-                    <Crown className="w-3 h-3 md:w-4 md:h-4 mr-2" />
-                    Plano atual: {currentPlanDisplayName}
-                  </Badge>
-                )}
               </div>
 
-              <Separator className="my-6" />
-              
-              {/* Seção de comparação de planos */}
-              {productsToShow.length > 0 && (
+              {/* Planos disponíveis */}
+              {products.length > 0 && (
                 <>
-                  <div className="mb-8">
-                    <h3 className="text-xl font-semibold text-center mb-6 text-foreground">
-                      Compare os planos disponíveis
-                    </h3>
+                  <div className="mb-6">
+                    <h2 className="text-xl font-semibold text-center mb-6">
+                      Escolha o Plano Ideal
+                    </h2>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-                      {productsToShow.map((product) => {
-                        const planId = getPlanIdFromProduct(product.name);
-                        const planDisplayName = getPlanDisplayName(product.name);
-                        const features = getFeaturesFromProduct(product);
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+                      {products.map(product => {
                         const price = getPriceForProduct(product.id);
-                        const isCurrentPlanType = currentPlan?.toLowerCase() === planId;
-                        const isRequiredPlan = requiredPlanName?.toLowerCase() === planId;
-                        const isEligible = eligibleProducts.some(p => p.id === product.id);
-                        const colors = getPlanColors(product);
-                        const Icon = getPlanIcon(product);
+                        if (!price) return null;
                         
+                        const Icon = getPlanIcon(product);
+                        const colors = getPlanColors(product);
+                        const features = getFeaturesFromProduct(product);
+                        const planName = getPlanDisplayName(product.name);
+                        const isRecommended = denialReason === planName;
+
                         return (
-                          <Card 
+                          <div 
                             key={product.id}
-                            className={`relative border-2 transition-all duration-300 hover:shadow-xl ${
-                              isCurrentPlanType 
-                                ? 'border-green-500 ring-2 ring-green-500/20 shadow-lg' 
-                                : isRequiredPlan
-                                ? 'border-primary ring-2 ring-primary/20 shadow-md'
-                                : 'border-border'
-                            } ${isEligible ? 'opacity-100' : 'opacity-70'}`}
+                            className={`relative rounded-2xl p-6 transition-all duration-300 ${
+                              isRecommended 
+                                ? 'border-2 border-primary shadow-lg ring-2 ring-primary/20' 
+                                : 'border border-border/50 hover:border-border hover:shadow-md'
+                            }`}
                           >
-                            {product.metadata?.popular === 'true' && (
-                              <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-secondary text-white px-4 py-1 text-xs">
-                                <Sparkles className="w-3 h-3 mr-1" />
-                                Mais Popular
+                            {isRecommended && (
+                              <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground">
+                                Recomendado
                               </Badge>
                             )}
                             
-                            {isCurrentPlanType && (
-                              <Badge className="absolute -top-3 right-4 bg-green-500 text-white px-3 py-1 text-xs">
-                                <Check className="w-3 h-3 mr-1" />
-                                Seu Plano
-                              </Badge>
-                            )}
+                            <div className="text-center mb-6">
+                              <div className={`w-12 h-12 ${colors.bgColor} rounded-xl flex items-center justify-center mx-auto mb-3`}>
+                                <Icon className={`w-6 h-6 ${colors.textColor}`} />
+                              </div>
+                              
+                              <h3 className="text-xl font-bold text-foreground mb-2">
+                                {planName}
+                              </h3>
+                              
+                              <div className="flex items-baseline justify-center gap-1">
+                                <span className="text-3xl font-bold text-foreground">
+                                  {formatPrice(price).split('/')[0]}
+                                </span>
+                                <span className="text-muted-foreground">
+                                  /{formatPrice(price).split('/')[1]}
+                                </span>
+                              </div>
+                            </div>
 
-                            <CardContent className="pt-8 pb-6">
-                              {/* Nome do plano com ícone */}
-                              <div className="text-center mb-4">
-                                <div className="flex items-center justify-center gap-2 mb-2">
-                                  <div className={`w-10 h-10 ${colors.bgColor} rounded-full flex items-center justify-center`}>
-                                    <Icon className={`w-5 h-5 ${colors.textColor}`} />
-                                  </div>
-                                  <h4 className="text-xl font-bold text-foreground">
-                                    {planDisplayName}
-                                  </h4>
+                            <div className="space-y-3 mb-6">
+                              {features.map((feature, index) => (
+                                <div key={index} className="flex items-start gap-2">
+                                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                                  <span className="text-sm text-foreground">{feature}</span>
                                 </div>
-                                <p className="text-sm text-muted-foreground min-h-[40px]">
-                                  {product.description}
-                                </p>
-                              </div>
+                              ))}
+                            </div>
 
-                              {/* Preço */}
-                              {price && (
-                                <div className="text-center mb-6">
-                                  <div className="text-2xl md:text-3xl font-bold text-foreground mb-1">
-                                    {formatPrice(price)}
-                                  </div>
-                                  {price.recurring?.interval === "year" && (
-                                    <p className="text-sm text-green-600">
-                                      Economize 20% comparado ao mensal
-                                    </p>
-                                  )}
-                                </div>
-                              )}
-
-                              {/* Lista de features - IGUAL À PÁGINA DE PLANOS */}
-                              <div className="space-y-3 mb-6">
-                                {features.slice(0, 5).map((feature, idx) => (
-                                  <div key={idx} className="flex items-start gap-3">
-                                    {isEligible ? (
-                                      <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-1" />
-                                    ) : (
-                                      <X className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-1" />
-                                    )}
-                                    <span className={`text-sm text-left ${
-                                      isEligible ? 'text-foreground' : 'text-muted-foreground'
-                                    }`}>
-                                      {feature}
-                                    </span>
-                                  </div>
-                                ))}
-                                {features.length > 5 && (
-                                  <div className="text-xs text-muted-foreground text-center pt-2">
-                                    + {features.length - 5} recursos adicionais
-                                  </div>
-                                )}
-                              </div>
-
-                              {/* Botão de ação */}
-                              <div className="mt-auto">
-                                {isCurrentPlanType ? (
-                                  <Button 
-                                    className="w-full" 
-                                    variant="outline" 
-                                    disabled
-                                    size="lg"
-                                  >
-                                    <Check className="w-4 h-4 mr-2" />
-                                    Plano Atual
-                                  </Button>
-                                ) : isEligible ? (
-                                  <Button 
-                                    onClick={() => navigate('/planos')}
-                                    className={`w-full bg-gradient-to-r ${colors.color} hover:opacity-90`}
-                                    size="lg"
-                                  >
-                                    <CreditCard className="w-4 h-4 mr-2" />
-                                    Assinar Agora
-                                  </Button>
-                                ) : (
-                                  <Button 
-                                    onClick={() => navigate('/planos')}
-                                    className="w-full"
-                                    variant="outline"
-                                    size="lg"
-                                  >
-                                    Ver Detalhes
-                                  </Button>
-                                )}
-                              </div>
-                            </CardContent>
-                          </Card>
+                            <Button
+                              onClick={() => navigate('/planos')}
+                              className={`w-full ${
+                                isRecommended 
+                                  ? 'bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90' 
+                                  : ''
+                              }`}
+                              variant={isRecommended ? 'default' : 'outline'}
+                            >
+                              <CreditCard className="w-4 h-4 mr-2" />
+                              Assinar Agora
+                            </Button>
+                          </div>
                         );
                       })}
                     </div>
                   </div>
 
-                  {/* Seção de Diferenciais - IGUAL À PÁGINA DE PLANOS */}
+                  {/* Seção de Diferenciais */}
                   <div className="mb-8 max-w-2xl mx-auto">
                     <div className="text-center mb-6">
                       <h3 className="text-lg font-semibold text-foreground mb-2">
@@ -493,8 +511,8 @@ export function ProtectedRoute({
     );
   }
 
-  // All checks passed
-  return <>{children}</>;
+  // All checks passed - mostra o conteúdo
+  return <>{showContent ? children : null}</>;
 }
 
 // Componente para bloquear apenas parte do conteúdo baseado em feature
