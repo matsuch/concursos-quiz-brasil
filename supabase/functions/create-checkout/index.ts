@@ -60,6 +60,7 @@ serve(async (req) => {
         },
       ],
       mode: "subscription",
+      locale: "pt-BR",
       success_url: `${req.headers.get("origin")}/?success=true`,
       cancel_url: `${req.headers.get("origin")}/?canceled=true`,
     });
