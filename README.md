@@ -71,3 +71,30 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## Stripe: trocar de HML para PRD
+
+As funções em `supabase/functions/*` agora priorizam variáveis de produção:
+
+- `STRIPE_SECRET_KEY_PRD`
+- `STRIPE_WEBHOOK_SECRET_PRD`
+
+Se não existirem, o código ainda usa fallback para `STRIPE_SECRET_KEY` e `STRIPE_WEBHOOK_SECRET`.
+
+Para atualizar no Supabase (projeto atual):
+
+```sh
+supabase secrets set STRIPE_SECRET_KEY_PRD=sk_live_xxx
+supabase secrets set STRIPE_WEBHOOK_SECRET_PRD=whsec_xxx
+```
+
+Depois, faça o deploy das funções:
+
+```sh
+supabase functions deploy create-checkout
+supabase functions deploy get-products
+supabase functions deploy customer-portal
+supabase functions deploy create-portal-session
+supabase functions deploy cancel-subscription
+supabase functions deploy webhook-stripe
+```
