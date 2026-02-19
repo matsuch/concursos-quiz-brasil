@@ -142,20 +142,20 @@ export function AIStudyPlanGenerator() {
 
       const body = method === 'edital'
         ? {
-            mode: 'edital',
-            editalText,
-            questionnaire: {
-              ...editalSchedule,
-              diasSemana: editalSchedule.diasSemana.map(d => DAY_NAMES[d]),
-            },
-          }
+          mode: 'edital',
+          editalText,
+          questionnaire: {
+            ...editalSchedule,
+            diasSemana: editalSchedule.diasSemana.map(d => DAY_NAMES[d]),
+          },
+        }
         : {
-            mode: 'questionnaire',
-            questionnaire: {
-              ...questionnaire,
-              diasSemana: questionnaire.diasSemana.map(d => DAY_NAMES[d]),
-            },
-          };
+          mode: 'questionnaire',
+          questionnaire: {
+            ...questionnaire,
+            diasSemana: questionnaire.diasSemana.map(d => DAY_NAMES[d]),
+          },
+        };
 
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-study-plan`,
@@ -175,13 +175,15 @@ export function AIStudyPlanGenerator() {
       }
 
       const data = await response.json();
-      setSuggestedTopics(
-        (data.topics || []).map((t: any) => ({ ...t, selected: true }))
-      );
-      setScheduleBlocks(
-        (data.schedule || []).map((s: any) => ({ ...s, selected: true }))
-      );
-      setStep('proposal');
+
+      // Fechar o modal e mostrar mensagem de sucesso
+      toast({
+        title: 'Plano sendo gerado! 🎯',
+        description: 'Seu plano de estudos está sendo processado em background. Você receberá uma notificação quando estiver pronto.',
+      });
+
+      handleOpenChange(false);
+
     } catch (e: any) {
       toast({ title: e.message || 'Erro ao gerar plano de estudos', variant: 'destructive' });
     } finally {
@@ -241,7 +243,7 @@ export function AIStudyPlanGenerator() {
         for (let week = 0; week < weeksCount; week++) {
           const baseDate = addWeeks(weekStart, week);
           const eventDay = setDay(baseDate, block.day_of_week, { weekStartsOn: 0 });
-          
+
           // Skip past dates
           if (eventDay < now && week === 0) continue;
 
@@ -354,11 +356,10 @@ export function AIStudyPlanGenerator() {
                   key={idx}
                   type="button"
                   onClick={() => toggleDay(idx, isEdital)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-                    isSelected
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${isSelected
                       ? 'bg-primary text-primary-foreground border-primary'
                       : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'
-                  }`}
+                    }`}
                 >
                   {day}
                 </button>
@@ -558,9 +559,8 @@ export function AIStudyPlanGenerator() {
                           return (
                             <div
                               key={topic.originalIndex}
-                              className={`flex items-center gap-3 p-2.5 rounded-lg border transition-colors cursor-pointer ${
-                                topic.selected ? 'bg-primary/5 border-primary/20' : 'bg-muted/20 border-muted opacity-60'
-                              }`}
+                              className={`flex items-center gap-3 p-2.5 rounded-lg border transition-colors cursor-pointer ${topic.selected ? 'bg-primary/5 border-primary/20' : 'bg-muted/20 border-muted opacity-60'
+                                }`}
                               onClick={() => toggleTopic(topic.originalIndex)}
                             >
                               <Checkbox checked={topic.selected} onCheckedChange={() => toggleTopic(topic.originalIndex)} className="flex-shrink-0" />
@@ -602,9 +602,8 @@ export function AIStudyPlanGenerator() {
                             .map((block) => (
                               <div
                                 key={block.originalIndex}
-                                className={`flex items-center gap-3 p-2.5 rounded-lg border transition-colors cursor-pointer ${
-                                  block.selected ? 'bg-primary/5 border-primary/20' : 'bg-muted/20 border-muted opacity-60'
-                                }`}
+                                className={`flex items-center gap-3 p-2.5 rounded-lg border transition-colors cursor-pointer ${block.selected ? 'bg-primary/5 border-primary/20' : 'bg-muted/20 border-muted opacity-60'
+                                  }`}
                                 onClick={() => toggleScheduleBlock(block.originalIndex)}
                               >
                                 <Checkbox checked={block.selected} onCheckedChange={() => toggleScheduleBlock(block.originalIndex)} className="flex-shrink-0" />

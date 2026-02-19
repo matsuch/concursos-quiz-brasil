@@ -14,15 +14,17 @@ import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { ProposalsTab } from '@/components/planner/ProposalsTab';
+import { NotificationsPopover } from '@/components/planner/NotificationsPopover';
 
-function PlannerSidebar({ 
-  selectedDate, 
+function PlannerSidebar({
+  selectedDate,
   onSelectDate,
   onNewEvent,
   activePanel,
   onPanelChange
-}: { 
-  selectedDate: Date; 
+}: {
+  selectedDate: Date;
   onSelectDate: (date: Date) => void;
   onNewEvent: () => void;
   activePanel: string;
@@ -46,8 +48,8 @@ function PlannerSidebar({
   return (
     <div className="flex flex-col h-full">
       {/* New Event Button */}
-      <Button 
-        onClick={onNewEvent} 
+      <Button
+        onClick={onNewEvent}
         className="mb-5 rounded-xl shadow-md h-11 text-sm font-semibold gap-2"
       >
         <Plus className="w-4 h-4" />
@@ -73,8 +75,8 @@ function PlannerSidebar({
           onClick={() => onPanelChange('upcoming')}
           className={cn(
             "flex-1 text-xs font-medium py-2 px-3 rounded-md transition-colors",
-            activePanel === 'upcoming' 
-              ? "bg-card shadow-sm text-foreground" 
+            activePanel === 'upcoming'
+              ? "bg-card shadow-sm text-foreground"
               : "text-muted-foreground hover:text-foreground"
           )}
         >
@@ -84,8 +86,8 @@ function PlannerSidebar({
           onClick={() => onPanelChange('edital')}
           className={cn(
             "flex-1 text-xs font-medium py-2 px-3 rounded-md transition-colors",
-            activePanel === 'edital' 
-              ? "bg-card shadow-sm text-foreground" 
+            activePanel === 'edital'
+              ? "bg-card shadow-sm text-foreground"
               : "text-muted-foreground hover:text-foreground"
           )}
         >
@@ -113,9 +115,9 @@ function PlannerSidebar({
                     className="w-full text-left p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors group"
                   >
                     <div className="flex items-start gap-2.5">
-                      <div 
-                        className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" 
-                        style={{ backgroundColor: event.color || 'hsl(var(--primary))' }} 
+                      <div
+                        className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0"
+                        style={{ backgroundColor: event.color || 'hsl(var(--primary))' }}
                       />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-foreground truncate">{event.title}</p>
@@ -288,8 +290,8 @@ export default function Planner() {
                       onClick={() => setActiveTab('calendar')}
                       className={cn(
                         "text-xs font-medium py-1.5 px-3 rounded-md transition-colors",
-                        activeTab === 'calendar' 
-                          ? "bg-card shadow-sm text-foreground" 
+                        activeTab === 'calendar'
+                          ? "bg-card shadow-sm text-foreground"
                           : "text-muted-foreground hover:text-foreground"
                       )}
                     >
@@ -299,27 +301,43 @@ export default function Planner() {
                       onClick={() => setActiveTab('edital')}
                       className={cn(
                         "text-xs font-medium py-1.5 px-3 rounded-md transition-colors",
-                        activeTab === 'edital' 
-                          ? "bg-card shadow-sm text-foreground" 
+                        activeTab === 'edital'
+                          ? "bg-card shadow-sm text-foreground"
                           : "text-muted-foreground hover:text-foreground"
                       )}
                     >
                       Controle de Edital
                     </button>
+                    <button
+                      onClick={() => setActiveTab('proposals')}
+                      className={cn(
+                        "text-xs font-medium py-1.5 px-3 rounded-md transition-colors",
+                        activeTab === 'proposals'
+                          ? "bg-card shadow-sm text-foreground"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      Propostas
+                    </button>
                   </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <NotificationsPopover />
                 </div>
               </div>
 
               {/* Content Area */}
               <div className="flex-1 overflow-auto p-6">
                 {activeTab === 'calendar' ? (
-                  <CalendarTab 
-                    selectedDate={selectedDate} 
+                  <CalendarTab
+                    selectedDate={selectedDate}
                     onDateChange={setSelectedDate}
                     triggerNewEvent={triggerNewEvent}
                   />
-                ) : (
+                ) : activeTab === 'edital' ? (
                   <EditalControlTab />
+                ) : (
+                  <ProposalsTab />
                 )}
               </div>
             </main>

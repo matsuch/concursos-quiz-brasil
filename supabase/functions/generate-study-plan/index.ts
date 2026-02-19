@@ -57,25 +57,89 @@ serve(async (req) => {
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_ANON_KEY")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, // Usar service role para operações em background
       { global: { headers: { Authorization: authHeader } } }
     );
 
     const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } =
-      await supabase.auth.getClaims(token);
+    const { data: userData, error: userError } = await supabase.auth.getUser(token);
 
-    if (claimsError || !claimsData?.claims) {
+    if (userError || !userData?.user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
+    const userId = userData.user.id;
     const { mode, editalText, questionnaire } = await req.json();
 
-    let userMessage = "";
+    // Criar registro da proposta
+    const { data: proposal, error: proposalError } = await supabase
+      .from('study_plan_proposals')
+      .insert({
+        user_id: userId,
+        mode: mode,
+        input_data: mode === 'edital' 
+          ? { editalText, questionnaire } 
+          : { questionnaire },
+        status: 'pending',
+        topics: [],
+        schedule: []
+      })
+      .select()
+      .single();
 
+    if (proposalError) {
+      console.error('Error creating proposal:', proposalError);
+      return new Response(JSON.stringify({ error: "Failed to create proposal" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Responder imediatamente que a requisição foi aceita
+    const response = new Response(
+      JSON.stringify({ 
+        message: "Plano de estudos está sendo gerado em background",
+        proposal_id: proposal.id,
+        status: "processing"
+      }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+
+    // Iniciar processamento em background (não await)
+    processStudyPlan(proposal.id, userId, mode, editalText, questionnaire).catch(console.error);
+
+    return response;
+
+  } catch (e) {
+    console.error("generate-study-plan error:", e);
+    return new Response(
+      JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido" }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+});
+
+async function processStudyPlan(
+  proposalId: string,
+  userId: string,
+  mode: string,
+  editalText: string,
+  questionnaire: any
+) {
+  console.log(`Processing study plan for proposal ${proposalId}`);
+  
+  // Criar cliente com service role para poder atualizar a proposta
+  const supabase = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+  );
+
+  try {
+    // Construir mensagem do usuário
+    let userMessage = "";
     if (mode === "edital") {
       const schedule = questionnaire || {};
       userMessage = `Analise o seguinte texto de edital de concurso público e extraia os tópicos de estudo.
@@ -88,7 +152,7 @@ Informações de agenda:
 
 Texto do edital:
 ${editalText}`;
-    } else if (mode === "questionnaire") {
+    } else {
       userMessage = `Com base nas seguintes informações, gere um plano de estudos completo com tópicos E cronograma:
 - Concurso: ${questionnaire.concurso}
 - Órgão: ${questionnaire.orgao}
@@ -101,19 +165,14 @@ ${editalText}`;
 - Horário preferido para começar: ${questionnaire.horarioInicio || "08:00"}
 
 Gere tópicos detalhados para cada matéria relevante e um cronograma semanal.`;
-    } else {
-      return new Response(JSON.stringify({ error: "Invalid mode" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
     }
 
     const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
-
     if (!OPENAI_API_KEY) {
       throw new Error("OPENAI_API_KEY is not configured");
     }
 
+    // Chamar OpenAI
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -127,71 +186,50 @@ Gere tópicos detalhados para cada matéria relevante e um cronograma semanal.`;
           { role: "system", content: systemPrompt },
           { role: "user", content: userMessage },
         ],
-        tools: [
-          {
-            type: "function",
-            function: {
-              name: "generate_study_plan",
-              description:
-                "Generate a structured list of study topics and a weekly schedule.",
-              parameters: {
-                type: "object",
-                properties: {
-                  topics: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        subject: { type: "string" },
-                        topic: { type: "string" },
-                        subtopic: { type: "string" },
-                        priority: { type: "number", enum: [1, 2, 3] },
-                      },
-                      required: ["subject", "topic", "priority"],
-                      additionalProperties: false,
+        tools: [{
+          type: "function",
+          function: {
+            name: "generate_study_plan",
+            description: "Generate a structured list of study topics and a weekly schedule.",
+            parameters: {
+              type: "object",
+              properties: {
+                topics: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      subject: { type: "string" },
+                      topic: { type: "string" },
+                      subtopic: { type: "string" },
+                      priority: { type: "number", enum: [1, 2, 3] },
                     },
-                  },
-                  schedule: {
-                    type: "array",
-                    description: "Weekly recurring schedule blocks",
-                    items: {
-                      type: "object",
-                      properties: {
-                        day_of_week: {
-                          type: "number",
-                          description: "0=Sunday, 1=Monday, ..., 6=Saturday",
-                        },
-                        start_hour: {
-                          type: "number",
-                          description: "Hour to start (0-23)",
-                        },
-                        duration_minutes: {
-                          type: "number",
-                          description: "Duration in minutes",
-                        },
-                        subject: { type: "string" },
-                        title: {
-                          type: "string",
-                          description: "Display title for the calendar event",
-                        },
-                      },
-                      required: [
-                        "day_of_week",
-                        "start_hour",
-                        "duration_minutes",
-                        "subject",
-                        "title",
-                      ],
-                      additionalProperties: false,
-                    },
+                    required: ["subject", "topic", "priority"],
+                    additionalProperties: false,
                   },
                 },
-                required: ["topics", "schedule"],
-                additionalProperties: false,
+                schedule: {
+                  type: "array",
+                  description: "Weekly recurring schedule blocks",
+                  items: {
+                    type: "object",
+                    properties: {
+                      day_of_week: { type: "number", description: "0=Sunday, 1=Monday, ..., 6=Saturday" },
+                      start_hour: { type: "number", description: "Hour to start (0-23)" },
+                      duration_minutes: { type: "number", description: "Duration in minutes" },
+                      subject: { type: "string" },
+                      title: { type: "string", description: "Display title for the calendar event" },
+                    },
+                    required: ["day_of_week", "start_hour", "duration_minutes", "subject", "title"],
+                    additionalProperties: false,
+                  },
+                },
               },
+              required: ["topics", "schedule"],
+              additionalProperties: false,
             },
           },
-        ],
+        }],
         tool_choice: {
           type: "function",
           function: { name: "generate_study_plan" },
@@ -201,35 +239,76 @@ Gere tópicos detalhados para cada matéria relevante e um cronograma semanal.`;
 
     if (!response.ok) {
       const errText = await response.text();
-      console.error("OpenAI error:", response.status, errText);
-      return new Response(
-        JSON.stringify({ error: "OpenAI error", status: response.status, details: errText }),
-        { status: response.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      throw new Error(`OpenAI error: ${response.status} - ${errText}`);
     }
 
     const aiResult = await response.json();
     const toolCall = aiResult.choices?.[0]?.message?.tool_calls?.[0];
 
     if (!toolCall?.function?.arguments) {
-      console.error("No tool call in response:", JSON.stringify(aiResult));
-      return new Response(
-        JSON.stringify({ error: "A IA não retornou dados estruturados." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      throw new Error("A IA não retornou dados estruturados.");
     }
 
     const parsed = JSON.parse(toolCall.function.arguments);
 
-    return new Response(
-      JSON.stringify({ topics: parsed.topics, schedule: parsed.schedule || [] }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
-  } catch (e) {
-    console.error("generate-study-plan error:", e);
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    // Atualizar proposta com os dados gerados
+    const { error: updateError } = await supabase
+      .from('study_plan_proposals')
+      .update({
+        topics: parsed.topics || [],
+        schedule: parsed.schedule || [],
+        status: 'pending', // Mantém pending até usuário aprovar
+        processed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', proposalId);
+
+    if (updateError) {
+      throw new Error(`Failed to update proposal: ${updateError.message}`);
+    }
+
+    // Criar notificação para o usuário
+    const { error: notifError } = await supabase
+      .from('notifications')
+      .insert({
+        user_id: userId,
+        type: 'study_plan_ready',
+        title: 'Plano de Estudos Pronto! 🎯',
+        message: `Seu plano de estudos foi gerado com ${parsed.topics?.length || 0} tópicos e ${parsed.schedule?.length || 0} blocos semanais.`,
+        data: { proposal_id: proposalId }
+      });
+
+    if (notifError) {
+      console.error('Error creating notification:', notifError);
+    }
+
+    console.log(`Successfully processed proposal ${proposalId}`);
+
+  } catch (error) {
+    console.error(`Error processing proposal ${proposalId}:`, error);
+
+    // Atualizar proposta com erro
+    await supabase
+      .from('study_plan_proposals')
+      .update({
+        status: 'rejected',
+        input_data: {
+          ...(await supabase.from('study_plan_proposals').select('input_data').eq('id', proposalId).single()).data?.input_data,
+          error: error.message
+        },
+        processed_at: new Date().toISOString()
+      })
+      .eq('id', proposalId);
+
+    // Notificar erro
+    await supabase
+      .from('notifications')
+      .insert({
+        user_id: userId,
+        type: 'study_plan_error',
+        title: 'Erro ao gerar plano',
+        message: 'Ocorreu um erro ao gerar seu plano de estudos. Tente novamente.',
+        data: { proposal_id: proposalId, error: error.message }
+      });
   }
-});
+}
