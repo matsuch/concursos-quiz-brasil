@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import { useState, useEffect, createContext, useContext, ReactNode, useCallback, useMemo, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -8,8 +8,8 @@ type SubscriptionStatus = 'active' | 'canceled' | 'trialing' | 'past_due' | 'inc
 export type PlanName = 'Básico' | 'Avançado' | null;
 
 export const PLAN_FEATURES: Record<Exclude<PlanName, null>, string[]> = {
-  'Básico': ['flashcards', 'quiz', 'planner'], // Recursos do plano Básico
-  'Avançado': ['flashcards', 'quiz', 'planner', 'flashcardsCustom', 'simulado', 'ai_explanation', 'ranking'], // Recursos do plano Avançado
+  'Básico': ['flashcards', 'quiz', 'planner'],
+  'Avançado': ['flashcards', 'quiz', 'planner', 'flashcardsCustom', 'simulado', 'ai_explanation', 'ranking'],
 };
 
 // Hierarquia de planos (índice maior = plano superior)
@@ -28,23 +28,15 @@ interface SubscriptionContextType {
   subscription: Subscription | null;
   loading: boolean;
   error: string | null;
-  // Verifica se tem qualquer assinatura ativa
+  initialized: boolean;
   hasActiveSubscription: () => boolean;
-  // Verifica se a assinatura está válida (ativa + dentro do período)
   isSubscriptionValid: () => boolean;
-  // Verifica se é premium (qualquer plano ativo)
   isPremium: () => boolean;
-  // Retorna o nome do plano atual
   getCurrentPlan: () => PlanName;
-  // Verifica se o plano atual tem acesso a uma feature específica
   hasFeature: (feature: string) => boolean;
-  // Verifica se o plano atual é igual ou superior ao plano requerido
   hasPlanOrHigher: (requiredPlan: Exclude<PlanName, null>) => boolean;
-  // Retorna o plano mínimo necessário para uma feature
   getRequiredPlan: (feature: string) => Exclude<PlanName, null> | null;
-  // Dias até expirar
   daysUntilExpiration: () => number | null;
-  // Atualizar dados
   refetch: () => Promise<void>;
 }
 
@@ -52,6 +44,7 @@ const SubscriptionContext = createContext<SubscriptionContextType | undefined>(u
 
 // Função auxiliar para normalizar strings removendo acentos
 function normalizeString(str: string): string {
+  if (!str) return '';
   return str
     .toLowerCase()
     .normalize('NFD')
@@ -63,17 +56,65 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [initialized, setInitialized] = useState(false);
+  
+  // Use ref para evitar loops infinitos
+  const fetchInProgress = useRef(false);
 
-  useEffect(() => {
-    if (!user) {
-      setSubscription(null);
-      setLoading(false);
-      return;
-    }
-
-    fetchSubscription();
+  const fetchSubscription = useCallback(async () => {
+    // Evita chamadas simultâneas
+    if (fetchInProgress.current) return;
     
-    // Real-time subscription updates
+    try {
+      fetchInProgress.current = true;
+      setLoading(true);
+      setError(null);
+
+      if (!user) {
+        setSubscription(null);
+        setInitialized(true);
+        return;
+      }
+
+      const { data, error: subError } = await supabase
+        .from('subscriptions')
+        .select('id, status, plan_name, plan_amount, current_period_end, cancel_at_period_end')
+        .eq('user_id', user.id)
+        .maybeSingle(); // Usar maybeSingle em vez de single para evitar erro quando não existe
+
+      if (subError) {
+        console.error('Erro ao buscar assinatura:', subError);
+        setError('Erro ao verificar assinatura');
+        setSubscription(null);
+      } else {
+        setSubscription(data as Subscription);
+        console.log('📦 Assinatura carregada:', data ? {
+          plan_name: data.plan_name,
+          status: data.status,
+          amount: data.plan_amount,
+          period_end: data.current_period_end
+        } : 'Nenhuma assinatura');
+      }
+    } catch (err) {
+      console.error('Erro:', err);
+      setError('Erro ao verificar assinatura');
+      setSubscription(null);
+    } finally {
+      setLoading(false);
+      setInitialized(true);
+      fetchInProgress.current = false;
+    }
+  }, [user]);
+
+  // Carrega assinatura quando usuário muda
+  useEffect(() => {
+    fetchSubscription();
+  }, [fetchSubscription]);
+
+  // Real-time subscription updates
+  useEffect(() => {
+    if (!user) return;
+
     const channel = supabase
       .channel('subscription-changes')
       .on(
@@ -88,6 +129,9 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
           console.log('Assinatura atualizada em tempo real:', payload);
           if (payload.new) {
             setSubscription(payload.new as Subscription);
+          } else if (payload.old) {
+            // Se foi deletada
+            setSubscription(null);
           }
         }
       )
@@ -98,184 +142,152 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     };
   }, [user]);
 
-  const fetchSubscription = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      if (!user) {
-        setSubscription(null);
-        return;
-      }
-
-      const { data, error: subError } = await supabase
-        .from('subscriptions')
-        .select('id, status, plan_name, plan_amount, current_period_end, cancel_at_period_end')
-        .eq('user_id', user.id)
-        .single();
-
-      if (subError) {
-        if (subError.code === 'PGRST116') {
-          // Nenhuma assinatura encontrada
-          setSubscription(null);
-        } else {
-          console.error('Erro ao buscar assinatura:', subError);
-          setError('Erro ao verificar assinatura');
-        }
-      } else {
-        setSubscription(data as Subscription);
-        console.log('📦 Assinatura carregada:', {
-          plan_name: data.plan_name,
-          status: data.status,
-          amount: data.plan_amount,
-          period_end: data.current_period_end
-        });
-      }
-    } catch (err) {
-      console.error('Erro:', err);
-      setError('Erro ao verificar assinatura');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const hasActiveSubscription = (): boolean => {
+  const hasActiveSubscription = useCallback((): boolean => {
     if (!subscription) return false;
     return subscription.status === 'active' || subscription.status === 'trialing';
-  };
+  }, [subscription]);
 
-  const isSubscriptionValid = (): boolean => {
-    if (!subscription) return false;
-    
+  const isSubscriptionValid = useCallback((): boolean => {
+    if (!subscription) {
+      console.log('❌ isSubscriptionValid: Sem subscription');
+      return false;
+    }
+
     const validStatuses: SubscriptionStatus[] = ['active', 'trialing'];
     const isStatusValid = validStatuses.includes(subscription.status);
-    
+
     const periodEnd = new Date(subscription.current_period_end);
     const now = new Date();
     const hasAccess = periodEnd > now;
-    
-    const isValid = isStatusValid && hasAccess;
-    
-    console.log('🔍 Validação de assinatura:', {
-      subscription: subscription.plan_name,
+
+    console.log('🔍 isSubscriptionValid:', {
       status: subscription.status,
       isStatusValid,
       periodEnd: periodEnd.toISOString(),
       now: now.toISOString(),
       hasAccess,
-      isValid
+      isValid: isStatusValid && hasAccess
     });
-    
-    return isValid;
-  };
 
-  const isPremium = (): boolean => {
+    return isStatusValid && hasAccess;
+  }, [subscription]);
+
+  const isPremium = useCallback((): boolean => {
     return isSubscriptionValid();
-  };
+  }, [isSubscriptionValid]);
 
-  const getCurrentPlan = (): PlanName => {
+  const getCurrentPlan = useCallback((): PlanName => {
     if (!isSubscriptionValid() || !subscription) {
-      console.log('❌ Assinatura não válida ou não existe');
+      console.log('❌ getCurrentPlan: Assinatura não válida ou não existe');
       return null;
     }
-    
-    const planName = subscription.plan_name;
-    const normalized = normalizeString(planName);
-    
-    console.log('🔍 Detectando plano:', {
-      original: planName,
-      normalized,
-      amount: subscription.plan_amount
+
+    console.log('📦 getCurrentPlan - Subscription:', {
+      plan_name: subscription.plan_name,
+      plan_amount: subscription.plan_amount,
+      status: subscription.status,
+      current_period_end: subscription.current_period_end
     });
+
+    const planName = subscription.plan_name;
     
+    // Se não tem plan_name, usa fallback
+    if (!planName) {
+      console.log('⚠️ getCurrentPlan: plan_name vazio, usando fallback por valor');
+      return subscription.plan_amount >= 1960 ? 'Avançado' : 'Básico';
+    }
+
+    const normalized = normalizeString(planName);
+    console.log('🔍 getCurrentPlan - Original:', planName, 'Normalized:', normalized);
+
     // Verifica por "avançado" ou "avancado" (normalizado)
     if (normalized.includes('avancado')) {
-      console.log('✅ Plano detectado: Avançado');
+      console.log('✅ getCurrentPlan: Detectado Avançado');
       return 'Avançado';
     }
-    
+
     // Verifica por "básico" ou "basico" (normalizado)
     if (normalized.includes('basico')) {
-      console.log('✅ Plano detectado: Básico');
+      console.log('✅ getCurrentPlan: Detectado Básico');
       return 'Básico';
     }
-    
-    // Fallback baseado no valor (ajuste conforme seus preços)
-    // R$ 19,60 armazenado como 1960 centavos
-    if (subscription.plan_amount >= 1960) {
-      console.log('✅ Plano detectado por valor: Avançado (R$ 19,60+)');
-      return 'Avançado';
-    }
-    
-    console.log('✅ Plano detectado por valor: Básico (< R$ 19,60)');
-    return 'Básico';
-  };
 
-  const hasFeature = (feature: string): boolean => {
+    // Fallback baseado no valor
+    console.log('⚠️ getCurrentPlan: Usando fallback por valor');
+    return subscription.plan_amount >= 1960 ? 'Avançado' : 'Básico';
+  }, [subscription, isSubscriptionValid]);
+
+  const hasFeature = useCallback((feature: string): boolean => {
     const plan = getCurrentPlan();
     if (!plan) {
-      console.log(`❌ Sem plano ativo, feature "${feature}" não disponível`);
+      console.log(`❌ hasFeature: Sem plano ativo, feature "${feature}" não disponível`);
       return false;
     }
-    
-    const hasAccess = PLAN_FEATURES[plan]?.includes(feature) ?? false;
-    console.log(`🔍 Feature "${feature}" no plano "${plan}": ${hasAccess ? '✅' : '❌'}`);
-    
-    return hasAccess;
-  };
 
-  const hasPlanOrHigher = (requiredPlan: Exclude<PlanName, null>): boolean => {
+    const hasAccess = PLAN_FEATURES[plan]?.includes(feature) ?? false;
+    console.log(`🔍 hasFeature: Feature "${feature}" no plano "${plan}": ${hasAccess ? '✅' : '❌'}`);
+    return hasAccess;
+  }, [getCurrentPlan]);
+
+  const hasPlanOrHigher = useCallback((requiredPlan: Exclude<PlanName, null>): boolean => {
+    console.log(`🔍 hasPlanOrHigher: Verificando se usuário tem plano ${requiredPlan} ou superior`);
+    
     const currentPlan = getCurrentPlan();
+    console.log('🔍 hasPlanOrHigher - Current plan:', currentPlan);
+
     if (!currentPlan) {
-      console.log(`❌ Sem plano ativo, não possui "${requiredPlan}"`);
+      console.log('❌ hasPlanOrHigher: Sem plano ativo');
       return false;
     }
-    
+
     const currentIndex = PLAN_HIERARCHY.indexOf(currentPlan);
     const requiredIndex = PLAN_HIERARCHY.indexOf(requiredPlan);
-    
-    // Se algum plano não for encontrado, retorna false
+
+    console.log('🔍 hasPlanOrHigher - Índices:', {
+      currentPlan,
+      currentIndex,
+      requiredPlan,
+      requiredIndex,
+      hierarchy: PLAN_HIERARCHY
+    });
+
     if (currentIndex === -1 || requiredIndex === -1) {
-      console.log(`❌ Plano não encontrado na hierarquia - Current: ${currentPlan} (${currentIndex}), Required: ${requiredPlan} (${requiredIndex})`);
+      console.log('❌ hasPlanOrHigher: Plano não encontrado na hierarquia');
       return false;
     }
-    
+
     const hasAccess = currentIndex >= requiredIndex;
-    console.log(`🔍 Verificação de plano:`, {
-      currentPlan,
-      requiredPlan,
-      currentIndex,
-      requiredIndex,
-      hasAccess: hasAccess ? '✅' : '❌'
-    });
+    console.log(`🔍 hasPlanOrHigher - Resultado: ${hasAccess ? '✅' : '❌'}`);
     
     return hasAccess;
-  };
+  }, [getCurrentPlan]);
 
-  const getRequiredPlan = (feature: string): Exclude<PlanName, null> | null => {
+  const getRequiredPlan = useCallback((feature: string): Exclude<PlanName, null> | null => {
     for (const plan of PLAN_HIERARCHY) {
       if (PLAN_FEATURES[plan]?.includes(feature)) {
         return plan;
       }
     }
     return null;
-  };
+  }, []);
 
-  const daysUntilExpiration = (): number | null => {
+  const daysUntilExpiration = useCallback((): number | null => {
     if (!subscription) return null;
-    
+
     const periodEnd = new Date(subscription.current_period_end);
     const now = new Date();
     const diffTime = periodEnd.getTime() - now.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    return diffDays > 0 ? diffDays : 0;
-  };
 
-  const value: SubscriptionContextType = {
+    return diffDays > 0 ? diffDays : 0;
+  }, [subscription]);
+
+  // Memoizar o value para evitar re-renders desnecessários
+  const value = useMemo<SubscriptionContextType>(() => ({
     subscription,
     loading,
     error,
+    initialized,
     hasActiveSubscription,
     isSubscriptionValid,
     isPremium,
@@ -285,7 +297,21 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     getRequiredPlan,
     daysUntilExpiration,
     refetch: fetchSubscription,
-  };
+  }), [
+    subscription,
+    loading,
+    error,
+    initialized,
+    hasActiveSubscription,
+    isSubscriptionValid,
+    isPremium,
+    getCurrentPlan,
+    hasFeature,
+    hasPlanOrHigher,
+    getRequiredPlan,
+    daysUntilExpiration,
+    fetchSubscription
+  ]);
 
   return (
     <SubscriptionContext.Provider value={value}>
