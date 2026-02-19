@@ -115,9 +115,9 @@ export function useStudyProposals() {
       }
 
       // Criar eventos de calendário (repetir por N semanas)
-      const weeksCount = proposal.input_data?.questionnaire?.duracaoSemanas || 
-                        proposal.input_data?.editalSchedule?.duracaoSemanas || 4;
-      
+      const weeksCount = proposal.input_data?.questionnaire?.duracaoSemanas ||
+        proposal.input_data?.editalSchedule?.duracaoSemanas || 4;
+
       const now = new Date();
       const weekStart = new Date(now);
       weekStart.setDate(now.getDate() - now.getDay()); // Começa no domingo
@@ -131,16 +131,16 @@ export function useStudyProposals() {
         for (let week = 0; week < weeksCount; week++) {
           const baseDate = new Date(weekStart);
           baseDate.setDate(baseDate.getDate() + week * 7);
-          
+
           const eventDay = new Date(baseDate);
           eventDay.setDate(baseDate.getDate() + block.day_of_week);
-          
+
           // Pular datas passadas
           if (eventDay < now && week === 0) continue;
 
           const startTime = new Date(eventDay);
           startTime.setHours(block.start_hour, 0, 0, 0);
-          
+
           const endTime = new Date(startTime);
           endTime.setMinutes(startTime.getMinutes() + block.duration_minutes);
 
@@ -172,8 +172,9 @@ export function useStudyProposals() {
       }
 
       if (eventsToCreate.length > 0) {
+        // CORREÇÃO: mudar de 'calendar_events' para 'study_calendar_events'
         const { error: eventsError } = await supabase
-          .from('calendar_events')
+          .from('study_calendar_events')  // Nome correto da tabela
           .insert(eventsToCreate);
 
         if (eventsError) throw eventsError;
@@ -196,7 +197,7 @@ export function useStudyProposals() {
       queryClient.invalidateQueries({ queryKey: ['study-proposals'] });
       queryClient.invalidateQueries({ queryKey: ['edital-topics'] });
       queryClient.invalidateQueries({ queryKey: ['calendar-events'] });
-      
+
       toast({
         title: 'Plano aprovado! 🎉',
         description: `${data.topicsCount} tópicos e ${data.eventsCount} eventos adicionados.`,
