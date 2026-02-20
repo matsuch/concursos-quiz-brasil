@@ -20,6 +20,7 @@ import Planos from "./pages/Planos";
 import Planner from "./pages/Planner";
 import Anotacoes from "./pages/Anotacoes";
 import { HelmetProvider } from 'react-helmet-async';
+import { Analytics } from "@vercel/analytics/react";
 
 const queryClient = new QueryClient();
 
@@ -30,7 +31,7 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter> 
+          <BrowserRouter>
             <AuthProvider>
               <SubscriptionProvider>
                 <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
@@ -38,46 +39,46 @@ const App = () => (
                   <main style={{ flex: 1, overflow: "auto" }}>
                     <Routes>
                       <Route path="/" element={<Home />} />
-                      
+
                       {/* Rotas públicas */}
                       <Route path="/concursos" element={<ConcursosPage />} />
                       <Route path="/quiz" element={<Quiz />} />
                       <Route path="/planos" element={<Planos />} />
                       <Route path="/anotacoes" element={<Anotacoes />} />
                       <Route path="/auth" element={<Auth />} />
-                      
+
                       {/* Rotas protegidas */}
-                      <Route 
-                        path="/planner" 
+                      <Route
+                        path="/planner"
                         element={
                           <ProtectedRoute requiredPlan="Básico">
                             <Planner />
                           </ProtectedRoute>
-                        } 
+                        }
                       />
-                      <Route 
-                        path="/estudo" 
+                      <Route
+                        path="/estudo"
                         element={
                           <ProtectedRoute requiredPlan="Básico">
                             <Estudo />
                           </ProtectedRoute>
-                        } 
+                        }
                       />
-                      <Route 
-                        path="/simulado" 
+                      <Route
+                        path="/simulado"
                         element={
                           <ProtectedRoute requiredPlan="Avançado">
                             <SimuladoPage />
                           </ProtectedRoute>
-                        } 
+                        }
                       />
-                      <Route 
-                        path="/minha-conta" 
+                      <Route
+                        path="/minha-conta"
                         element={
                           <ProtectedRoute>
                             <MyAccount />
                           </ProtectedRoute>
-                        } 
+                        }
                       />
 
                       {/* Rota 404 */}
@@ -88,6 +89,9 @@ const App = () => (
               </SubscriptionProvider>
             </AuthProvider>
           </BrowserRouter>
+
+          <Analytics />
+
         </TooltipProvider>
       </ThemeProvider>
     </HelmetProvider>
