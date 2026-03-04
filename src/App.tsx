@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { SubscriptionProvider } from "@/hooks/useSubscription";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -21,8 +21,71 @@ import Planner from "./pages/Planner";
 import Anotacoes from "./pages/Anotacoes";
 import { HelmetProvider } from 'react-helmet-async';
 import { Analytics } from "@vercel/analytics/react";
+import { useAndroidBackButton } from "@/hooks/useAndroidBackButton";
 
 const queryClient = new QueryClient();
+
+function AppRoutes() {
+  useAndroidBackButton();
+  return (
+    <AuthProvider>
+      <SubscriptionProvider>
+        <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+          <Navbar />
+          <main style={{ flex: 1, overflow: "auto" }}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+
+              {/* Rotas públicas */}
+              <Route path="/concursos" element={<ConcursosPage />} />
+              <Route path="/quiz" element={<Quiz />} />
+              <Route path="/planos" element={<Planos />} />
+              <Route path="/anotacoes" element={<Anotacoes />} />
+              <Route path="/auth" element={<Auth />} />
+
+              {/* Rotas protegidas */}
+              <Route
+                path="/planner"
+                element={
+                  <ProtectedRoute requiredPlan="Básico">
+                    <Planner />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/estudo"
+                element={
+                  <ProtectedRoute requiredPlan="Básico">
+                    <Estudo />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/simulado"
+                element={
+                  <ProtectedRoute requiredPlan="Avançado">
+                    <SimuladoPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/minha-conta"
+                element={
+                  <ProtectedRoute>
+                    <MyAccount />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Rota 404 */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
+        </div>
+      </SubscriptionProvider>
+    </AuthProvider>
+  );
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -31,64 +94,9 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter>
-            <AuthProvider>
-              <SubscriptionProvider>
-                <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-                  <Navbar />
-                  <main style={{ flex: 1, overflow: "auto" }}>
-                    <Routes>
-                      <Route path="/" element={<Home />} />
-
-                      {/* Rotas públicas */}
-                      <Route path="/concursos" element={<ConcursosPage />} />
-                      <Route path="/quiz" element={<Quiz />} />
-                      <Route path="/planos" element={<Planos />} />
-                      <Route path="/anotacoes" element={<Anotacoes />} />
-                      <Route path="/auth" element={<Auth />} />
-
-                      {/* Rotas protegidas */}
-                      <Route
-                        path="/planner"
-                        element={
-                          <ProtectedRoute requiredPlan="Básico">
-                            <Planner />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/estudo"
-                        element={
-                          <ProtectedRoute requiredPlan="Básico">
-                            <Estudo />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/simulado"
-                        element={
-                          <ProtectedRoute requiredPlan="Avançado">
-                            <SimuladoPage />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/minha-conta"
-                        element={
-                          <ProtectedRoute>
-                            <MyAccount />
-                          </ProtectedRoute>
-                        }
-                      />
-
-                      {/* Rota 404 */}
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </main>
-                </div>
-              </SubscriptionProvider>
-            </AuthProvider>
-          </BrowserRouter>
+          <HashRouter>
+            <AppRoutes />
+          </HashRouter>
 
           <Analytics />
 
