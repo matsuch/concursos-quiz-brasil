@@ -36,13 +36,18 @@ jobs:
 
           SUF="$(date +%s)-$RANDOM"
           SENHA="Teste-$SUF-Ab1!"
+          ORIGEM='Origin: http://localhost:3000'
 
           # --- cadastro + login, devolvendo "<user_id> <jwt>" ---------------
           autenticar() {
             local email="$1" nome="$2" body code sess uid jwt
 
+            # O Better Auth exige Origin, e ele precisa ser confiável. A config
+            # do projeto tem trusted_origins vazio mas allow_localhost true,
+            # então localhost é o único origin aceito hoje.
             body=$(curl -sS -X POST "$AUTH_URL/sign-up/email" \
               -H 'Content-Type: application/json' \
+              -H "$ORIGEM" \
               -d "{\"email\":\"$email\",\"password\":\"$SENHA\",\"name\":\"$nome\"}" \
               -w '\n%{http_code}')
             code=$(tail -n1 <<<"$body"); body=$(sed '$d' <<<"$body")
@@ -53,6 +58,7 @@ jobs:
 
             body=$(curl -sS -X POST "$AUTH_URL/sign-in/email" \
               -H 'Content-Type: application/json' \
+              -H "$ORIGEM" \
               -d "{\"email\":\"$email\",\"password\":\"$SENHA\"}" \
               -w '\n%{http_code}')
             code=$(tail -n1 <<<"$body"); body=$(sed '$d' <<<"$body")
@@ -67,7 +73,7 @@ jobs:
             [ -n "$sess" ] && [ -n "$uid" ] || { echo "    sem token/uid no corpo" >&2; return 1; }
 
             # plugin jwt do Better Auth: troca a sessão por um JWT assinado
-            jwt=$(curl -sS "$AUTH_URL/token" -H "Authorization: Bearer $sess" \
+            jwt=$(curl -sS "$AUTH_URL/token" -H "Authorization: Bearer $sess" -H "$ORIGEM" \
                   | jq -r '.token // empty')
             [ -n "$jwt" ] || { echo "    /token nao devolveu JWT" >&2; return 1; }
 
