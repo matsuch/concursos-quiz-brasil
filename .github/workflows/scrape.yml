@@ -22,6 +22,10 @@ name: Scraping de dados reais
 # e a aplicação no banco acontece depois, à parte.
 
 on:
+  # Semanal: concurso expira rápido, e uma listagem parada é pior que vazia.
+  # Só dispara a partir do branch padrão — regra do GitHub para schedule.
+  schedule:
+    - cron: '0 9 * * 1'   # segunda, 06:00 em Brasília
   push:
     paths:
       - 'scripts/scrape/**'
@@ -67,6 +71,39 @@ jobs:
       - name: Extrair concursos
         if: ${{ env.MODO == 'concursos' }}
         run: python scripts/scrape/concursos.py
+
+      # A coleta roda sem credencial nenhuma. A aplicação precisa de uma, e é
+      # por isso que ela vive num passo separado, que simplesmente não faz nada
+      # se o secret não existir: o seed fica gerado no repositório de qualquer
+      # forma, e a coleta nunca falha por falta de credencial.
+      - name: Aplicar no Neon
+        if: ${{ env.MODO == 'concursos' }}
+        env:
+          PGURL: ${{ secrets.NEON_DATABASE_URL }}
+        run: |
+          if [ -z "$PGURL" ]; then
+            echo "::warning::Secret NEON_DATABASE_URL ausente — seed gerado, mas não aplicado."
+            echo "Cadastre em Settings -> Secrets and variables -> Actions." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          if ! command -v psql >/dev/null; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
+          fi
+
+          ANTES=$(psql "$PGURL" -tAc "select count(*) from public.concursos;")
+
+          # Inscrição encerrada só atrapalha quem está procurando concurso.
+          psql "$PGURL" -v ON_ERROR_STOP=1 \
+            -c "DELETE FROM public.concursos WHERE inscricoes_ate < current_date;"
+
+          # O seed é idempotente (ON CONFLICT em url_edital), então reaplicar
+          # atualiza prazo, vagas e status em vez de duplicar.
+          psql "$PGURL" -v ON_ERROR_STOP=1 -f neon/seed/concursos.sql
+
+          DEPOIS=$(psql "$PGURL" -tAc "select count(*) from public.concursos;")
+          echo "### Aplicado no Neon" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Antes: **$ANTES** | Depois: **$DEPOIS**" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Commitar resultado
         if: ${{ env.MODO != 'nenhum' }}
