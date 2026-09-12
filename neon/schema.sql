@@ -500,7 +500,10 @@ ALTER TABLE public.study_plan_proposals  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.study_notes           ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.notifications         ENABLE ROW LEVEL SECURITY;
 
--- --- Conteúdo público: leitura liberada, escrita apenas por service_role -----
+-- --- Conteúdo público: leitura liberada, sem policy de escrita --------------
+-- Sem policy de INSERT/UPDATE/DELETE, o RLS nega a escrita a qualquer cliente
+-- da Data API. Quem popula estas tabelas é o seed ou código servidor que
+-- conecta como dono do banco, que não passa por RLS.
 
 CREATE POLICY "Concursos são visíveis por todos"
   ON public.concursos FOR SELECT USING (true);
