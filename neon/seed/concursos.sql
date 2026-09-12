@@ -1,6 +1,6 @@
 -- Gerado por scripts/scrape/concursos.py — NÃO editar à mão.
 -- Fonte: pciconcursos.com.br (robots.txt permite /concursos/)
--- Coletado em: 2026-09-12T19:29:08.717493Z
+-- Coletado em: 2026-09-12T19:30:23.205704Z
 -- Linhas: 530
 --
 -- Idempotente: o índice único parcial em url_edital sustenta o ON CONFLICT,
