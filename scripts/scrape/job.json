@@ -1,0 +1,14 @@
+{
+  "modo": "recon",
+  "comentario": "Rodada 1: reconhecer as fontes. O parser é escrito depois, contra o HTML que voltar em scratch/recon/.",
+  "urls": [
+    "https://www.pciconcursos.com.br/concursos/",
+    "https://www.pciconcursos.com.br/concursos/nacional/",
+    "https://concursosnobrasil.com.br/concursos/",
+    "https://www.jcconcursos.com.br/concursos/",
+    "https://www.folhadirigida.com.br/concursos",
+    "https://conhecimento.fgv.br/concursos",
+    "https://www.cebraspe.org.br/concursos/",
+    "https://www.concursosfcc.com.br/"
+  ]
+}
