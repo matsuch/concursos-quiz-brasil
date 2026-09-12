@@ -1,15 +1,22 @@
 import { createClient, SupabaseAuthAdapter } from '@neondatabase/neon-js';
 import type { Database } from './types';
 
-const AUTH_URL = import.meta.env.VITE_NEON_AUTH_URL;
-const DATA_API_URL = import.meta.env.VITE_NEON_DATA_API_URL;
+/**
+ * Endpoints do projeto Neon.
+ *
+ * Ficam como padrão no código, e não só em variável de ambiente, porque não
+ * são segredo: o Vite os embute no bundle de qualquer forma, e quem protege a
+ * Data API é o JWT do usuário somado ao RLS — não o desconhecimento da URL.
+ * Deixá-los aqui faz o build funcionar em qualquer ambiente sem configuração,
+ * e as variáveis seguem tendo precedência para apontar para outro projeto.
+ */
+const AUTH_URL =
+  import.meta.env.VITE_NEON_AUTH_URL ??
+  'https://ep-steep-waterfall-ac5tzxmb.neonauth.sa-east-1.aws.neon.tech/neondb/auth';
 
-if (!AUTH_URL || !DATA_API_URL) {
-  throw new Error(
-    'VITE_NEON_AUTH_URL e VITE_NEON_DATA_API_URL precisam estar definidas. ' +
-    'Veja .env.example.'
-  );
-}
+const DATA_API_URL =
+  import.meta.env.VITE_NEON_DATA_API_URL ??
+  'https://ep-steep-waterfall-ac5tzxmb.apirest.sa-east-1.aws.neon.tech/neondb/rest/v1';
 
 /**
  * Cliente do Neon: Data API (compatível com PostgREST) + Managed Better Auth.

@@ -22,12 +22,26 @@ import { createRemoteJWKSet, jwtVerify } from 'jose';
  *    fica dentro de waitUntil(), que mantém o trabalho vivo após a resposta.
  */
 
-const DATABASE_URL = process.env.DATABASE_URL!;
-const NEON_JWKS_URL = process.env.NEON_JWKS_URL!;
+// Público como o JWKS de qualquer provedor de auth: serve para verificar
+// assinatura, não é credencial. Padrão no código para não exigir configuração.
+const NEON_JWKS_URL =
+  process.env.NEON_JWKS_URL ??
+  'https://ep-steep-waterfall-ac5tzxmb.neonauth.sa-east-1.aws.neon.tech/neondb/auth/.well-known/jwks.json';
+
+// Estes dois são segredo de verdade e só existem se configurados na Vercel.
+const DATABASE_URL = process.env.DATABASE_URL;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 const jwks = createRemoteJWKSet(new URL(NEON_JWKS_URL));
-const sql = neon(DATABASE_URL);
+
+// Conexão criada sob demanda: sem DATABASE_URL o módulo ainda carrega e o
+// handler responde 503 explicando, em vez de derrubar a função na importação.
+let sqlCache: ReturnType<typeof neon> | null = null;
+function getSql() {
+  if (!DATABASE_URL) throw new Error('DATABASE_URL não configurada');
+  if (!sqlCache) sqlCache = neon(DATABASE_URL);
+  return sqlCache;
+}
 
 const SUBJECTS = [
   "Direito Constitucional",
@@ -96,6 +110,18 @@ async function handleRequest(req: Request): Promise<Response> {
     return json({ error: 'Method Not Allowed' }, 405);
   }
 
+  if (!DATABASE_URL || !OPENAI_API_KEY) {
+    const faltando = [
+      !DATABASE_URL && 'DATABASE_URL',
+      !OPENAI_API_KEY && 'OPENAI_API_KEY',
+    ].filter(Boolean).join(', ');
+    console.error(`generate-study-plan: variáveis ausentes: ${faltando}`);
+    return json(
+      { error: `Geração de plano indisponível: falta configurar ${faltando}.` },
+      503,
+    );
+  }
+
   const userId = await userIdFromRequest(req);
   if (!userId) return json({ error: 'Unauthorized' }, 401);
 
@@ -106,11 +132,13 @@ async function handleRequest(req: Request): Promise<Response> {
       ? { editalText, questionnaire }
       : { questionnaire };
 
-    const [proposal] = await sql`
+    const linhas = (await getSql()`
       insert into study_plan_proposals (user_id, mode, input_data, status, topics, schedule)
       values (${userId}, ${mode}, ${JSON.stringify(inputData)}::jsonb, 'pending', '[]'::jsonb, '[]'::jsonb)
       returning id
-    `;
+    `) as { id: string }[];
+    const proposal = linhas[0];
+    if (!proposal) throw new Error('Falha ao criar a proposta de plano');
 
     // Mantém o processamento vivo depois que a resposta já foi enviada.
     waitUntil(processStudyPlan(proposal.id, userId, mode, editalText, questionnaire));
@@ -236,7 +264,7 @@ Gere tópicos detalhados para cada matéria relevante e um cronograma semanal.`;
     const topics = parsed.topics || [];
     const schedule = parsed.schedule || [];
 
-    await sql`
+    await getSql()`
       update study_plan_proposals
          set topics = ${JSON.stringify(topics)}::jsonb,
              schedule = ${JSON.stringify(schedule)}::jsonb,
@@ -246,7 +274,7 @@ Gere tópicos detalhados para cada matéria relevante e um cronograma semanal.`;
        where id = ${proposalId}
     `;
 
-    await sql`
+    await getSql()`
       insert into notifications (user_id, type, title, message, data)
       values (
         ${userId}, 'study_plan_ready', 'Plano de Estudos Pronto! 🎯',
@@ -259,7 +287,7 @@ Gere tópicos detalhados para cada matéria relevante e um cronograma semanal.`;
     console.error(`Error processing proposal ${proposalId}:`, error);
 
     // Preserva o input_data original e acrescenta o erro, como fazia o original
-    await sql`
+    await getSql()`
       update study_plan_proposals
          set status = 'rejected',
              input_data = input_data || ${JSON.stringify({ error: mensagem })}::jsonb,
@@ -267,7 +295,7 @@ Gere tópicos detalhados para cada matéria relevante e um cronograma semanal.`;
        where id = ${proposalId}
     `;
 
-    await sql`
+    await getSql()`
       insert into notifications (user_id, type, title, message, data)
       values (
         ${userId}, 'study_plan_error', 'Erro ao gerar plano',
