@@ -80,7 +80,22 @@ function json(body: unknown, status = 200) {
   });
 }
 
-export async function POST(req: Request) {
+/**
+ * Assinatura `export default { fetch }`, a forma Web Standard das Vercel
+ * Functions. Os docs também aceitam named exports por método
+ * (`export function POST`), mas esta é a forma que a documentação do
+ * @vercel/functions usa junto de waitUntil — exatamente o caso aqui — e não
+ * depende de o roteamento por nome de método estar ativo no projeto.
+ */
+export default {
+  fetch: handleRequest,
+};
+
+async function handleRequest(req: Request): Promise<Response> {
+  if (req.method !== 'POST') {
+    return json({ error: 'Method Not Allowed' }, 405);
+  }
+
   const userId = await userIdFromRequest(req);
   if (!userId) return json({ error: 'Unauthorized' }, 401);
 
