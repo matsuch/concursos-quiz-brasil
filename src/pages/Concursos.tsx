@@ -247,7 +247,7 @@ const ConcursosPage = () => {
   return (
     <>
       <SeoHead
-        title="Concursos Públicos Abertos 2024 - Lista Completa com Filtros"
+        title="Concursos Públicos Abertos - Lista Completa com Filtros por Estado e Nível"
         description={`Encontre ${filteredConcursos.length} concursos públicos abertos, em destaque e em breve. Filtre por estado, órgão, salário e nível. Vagas atualizadas diariamente.`}
         canonical="/concursos"
         structuredData={generateStructuredData()}

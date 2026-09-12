@@ -14,8 +14,11 @@
     <meta name="author" content="Passar Concursos" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     
-    <!-- Canonical -->
-    <link rel="canonical" href="https://passar-concursos.vercel.app/" />
+    <!-- Sem canonical fixa aqui: este HTML e servido para TODA rota, entao
+         declarar "/" faria /concursos e /quiz se anunciarem como copia da
+         home para quem nao executa JavaScript. Cada pagina poe a sua pelo
+         Helmet. As og:* abaixo ficam como padrao da home; corrigi-las por
+         rota depende de pre-renderizacao. -->
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
