@@ -12,10 +12,6 @@ const publicNavItems = [
   { to: "/quiz", icon: Notebook, label: "Questões" },
 ];
 
-const guestOnlyNavItems = [
-  { to: "/planos", icon: CreditCard, label: "Planos" },
-];
-
 const authOnlyNavItems = [
   { to: "/anotacoes", icon: FileText, label: "Anotações" },
   { to: "/planner", icon: CalendarDays, label: "Planner" },
@@ -32,7 +28,7 @@ const Navbar = () => {
   // Itens públicos + itens exclusivos por estado de login
   const navItems = user
     ? [...publicNavItems, ...authOnlyNavItems]
-    : [...publicNavItems, ...guestOnlyNavItems];
+    : publicNavItems;
 
   const handleAuthClick = async () => {
     if (user) {

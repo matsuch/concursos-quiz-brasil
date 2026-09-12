@@ -28,17 +28,6 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   'settings': Settings, 'loader': Loader2, 'login': LogIn, 'creditcard': CreditCard,
 };
 
-type Subscription = {
-  id: string;
-  stripe_subscription_id: string;
-  status: string;
-  plan_name: string;
-  plan_amount: number;
-  currency: string;
-  current_period_end: string;
-  cancel_at_period_end: boolean;
-};
-
 type Profile = {
   display_name: string | null;
   avatar_url: string | null;
@@ -70,40 +59,10 @@ const MyAccount = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [userBadges, setUserBadges] = useState<UserBadge[]>([]);
-  const [canceling, setCanceling] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [openingPortal, setOpeningPortal] = useState(false);
-
-  const handleOpenPortal = async () => {
-    try {
-      setOpeningPortal(true);
-      setError(null);
-      setSuccess(null);
-      const { data, error } = await supabase.functions.invoke('create-portal-session');
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      if (data?.url) {
-        setSuccess('Abrindo portal de pagamento...');
-        setTimeout(() => {
-          window.open(data.url, '_blank');
-          setOpeningPortal(false);
-          setTimeout(() => setSuccess(null), 3000);
-        }, 500);
-      } else {
-        throw new Error('URL do portal não encontrada');
-      }
-    } catch (err) {
-      console.error('Erro ao abrir portal:', err);
-      setError(err instanceof Error ? err.message : 'Erro ao abrir portal de pagamento');
-      setOpeningPortal(false);
-    }
-  };
-
-  useEffect(() => { checkAuthAndFetchData(); }, []);
 
   const checkAuthAndFetchData = async () => {
     try {
@@ -115,15 +74,11 @@ const MyAccount = () => {
       setUserId(user.id);
       setUserEmail(user.email ?? null);
 
-      const [subscriptionResult, profileResult, badgesResult] = await Promise.all([
-        supabase.from('subscriptions').select('*').eq('user_id', user.id).single(),
+      const [profileResult, badgesResult] = await Promise.all([
         supabase.from('profiles').select('*').eq('user_id', user.id).single(),
         supabase.from('user_badges').select('id, unlocked_at, badges(name, icon, rarity)').eq('user_id', user.id).limit(5),
       ]);
 
-      if (subscriptionResult.error && subscriptionResult.error.code !== 'PGRST116') {
-        console.error('Erro ao buscar assinatura:', subscriptionResult.error);
-      } else { setSubscription(subscriptionResult.data); }
 
       if (profileResult.error && profileResult.error.code !== 'PGRST116') {
         console.error('Erro ao buscar perfil:', profileResult.error);
@@ -134,23 +89,6 @@ const MyAccount = () => {
       console.error('Erro:', err);
       setError('Erro ao carregar dados da conta');
     } finally { setLoading(false); }
-  };
-
-  const handleCancelSubscription = async () => {
-    if (!window.confirm('Tem certeza que deseja cancelar sua assinatura? Você continuará tendo acesso até o final do período pago.')) return;
-    try {
-      setCanceling(true); setError(null); setSuccess(null);
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { setError('Sessão expirada. Faça login novamente.'); return; }
-      const { data, error } = await supabase.functions.invoke('cancel-subscription', { method: 'POST' });
-      if (error) throw new Error(error.message || 'Erro ao cancelar assinatura');
-      if (data?.error) throw new Error(data.error);
-      setSuccess(data?.message || 'Assinatura cancelada com sucesso! Você terá acesso até o final do período pago.');
-      await checkAuthAndFetchData();
-    } catch (err) {
-      console.error('Erro ao cancelar assinatura:', err);
-      setError(err instanceof Error ? err.message : 'Erro ao cancelar assinatura. Tente novamente.');
-    } finally { setCanceling(false); }
   };
 
   const getStatusInfo = (status: string) => {
@@ -172,13 +110,6 @@ const MyAccount = () => {
     return 'US';
   };
 
-  const getPlanBadgeColor = (planName: string) => {
-    switch (planName?.toLowerCase()) {
-      case 'premium': return 'bg-gradient-to-r from-amber-500 to-orange-500 text-white';
-      case 'standard': return 'bg-gradient-to-r from-primary to-secondary text-white';
-      default: return 'bg-muted text-muted-foreground';
-    }
-  };
 
   if (loading) {
     return (
@@ -211,13 +142,11 @@ const MyAccount = () => {
     );
   }
 
-  const isCanceling = subscription?.cancel_at_period_end;
-
   return (
     <>
       <Helmet>
-        <title>Minha Conta | Passar Concursos - Gerenciar Perfil e Assinatura</title>
-        <meta name="description" content="Gerencie sua conta, visualize seu plano atual e atualize suas informações pessoais." />
+        <title>Minha Conta | Passar Concursos - Gerenciar Perfil</title>
+        <meta name="description" content="Gerencie sua conta e atualize suas informações pessoais." />
         <link rel="canonical" href="https://passar-concursos.vercel.app/minha-conta" />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
@@ -237,11 +166,6 @@ const MyAccount = () => {
                 <h1 className="text-2xl md:text-3xl font-bold text-foreground">
                   {profile?.display_name || 'Usuário'}
                 </h1>
-                {subscription && (
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPlanBadgeColor(subscription.plan_name)}`}>
-                    <Crown className="w-3 h-3 inline mr-1" />{subscription.plan_name}
-                  </span>
-                )}
               </div>
               <div className="flex items-center gap-2 mt-2 text-muted-foreground">
                 <Mail className="w-4 h-4" /><span className="text-sm">{userEmail}</span>
@@ -265,24 +189,12 @@ const MyAccount = () => {
               <p className="text-success">{success}</p>
             </div>
           )}
-          {isCanceling && (
-            <div className="bg-accent/20 border border-accent/30 rounded-lg p-4 flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-accent-foreground flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-accent-foreground font-medium">Assinatura será cancelada</p>
-                <p className="text-accent-foreground/80 text-sm mt-1">
-                  Você terá acesso até {subscription && formatDate(subscription.current_period_end)}
-                </p>
-              </div>
-            </div>
-          )} 
 
           {/* Main Tabs */}
           <Tabs defaultValue="dashboard" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 max-w-md">
+            <TabsList className="grid w-full grid-cols-1 max-w-md">
               <TabsTrigger value="dashboard">Desempenho</TabsTrigger>
             { /* <TabsTrigger value="overview">Resumo</TabsTrigger> */}
-              <TabsTrigger value="subscription">Assinatura</TabsTrigger>
             </TabsList>
 
             {/* Dashboard Tab */}
@@ -357,84 +269,6 @@ const MyAccount = () => {
               )}
             </TabsContent>
 
-            {/* Subscription Tab */}
-            <TabsContent value="subscription" className="space-y-4">
-              <Card className="overflow-hidden">
-                <div className="bg-primary p-6 text-primary-foreground">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-primary-foreground/80 text-sm mb-1">Plano Atual</p>
-                      <h2 className="text-2xl font-bold">{subscription?.plan_name || 'Gratuito'}</h2>
-                    </div>
-                    <CreditCard className="w-12 h-12 text-primary-foreground/60" />
-                  </div>
-                </div>
-                <CardContent className="p-6">
-                  {subscription ? (
-                    <>
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-border">
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-2">Status</p>
-                          <Badge variant={getStatusInfo(subscription.status).variant}>
-                            {subscription.status === 'active' ? <CheckCircle className="w-3 h-3 mr-1" /> : <XCircle className="w-3 h-3 mr-1" />}
-                            {getStatusInfo(subscription.status).label}
-                          </Badge>
-                        </div>
-                        <div className="sm:text-right">
-                          <p className="text-sm text-muted-foreground mb-1">Valor</p>
-                          <p className="text-2xl font-bold text-foreground">
-                            R$ {subscription.plan_amount.toFixed(2)}
-                            <span className="text-sm text-muted-foreground font-normal">/mês</span>
-                          </p>
-                        </div>
-                      </div>
-                      {subscription.status === 'active' && (
-                        <div className="flex items-center gap-3 mb-6 p-4 bg-muted rounded-lg">
-                          <Calendar className="w-5 h-5 text-muted-foreground" />
-                          <div>
-                            <p className="text-sm text-muted-foreground">{isCanceling ? 'Acesso até' : 'Próxima cobrança'}</p>
-                            <p className="font-medium text-foreground">{formatDate(subscription.current_period_end)}</p>
-                          </div>
-                        </div>
-                      )}
-                      <div className="space-y-3">
-                        {subscription.status === 'active' && !isCanceling && (
-                          <Button variant="destructive" onClick={handleCancelSubscription} disabled={canceling || openingPortal} className="w-full">
-                            {canceling && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                            {canceling ? 'Cancelando...' : 'Cancelar Assinatura'}
-                          </Button>
-                        )}
-                        <Button variant="outline" onClick={handleOpenPortal} disabled={openingPortal || canceling} className="w-full">
-                          {openingPortal ? (<><Loader2 className="w-4 h-4 mr-2 animate-spin" />Abrindo portal...</>) : (<><Settings className="w-4 h-4 mr-2" />Gerenciar Pagamento no Stripe</>)}
-                        </Button>
-                        {openingPortal && <p className="text-sm text-muted-foreground text-center">Uma nova aba será aberta com o portal de pagamento</p>}
-                      </div>
-                    </>
-                  ) : (
-                    <div className="text-center py-4">
-                      <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                        <AlertCircle className="w-8 h-8 text-muted-foreground" />
-                      </div>
-                      <h3 className="text-lg font-semibold text-foreground mb-2">Sem Assinatura Ativa</h3>
-                      <p className="text-muted-foreground mb-4">Assine um plano para desbloquear todos os recursos.</p>
-                      <Button onClick={() => navigate('/planos')} className="w-full sm:w-auto">Ver Planos</Button>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-              {subscription && (
-                <Card className="bg-secondary/5 border-secondary/20">
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                      <AlertCircle className="w-4 h-4 text-secondary" />Informação Importante
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      Ao cancelar sua assinatura, você continuará tendo acesso a todos os recursos até o final do período já pago. Após esta data, sua conta será convertida para o plano gratuito.
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
           </Tabs>
         </div>
       </div>
