@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/integrations/neon/client";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Loader2, Pencil } from "lucide-react";
 
@@ -97,7 +97,7 @@ export function CreateFlashcardDialog({ userId, onSuccess, flashcard, trigger }:
     setIsSubmitting(true);
     try {
       if (isEditing) {
-        const { error } = await supabase
+        const { error } = await db
           .from("flashcards")
           .update({
             subject: data.subject,
@@ -113,7 +113,7 @@ export function CreateFlashcardDialog({ userId, onSuccess, flashcard, trigger }:
           description: "Seu flashcard foi editado com sucesso.",
         });
       } else {
-        const { error } = await supabase.from("flashcards").insert({
+        const { error } = await db.from("flashcards").insert({
           subject: data.subject,
           front_content: data.front_content,
           back_content: data.back_content,

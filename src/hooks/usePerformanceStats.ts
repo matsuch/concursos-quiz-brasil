@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { db } from '@/integrations/neon/client';
 import { format, subDays, startOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -41,7 +41,7 @@ export function usePerformanceStats(userId: string | undefined, timeRange: TimeR
     queryFn: async () => {
       if (!userId) return null;
 
-      let query = supabase
+      let query = db
         .from('quiz_attempts')
         .select('*')
         .eq('user_id', userId)

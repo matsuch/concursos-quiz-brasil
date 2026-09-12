@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookOpen, Notebook, Loader2, ChevronLeft, ChevronRight, Crown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/integrations/neon/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Helmet } from 'react-helmet-async';
 
@@ -41,7 +41,7 @@ const Home = () => {
     try {
       setLoading(true);
 
-      const { data: concursosData, error: concursosError } = await supabase
+      const { data: concursosData, error: concursosError } = await db
         .from("concursos")
         .select("*")
         .order("created_at", { ascending: false })

@@ -1,4 +1,0 @@
-project_id = "ppohehdolxdryctgvesg"
-
-[functions.generate-study-plan]
-verify_jwt = false

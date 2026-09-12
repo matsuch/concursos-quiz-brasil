@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/integrations/neon/client";
 import { useToast } from "@/hooks/use-toast";
 
 interface FlashcardProgress {
@@ -16,7 +16,7 @@ export function useFlashcardProgress() {
   const fetchProgress = useCallback(async (userId: string) => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from("flashcard_progress")
         .select("flashcard_id, times_reviewed, last_reviewed_at")
         .eq("user_id", userId);
@@ -45,7 +45,7 @@ export function useFlashcardProgress() {
 
       if (existing) {
         // Update existing progress
-        const { error } = await supabase
+        const { error } = await db
           .from("flashcard_progress")
           .update({
             times_reviewed: existing.times_reviewed + 1,
@@ -67,7 +67,7 @@ export function useFlashcardProgress() {
         });
       } else {
         // Insert new progress
-        const { error } = await supabase.from("flashcard_progress").insert({
+        const { error } = await db.from("flashcard_progress").insert({
           user_id: userId,
           flashcard_id: flashcardId,
           times_reviewed: 1,
@@ -76,14 +76,14 @@ export function useFlashcardProgress() {
         if (error) throw error;
 
         // Update profile flashcards_studied count
-        const { data: profile } = await supabase
+        const { data: profile } = await db
           .from("profiles")
           .select("flashcards_studied")
           .eq("user_id", userId)
           .maybeSingle();
 
         if (profile) {
-          await supabase
+          await db
             .from("profiles")
             .update({ flashcards_studied: (profile.flashcards_studied ?? 0) + 1 })
             .eq("user_id", userId);

@@ -17,7 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/integrations/neon/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useFlashcardProgress } from "@/hooks/useFlashcardProgress";
 import { CreateFlashcardDialog } from "@/components/CreateFlashcardDialog";
@@ -225,7 +225,7 @@ export default function Estudo() {
   const { data: flashcards = [], isLoading } = useQuery({
     queryKey: ["flashcards"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from("flashcards")
         .select("id, subject, front_content, back_content, is_official, created_by")
         .order("subject", { ascending: true });
@@ -311,7 +311,7 @@ export default function Estudo() {
 
   const handleDeleteFlashcard = async (flashcardId: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await db
         .from("flashcards")
         .delete()
         .eq("id", flashcardId);

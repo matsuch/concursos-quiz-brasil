@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { db } from '@/integrations/neon/client';
 import { useAuth } from '@/hooks/useAuth';
 
 export interface StudyNote {
@@ -21,7 +21,7 @@ export function useStudyNotes() {
     queryKey: ['study-notes', user?.id],
     queryFn: async () => {
       if (!user) return [];
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('study_notes')
         .select('*')
         .eq('user_id', user.id)
@@ -37,7 +37,7 @@ export function useStudyNotes() {
   const createNote = useMutation({
     mutationFn: async (note: { subject: string; title: string; content?: string }) => {
       if (!user) throw new Error('User not authenticated');
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('study_notes')
         .insert({ ...note, user_id: user.id })
         .select()
@@ -51,7 +51,7 @@ export function useStudyNotes() {
 
   const updateNote = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<StudyNote> & { id: string }) => {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('study_notes')
         .update(updates)
         .eq('id', id)
@@ -66,7 +66,7 @@ export function useStudyNotes() {
 
   const deleteNote = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      const { error } = await db
         .from('study_notes')
         .delete()
         .eq('id', id);
@@ -78,7 +78,7 @@ export function useStudyNotes() {
 
   const togglePin = useMutation({
     mutationFn: async ({ id, is_pinned }: { id: string; is_pinned: boolean }) => {
-      const { error } = await supabase
+      const { error } = await db
         .from('study_notes')
         .update({ is_pinned: !is_pinned })
         .eq('id', id);
