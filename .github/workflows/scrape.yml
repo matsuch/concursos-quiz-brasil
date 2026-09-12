@@ -24,8 +24,8 @@ name: Scraping de dados reais
 on:
   push:
     paths:
-      - 'scripts/scrape/job.json'
-      - 'scripts/scrape/*.py'
+      - 'scripts/scrape/**'
+      - '.github/workflows/scrape.yml'
   workflow_dispatch:
 
 permissions:
@@ -73,7 +73,12 @@ jobs:
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add -A scratch neon/seed 2>/dev/null || true
+          # Um pathspec inexistente faz o git add inteiro falhar e nao preparar
+          # nada -- foi o que engoliu o resultado da primeira execucao. Cada
+          # caminho entra separado, e so se existir.
+          for caminho in scratch neon/seed; do
+            [ -e "$caminho" ] && git add -A "$caminho"
+          done
           if git diff --cached --quiet; then
             echo "Nada novo para commitar."
             exit 0

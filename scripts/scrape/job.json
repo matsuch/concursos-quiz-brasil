@@ -1,6 +1,6 @@
 {
   "modo": "recon",
-  "comentario": "Rodada 1: reconhecer as fontes. O parser é escrito depois, contra o HTML que voltar em scratch/recon/.",
+  "comentario": "Rodada 1 (repetida: o commit da primeira execucao nao levou nada). Reconhecer fontes de listagem de concursos e as paginas de provas/gabaritos das bancas oficiais.",
   "urls": [
     "https://www.pciconcursos.com.br/concursos/",
     "https://www.pciconcursos.com.br/concursos/nacional/",
@@ -8,7 +8,10 @@
     "https://www.jcconcursos.com.br/concursos/",
     "https://www.folhadirigida.com.br/concursos",
     "https://conhecimento.fgv.br/concursos",
+    "https://conhecimento.fgv.br/concursos/encerrados",
     "https://www.cebraspe.org.br/concursos/",
-    "https://www.concursosfcc.com.br/"
+    "https://www.cebraspe.org.br/concursos/encerrados",
+    "https://www.concursosfcc.com.br/",
+    "https://www.concursosfcc.com.br/concursos/encerrados"
   ]
 }
