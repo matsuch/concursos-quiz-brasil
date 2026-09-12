@@ -775,6 +775,40 @@ export type Database = {
           }
         ]
       }
+
+      plan_interest: {
+        Row: {
+          id: string
+          user_id: string
+          email: string
+          whatsapp: string | null
+          concurso: string | null
+          message: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          email: string
+          whatsapp?: string | null
+          concurso?: string | null
+          message?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          email?: string
+          whatsapp?: string | null
+          concurso?: string | null
+          message?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Functions: {
     }

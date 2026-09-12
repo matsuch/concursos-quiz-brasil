@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ProposalsTab } from '@/components/planner/ProposalsTab';
 import { NotificationsPopover } from '@/components/planner/NotificationsPopover';
+import { IA_PLANO_ESTUDOS_HABILITADA } from '@/config/features';
 
 function PlannerSidebar({
   selectedDate,
@@ -308,17 +309,21 @@ export default function Planner() {
                     >
                       Controle de Edital
                     </button>
-                    <button
-                      onClick={() => setActiveTab('proposals')}
-                      className={cn(
-                        "text-xs font-medium py-1.5 px-3 rounded-md transition-colors",
-                        activeTab === 'proposals'
-                          ? "bg-card shadow-sm text-foreground"
-                          : "text-muted-foreground hover:text-foreground"
-                      )}
-                    >
-                      Propostas
-                    </button>
+                    {/* Propostas só existem como saída do gerador de IA, que está
+                        desligado por ser recurso pago (src/config/features.ts). */}
+                    {IA_PLANO_ESTUDOS_HABILITADA && (
+                      <button
+                        onClick={() => setActiveTab('proposals')}
+                        className={cn(
+                          "text-xs font-medium py-1.5 px-3 rounded-md transition-colors",
+                          activeTab === 'proposals'
+                            ? "bg-card shadow-sm text-foreground"
+                            : "text-muted-foreground hover:text-foreground"
+                        )}
+                      >
+                        Propostas
+                      </button>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -334,10 +339,10 @@ export default function Planner() {
                     onDateChange={setSelectedDate}
                     triggerNewEvent={triggerNewEvent}
                   />
-                ) : activeTab === 'edital' ? (
-                  <EditalControlTab />
-                ) : (
+                ) : activeTab === 'proposals' && IA_PLANO_ESTUDOS_HABILITADA ? (
                   <ProposalsTab />
+                ) : (
+                  <EditalControlTab />
                 )}
               </div>
             </main>

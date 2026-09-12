@@ -14,15 +14,28 @@ pausa-e-apaga-em-90-dias que custou os dados do projeto anterior.
 
 | Arquivo | O que é |
 |---|---|
-| `schema.sql` | Schema completo adaptado para Neon: 20 tabelas, 60 policies, índices, funções |
+| `schema.sql` | Schema completo adaptado para Neon: 21 tabelas, 63 policies, índices, funções |
 | `seed.sql` | Conteúdo oficial: 12 badges, 49 questões, 26 flashcards (idêntico ao do Supabase) |
+| `migrations/` | Alterações incrementais para bancos que já rodam um `schema.sql` anterior |
 
 ## Como aplicar
+
+Banco novo:
 
 ```bash
 psql "$DATABASE_URL" -f neon/schema.sql
 psql "$DATABASE_URL" -f neon/seed.sql
 ```
+
+Banco que já existe: rodar só o que faltar de `migrations/`, em ordem de nome.
+Cada arquivo é idempotente, então reaplicar não quebra.
+
+```bash
+psql "$DATABASE_URL" -f neon/migrations/20260912_plan_interest.sql
+```
+
+O `schema.sql` sempre reflete o estado final — as duas rotas chegam ao mesmo
+banco.
 
 Habilite o Auth e a Data API no console do projeto antes de rodar o app, e
 anote as duas URLs para as variáveis `VITE_NEON_AUTH_URL` e
@@ -46,6 +59,28 @@ justamente o que encareceu a saída do Supabase.
 
 O custo é assumido e tratado: `delete_user_data()` substitui o cascade, e os
 índices por `user_id` sustentam os filtros do RLS.
+
+## Recurso pago desligado
+
+A geração de plano de estudos com IA (`api/generate-study-plan.ts`) cobra por
+chamada de LLM e está **desligada** em `src/config/features.ts`
+(`IA_PLANO_ESTUDOS_HABILITADA = false`) — o objetivo é manter o site no ar sem
+nenhum serviço pago enquanto se mede se ele cresce organicamente.
+
+No lugar do gerador o app mostra o aviso de "somente planos pagos" e um
+formulário de interesse, gravado em `public.plan_interest` (um registro por
+usuário, `user_id` UNIQUE, mesmas quatro policies das demais tabelas por
+usuário). É por essa tabela que se mede a demanda antes de ligar o custo:
+
+```sql
+SELECT count(*) FROM public.plan_interest;
+SELECT email, whatsapp, concurso, message, created_at
+  FROM public.plan_interest ORDER BY created_at DESC;
+```
+
+Para religar: `true` na chave, e cadastrar `DATABASE_URL` e `OPENAI_API_KEY`
+nas variáveis de ambiente da Vercel. A aba "Propostas" do planner volta junto,
+já que ela só existe para revisar o que a IA gerou.
 
 ## Validação
 
