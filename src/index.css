@@ -220,7 +220,7 @@
   }
 }
 
-/* Capacitor safe areas - handles notches and navigation bar on Android */
+/* Safe areas - notch e barra de navegação em telas móveis */
 body {
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);

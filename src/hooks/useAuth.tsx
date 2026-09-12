@@ -2,10 +2,6 @@ import { useState, useEffect, createContext, useContext, ReactNode } from 'react
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
-const isNative = () =>
-  typeof (window as any).Capacitor !== 'undefined' &&
-  (window as any).Capacitor.isNativePlatform();
-
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -26,31 +22,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
-
-        // Close the in-app browser after successful OAuth on native
-        if (event === 'SIGNED_IN' && isNative()) {
-          import('@capacitor/browser').then(({ Browser }) => Browser.close().catch(() => {}));
-        }
       }
     );
-
-    // Deep link listener for native OAuth callback (Google Sign-In)
-    let appUrlListenerCleanup: (() => void) | null = null;
-    if (isNative()) {
-      import('@capacitor/app').then(({ App }) => {
-        App.addListener('appUrlOpen', async ({ url }) => {
-          if (url.startsWith('io.concursos.brasil://')) {
-            await supabase.auth.exchangeCodeForSession(url);
-          }
-        }).then(handle => {
-          appUrlListenerCleanup = () => handle.remove();
-        });
-      });
-    }
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -61,7 +38,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       subscription.unsubscribe();
-      appUrlListenerCleanup?.();
     };
   }, []);
 
@@ -87,24 +63,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signInWithGoogle = async () => {
-    if (isNative()) {
-      // On native: open Google OAuth in system browser with custom scheme redirect
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: 'io.concursos.brasil://auth/callback',
-          skipBrowserRedirect: true,
-        }
-      });
-      if (error) return { error };
-      if (data.url) {
-        const { Browser } = await import('@capacitor/browser');
-        await Browser.open({ url: data.url });
-      }
-      return { error: null };
-    }
-
-    // Web: existing behavior
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {

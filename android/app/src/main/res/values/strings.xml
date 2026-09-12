@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">Passar Concursos</string>
-    <string name="title_activity_main">Passar Concursos</string>
-    <string name="package_name">io.concursos.brasil</string>
-    <string name="custom_url_scheme">io.concursos.brasil</string>
-</resources>
