@@ -225,9 +225,16 @@ const ConcursoCard = ({
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Users className="w-4 h-4 flex-shrink-0" />
-            <span itemProp="totalJobOpenings">
-              {vagas} vaga{vagas !== 1 ? "s" : ""}
-            </span>
+            {/* Boa parte dos concursos reais é cadastro de reserva, ou não
+                publica o número no edital. Nesses casos a fonte não informa e
+                vagas chega 0 — "0 vagas" seria afirmar algo falso. */}
+            {vagas > 0 ? (
+              <span itemProp="totalJobOpenings">
+                {vagas} vaga{vagas !== 1 ? "s" : ""}
+              </span>
+            ) : (
+              <span>Vagas a definir</span>
+            )}
             <span 
               className="text-xs px-2 py-0.5 rounded-full bg-muted ml-auto"
               itemProp="qualifications"

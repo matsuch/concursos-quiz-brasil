@@ -1,17 +1,5 @@
 {
-  "modo": "recon",
-  "comentario": "Rodada 1 (repetida: o commit da primeira execucao nao levou nada). Reconhecer fontes de listagem de concursos e as paginas de provas/gabaritos das bancas oficiais.",
-  "urls": [
-    "https://www.pciconcursos.com.br/concursos/",
-    "https://www.pciconcursos.com.br/concursos/nacional/",
-    "https://concursosnobrasil.com.br/concursos/",
-    "https://www.jcconcursos.com.br/concursos/",
-    "https://www.folhadirigida.com.br/concursos",
-    "https://conhecimento.fgv.br/concursos",
-    "https://conhecimento.fgv.br/concursos/encerrados",
-    "https://www.cebraspe.org.br/concursos/",
-    "https://www.cebraspe.org.br/concursos/encerrados",
-    "https://www.concursosfcc.com.br/",
-    "https://www.concursosfcc.com.br/concursos/encerrados"
-  ]
+  "modo": "concursos",
+  "comentario": "Extrai os concursos abertos das 6 paginas regionais do PCI e gera neon/seed/concursos.sql. Parser validado localmente contra o HTML de scratch/recon/.",
+  "urls": []
 }
