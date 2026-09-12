@@ -113,12 +113,18 @@ jobs:
           # Um pathspec inexistente faz o git add inteiro falhar e nao preparar
           # nada -- foi o que engoliu o resultado da primeira execucao. Cada
           # caminho entra separado, e so se existir.
-          for caminho in scratch neon/seed; do
+          # public/dados e o que a aplicacao le em producao: fora daqui, a coleta
+          # semanal regeneraria o instantaneo e nunca o publicaria, deixando o
+          # site congelado nos dados da ultima vez -- em silencio.
+          for caminho in scratch neon/seed public/dados; do
             [ -e "$caminho" ] && git add -A "$caminho"
           done
           if git diff --cached --quiet; then
             echo "Nada novo para commitar."
             exit 0
+          fi
+          if git diff --cached --name-only | grep -q '^public/dados/'; then
+            echo "Instantâneo da aplicação atualizado — o deploy vai publicar os dados novos." >> "$GITHUB_STEP_SUMMARY"
           fi
           git commit -m "Resultado do scraping (modo: ${MODO})"
           for tentativa in 1 2 3; do
