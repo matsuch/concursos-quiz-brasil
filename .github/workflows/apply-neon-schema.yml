@@ -6,12 +6,22 @@ name: Aplicar schema no Neon
 # egress), então a aplicação do schema precisa partir de um runner com rede
 # aberta. O runner do GitHub tem.
 #
-# Requer o secret NEON_DATABASE_URL no repositório:
+# A connection string vem do secret NEON_DATABASE_URL, se cadastrado:
 #   Settings -> Secrets and variables -> Actions -> New repository secret
+#
+# Como alternativa, pode ser passada no disparo pelo input 'database_url'.
+# ATENÇÃO: um valor passado por input fica registrado nos metadados da execução,
+# visível a quem tem acesso de leitura ao repositório. Use o secret sempre que
+# puder, e rotacione a senha depois se usar o input.
 
 on:
   workflow_dispatch:
     inputs:
+      database_url:
+        description: 'Connection string (deixe vazio para usar o secret NEON_DATABASE_URL)'
+        type: string
+        required: false
+        default: ''
       aplicar_seed:
         description: 'Aplicar também o seed (badges, questões, flashcards)'
         type: boolean
@@ -34,14 +44,24 @@ jobs:
           fi
           psql --version
 
-      - name: Conferir conexão e estado atual
+      - name: Resolver credencial
         env:
-          PGURL: ${{ secrets.NEON_DATABASE_URL }}
+          URL_SECRET: ${{ secrets.NEON_DATABASE_URL }}
+          URL_INPUT: ${{ inputs.database_url }}
         run: |
+          PGURL="${URL_INPUT:-$URL_SECRET}"
           if [ -z "$PGURL" ]; then
-            echo "::error::O secret NEON_DATABASE_URL não está definido no repositório."
+            echo "::error::Sem credencial: cadastre o secret NEON_DATABASE_URL ou informe o input database_url."
             exit 1
           fi
+          echo "::add-mask::$PGURL"
+          echo "PGURL=$PGURL" >> "$GITHUB_ENV"
+          if [ -n "$URL_INPUT" ]; then
+            echo "::warning::Credencial recebida por input — fica nos metadados da execução. Rotacione a senha depois."
+          fi
+
+      - name: Conferir conexão e estado atual
+        run: |
           echo "Conectado em:"
           psql "$PGURL" -tAc "select current_database() || ' @ ' || version();"
 
@@ -62,19 +82,13 @@ jobs:
           echo "Banco vazio, seguindo."
 
       - name: Aplicar schema
-        env:
-          PGURL: ${{ secrets.NEON_DATABASE_URL }}
         run: psql "$PGURL" -v ON_ERROR_STOP=1 -f neon/schema.sql
 
       - name: Aplicar seed
         if: ${{ inputs.aplicar_seed }}
-        env:
-          PGURL: ${{ secrets.NEON_DATABASE_URL }}
         run: psql "$PGURL" -v ON_ERROR_STOP=1 -f neon/seed.sql
 
       - name: Verificar resultado
-        env:
-          PGURL: ${{ secrets.NEON_DATABASE_URL }}
         run: |
           echo "### Resultado da aplicação" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
