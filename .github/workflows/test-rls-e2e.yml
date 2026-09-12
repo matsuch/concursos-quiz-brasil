@@ -1,0 +1,187 @@
+name: Teste ponta a ponta do RLS
+
+# Prova o caminho POSITIVO do RLS, que não dá para testar por SQL direto:
+# auth.user_id() do Neon lê o JWT pela extensão pg_session_jwt, então só um
+# token assinado de verdade exercita as policies. Este workflow faz login real
+# no Neon Auth e consulta a Data API com o JWT obtido.
+#
+# Roda no runner do GitHub porque a sessão do Claude Code não alcança
+# *.neon.tech (política de egress).
+#
+# Não requer secrets: as URLs são endpoints públicos e o acesso depende do JWT.
+
+on:
+  workflow_dispatch:
+
+env:
+  AUTH_URL: https://ep-steep-waterfall-ac5tzxmb.neonauth.sa-east-1.aws.neon.tech/neondb/auth
+  DATA_API: https://ep-steep-waterfall-ac5tzxmb.apirest.sa-east-1.aws.neon.tech/neondb/rest/v1
+
+jobs:
+  testar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Executar
+        run: |
+          set -uo pipefail
+
+          FALHAS=0
+          ok()    { echo "  ✅ $1"; echo "| ✅ | $1 |" >> "$GITHUB_STEP_SUMMARY"; }
+          falha() { echo "  ❌ $1"; echo "| ❌ | $1 |" >> "$GITHUB_STEP_SUMMARY"; FALHAS=$((FALHAS+1)); }
+
+          echo "## Teste ponta a ponta do RLS" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| | Verificação |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
+
+          SUF="$(date +%s)-$RANDOM"
+          SENHA="Teste-$SUF-Ab1!"
+
+          # --- cadastro + login, devolvendo "<user_id> <jwt>" ---------------
+          autenticar() {
+            local email="$1" nome="$2" body code sess uid jwt
+
+            body=$(curl -sS -X POST "$AUTH_URL/sign-up/email" \
+              -H 'Content-Type: application/json' \
+              -d "{\"email\":\"$email\",\"password\":\"$SENHA\",\"name\":\"$nome\"}" \
+              -w '\n%{http_code}')
+            code=$(tail -n1 <<<"$body"); body=$(sed '$d' <<<"$body")
+            echo "    sign-up $nome -> HTTP $code" >&2
+            if [ "$code" != "200" ] && [ "$code" != "201" ]; then
+              echo "    resposta: $(head -c 400 <<<"$body")" >&2
+            fi
+
+            body=$(curl -sS -X POST "$AUTH_URL/sign-in/email" \
+              -H 'Content-Type: application/json' \
+              -d "{\"email\":\"$email\",\"password\":\"$SENHA\"}" \
+              -w '\n%{http_code}')
+            code=$(tail -n1 <<<"$body"); body=$(sed '$d' <<<"$body")
+            echo "    sign-in $nome -> HTTP $code" >&2
+            if [ "$code" != "200" ]; then
+              echo "    resposta: $(head -c 400 <<<"$body")" >&2
+              return 1
+            fi
+
+            sess=$(jq -r '.token // empty' <<<"$body")
+            uid=$(jq -r '.user.id // empty' <<<"$body")
+            [ -n "$sess" ] && [ -n "$uid" ] || { echo "    sem token/uid no corpo" >&2; return 1; }
+
+            # plugin jwt do Better Auth: troca a sessão por um JWT assinado
+            jwt=$(curl -sS "$AUTH_URL/token" -H "Authorization: Bearer $sess" \
+                  | jq -r '.token // empty')
+            [ -n "$jwt" ] || { echo "    /token nao devolveu JWT" >&2; return 1; }
+
+            echo "$uid $jwt"
+          }
+
+          echo "=== Autenticando dois usuários ==="
+          if ! LIDO_A=$(autenticar "rls-a-$SUF@exemplo.test" "Usuario A"); then
+            falha "Autenticação do usuário A (bloqueia o resto do teste)"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "Teste abortado: não foi possível autenticar." >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          if ! LIDO_B=$(autenticar "rls-b-$SUF@exemplo.test" "Usuario B"); then
+            falha "Autenticação do usuário B (bloqueia o resto do teste)"
+            exit 1
+          fi
+          UID_A=${LIDO_A%% *}; JWT_A=${LIDO_A#* }
+          UID_B=${LIDO_B%% *}; JWT_B=${LIDO_B#* }
+          echo "::add-mask::$JWT_A"
+          echo "::add-mask::$JWT_B"
+          ok "Cadastro e login por e-mail/senha funcionam (2 usuários)"
+          echo "user A = $UID_A"
+          echo "user B = $UID_B"
+          { echo "UID_A=$UID_A"; echo "UID_B=$UID_B"; } >> "$GITHUB_ENV"
+
+          api() { # metodo jwt caminho [corpo]
+            local m="$1" j="$2" p="$3" d="${4:-}"
+            if [ -n "$d" ]; then
+              curl -sS -X "$m" "$DATA_API$p" \
+                -H "Authorization: Bearer $j" -H 'Content-Type: application/json' \
+                -H 'Prefer: return=representation' -d "$d" -w '\n%{http_code}'
+            else
+              curl -sS -X "$m" "$DATA_API$p" -H "Authorization: Bearer $j" -w '\n%{http_code}'
+            fi
+          }
+
+          echo "=== 1. Leitura de conteúdo público ==="
+          R=$(api GET "$JWT_A" "/questions?select=id&limit=5"); C=$(tail -n1 <<<"$R"); B=$(sed '$d' <<<"$R")
+          N=$(jq 'length' <<<"$B" 2>/dev/null || echo 0)
+          echo "    HTTP $C, $N linhas"
+          [ "$C" = "200" ] && [ "$N" -gt 0 ] && ok "Usuário autenticado lê tabela pública (questions)" \
+            || falha "Leitura de questions falhou (HTTP $C, $N linhas)"
+
+          echo "=== 2. Escrita do próprio dado ==="
+          R=$(api POST "$JWT_A" "/study_notes" \
+              "{\"user_id\":\"$UID_A\",\"subject\":\"Português\",\"title\":\"Nota do A\",\"content\":\"a\"}")
+          C=$(tail -n1 <<<"$R")
+          echo "    HTTP $C"
+          [ "$C" = "201" ] && ok "Usuário grava linha própria em study_notes" \
+            || falha "Gravação da própria linha falhou (HTTP $C)"
+
+          R=$(api POST "$JWT_B" "/study_notes" \
+              "{\"user_id\":\"$UID_B\",\"subject\":\"Português\",\"title\":\"Nota do B\",\"content\":\"b\"}")
+          C=$(tail -n1 <<<"$R")
+          [ "$C" = "201" ] || falha "Gravação da linha de B falhou (HTTP $C)"
+
+          echo "=== 3. Isolamento de leitura (o teste central) ==="
+          R=$(api GET "$JWT_A" "/study_notes?select=title,user_id"); C=$(tail -n1 <<<"$R"); B=$(sed '$d' <<<"$R")
+          TITULOS=$(jq -r '[.[].title] | sort | join(",")' <<<"$B" 2>/dev/null || echo "?")
+          ALHEIAS=$(jq --arg u "$UID_A" '[.[] | select(.user_id != $u)] | length' <<<"$B" 2>/dev/null || echo -1)
+          echo "    A enxerga: [$TITULOS]"
+          if [ "$TITULOS" = "Nota do A" ] && [ "$ALHEIAS" = "0" ]; then
+            ok "A enxerga apenas a própria nota, nenhuma de terceiros"
+          else
+            falha "Isolamento de leitura quebrado: A viu [$TITULOS], $ALHEIAS linha(s) alheia(s)"
+          fi
+
+          R=$(api GET "$JWT_B" "/study_notes?select=title,user_id"); B=$(sed '$d' <<<"$R")
+          TIT_B=$(jq -r '[.[].title] | sort | join(",")' <<<"$B" 2>/dev/null || echo "?")
+          echo "    B enxerga: [$TIT_B]"
+          [ "$TIT_B" = "Nota do B" ] && ok "B enxerga apenas a própria nota (isolamento nos dois sentidos)" \
+            || falha "Isolamento quebrado do lado de B: viu [$TIT_B]"
+
+          echo "=== 4. Tentativa de forjar linha em nome de outro ==="
+          R=$(api POST "$JWT_A" "/study_notes" \
+              "{\"user_id\":\"$UID_B\",\"subject\":\"Português\",\"title\":\"Forjada\",\"content\":\"x\"}")
+          C=$(tail -n1 <<<"$R")
+          echo "    HTTP $C (esperado 401/403/42501)"
+          [ "$C" != "201" ] && ok "RLS impede gravar em nome de outro usuário (HTTP $C)" \
+            || falha "GRAVE: usuário conseguiu criar linha em nome de outro"
+
+          echo "=== 5. Tentativa de alterar linha alheia ==="
+          R=$(api PATCH "$JWT_A" "/study_notes?title=eq.Nota%20do%20B" '{"content":"invadido"}')
+          C=$(tail -n1 <<<"$R"); B=$(sed '$d' <<<"$R")
+          N=$(jq 'length' <<<"$B" 2>/dev/null || echo 0)
+          echo "    HTTP $C, $N linha(s) afetada(s)"
+          [ "$N" = "0" ] && ok "RLS impede alterar linha de outro usuário" \
+            || falha "GRAVE: usuário alterou $N linha(s) alheia(s)"
+
+          echo "=== 6. Notificações: cliente não pode criar ==="
+          R=$(api POST "$JWT_A" "/notifications" \
+              "{\"user_id\":\"$UID_A\",\"type\":\"t\",\"title\":\"x\",\"message\":\"y\"}")
+          C=$(tail -n1 <<<"$R")
+          echo "    HTTP $C (esperado negar)"
+          [ "$C" != "201" ] && ok "Cliente não consegue forjar notificação (HTTP $C)" \
+            || falha "GRAVE: cliente criou notificação, que deveria ser só do sistema"
+
+          echo "=== 7. Upsert de profile (substituto do trigger do Supabase) ==="
+          R=$(api POST "$JWT_A" "/profiles" "{\"user_id\":\"$UID_A\",\"display_name\":\"Usuario A\"}")
+          C=$(tail -n1 <<<"$R")
+          echo "    HTTP $C"
+          [ "$C" = "201" ] && ok "App consegue criar o próprio profile no primeiro acesso" \
+            || falha "Criação de profile falhou (HTTP $C)"
+
+          echo ""
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$FALHAS" -eq 0 ]; then
+            echo "**Resultado: todas as verificações passaram.**" >> "$GITHUB_STEP_SUMMARY"
+            echo "TODAS AS VERIFICACOES PASSARAM"
+          else
+            echo "**Resultado: $FALHAS verificação(ões) falharam.**" >> "$GITHUB_STEP_SUMMARY"
+            echo "$FALHAS VERIFICACOES FALHARAM"
+          fi
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Usuários de teste criados: \`$UID_A\`, \`$UID_B\` — remover após a análise." >> "$GITHUB_STEP_SUMMARY"
+          exit "$FALHAS"
