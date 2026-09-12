@@ -89,8 +89,8 @@ jobs:
           fi
           echo "auth.user_id() presente, seguindo."
 
-      - name: Resetar schema public
-        if: \${{ inputs.resetar_schema_public }}
+      - name: Resetar objetos de public
+        if: ${{ inputs.resetar_schema_public }}
         run: |
           LINHAS=$(psql "$PGURL" -tAc "select coalesce(sum(n_live_tup),0) from pg_stat_user_tables where schemaname='public';")
           echo "Linhas atualmente em public: $LINHAS"
@@ -99,8 +99,23 @@ jobs:
             echo "Se a perda for intencional, marque também 'forcar_em_banco_nao_vazio'."
             exit 1
           fi
-          psql "$PGURL" -v ON_ERROR_STOP=1 -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
-          echo "Schema public recriado vazio."
+          # Derruba os objetos, e nao o schema: um DROP SCHEMA levaria junto as
+          # permissoes que o Neon configura em public ao habilitar a Data API.
+          psql "$PGURL" -v ON_ERROR_STOP=1 <<'SQL'
+          DO $$
+          DECLARE r record;
+          BEGIN
+            FOR r IN SELECT tablename FROM pg_tables WHERE schemaname = 'public' LOOP
+              EXECUTE format('DROP TABLE IF EXISTS public.%I CASCADE', r.tablename);
+            END LOOP;
+            FOR r IN SELECT p.proname, pg_get_function_identity_arguments(p.oid) AS args
+                     FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+                     WHERE n.nspname = 'public' LOOP
+              EXECUTE format('DROP FUNCTION IF EXISTS public.%I(%s) CASCADE', r.proname, r.args);
+            END LOOP;
+          END $$;
+          SQL
+          echo "Objetos de public removidos (schema e permissoes preservados)."
           echo "TABELAS_EXISTENTES=0" >> "$GITHUB_ENV"
 
       - name: Abortar se o banco não estiver vazio
