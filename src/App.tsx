@@ -13,6 +13,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import Navbar from "@/components/Navbar";
 import Home from "./pages/Home";
 import Quiz from "./pages/Quiz";
+import ConcursoDetalhe from "./pages/Concurso";
 import Estudo from "./pages/Estudo";
 import Auth from "./pages/Auth";
 import ConcursosPage from "@/pages/Concursos";
@@ -37,6 +38,9 @@ function AppRoutes() {
 
               {/* Rotas públicas */}
               <Route path="/concursos" element={<ConcursosPage />} />
+              {/* Uma URL por concurso: e o unico conteudo proprio e factual
+                  do site, e sem endereco proprio nao ha o que indexar nem citar. */}
+              <Route path="/concursos/:slug" element={<ConcursoDetalhe />} />
               <Route path="/quiz" element={<Quiz />} />
               <Route path="/anotacoes" element={<Anotacoes />} />
               <Route path="/auth" element={<Auth />} />

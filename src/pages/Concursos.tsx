@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, Filter, MapPin, Calendar, Banknote, Users, ChevronRight, Loader2, Sparkles, AlertCircle, Clock } from "lucide-react";
 import ConcursoCard from "@/components/ConcursoCard";
 import { SeoHead } from "@/components/SeoHead";
-import { db } from "@/integrations/neon/client";
+import { carregarConcursos } from '@/dados/concursos';
 import { Helmet } from 'react-helmet-async';
 
 interface Concurso {
@@ -23,6 +23,7 @@ interface Concurso {
   urlEdital?: string | null;
   salario?: number | null;
   salarioAte?: boolean;
+  slug: string;
 }
 
 interface Filters {
@@ -61,18 +62,16 @@ const ConcursosPage = () => {
   const fetchConcursos = async () => {
     try {
       setLoading(true);
-      
-      const { data: concursosData, error } = await db
-        .from("concursos")
-        .select("*")
-        .order("inscricoes_ate", { ascending: true })
-        .order("salario", { ascending: false, nullsFirst: false });
+      const { concursos: dados } = await carregarConcursos();
 
-      if (error) {
-        console.error("Erro ao buscar concursos:", error);
-      } else if (concursosData) {
-        const formatados: Concurso[] = concursosData.map((c) => ({
-          id: c.id,
+      const formatados: Concurso[] = dados
+        .slice()
+        .sort((a, b) =>
+          a.inscricoes_ate.localeCompare(b.inscricoes_ate) || (b.salario ?? 0) - (a.salario ?? 0),
+        )
+        .map((c) => ({
+          id: c.slug,
+          slug: c.slug,
           titulo: c.titulo,
           orgao: c.orgao,
           vagas: c.vagas,
@@ -82,25 +81,21 @@ const ConcursosPage = () => {
           status: c.status as "destaque" | "breve" | "aberto",
           urlEdital: c.url_edital,
           salario: c.salario,
-          salarioAte: c.salario_ate ?? false
+          salarioAte: c.salario_ate,
         }));
 
-        setConcursos(formatados);
-        setFilteredConcursos(formatados);
-        
-        // Extrair estados e órgãos únicos para filtros
-        const estadosUnicos = [...new Set(formatados.map(c => {
-          const parts = c.local.split('/');
-          return parts.length > 1 ? parts[0].trim() : "Outros";
-        }))].sort();
-        
-        const orgaosUnicos = [...new Set(formatados.map(c => c.orgao))].sort();
-        
-        setEstados(estadosUnicos);
-        setOrgaos(orgaosUnicos);
-      }
+      setConcursos(formatados);
+      setFilteredConcursos(formatados);
+
+      const estadosUnicos = [...new Set(formatados.map(c => {
+        const parts = c.local.split('/');
+        return parts.length > 1 ? parts[0].trim() : c.local;
+      }))].sort();
+
+      setEstados(estadosUnicos);
+      setOrgaos([...new Set(formatados.map(c => c.orgao))].sort());
     } catch (error) {
-      console.error("Erro ao buscar concursos:", error);
+      console.error("Erro ao carregar concursos:", error);
     } finally {
       setLoading(false);
     }
@@ -573,6 +568,7 @@ const ConcursosPage = () => {
                               {...concurso}
                               salario={concurso.salario ?? 0}
                               salarioAte={concurso.salarioAte ?? false}
+                              slug={concurso.slug}
                             />
                           </div>
                         ))}

@@ -46,6 +46,10 @@ UA = "ConcursosQuizBrasilBot/1.0 (+https://github.com/matsuch/concursos-quiz-bra
 PAUSA_SEGUNDOS = 2.0
 SAIDA = "neon/seed/concursos.sql"
 SAIDA_JSON = "scratch/concursos.json"
+# Instantâneo que a aplicação lê em produção (ver src/dados/concursos.ts).
+# É ele que faz sitemap, páginas pré-renderizadas e site concordarem sobre o
+# que existe, sem nenhum deles precisar de credencial de banco.
+SAIDA_APP = "public/dados/concursos.json"
 
 PAGINAS = [
     "https://www.pciconcursos.com.br/concursos/nacional/",
@@ -348,6 +352,21 @@ def main() -> int:
 
     os.makedirs(os.path.dirname(SAIDA), exist_ok=True)
     os.makedirs(os.path.dirname(SAIDA_JSON), exist_ok=True)
+    os.makedirs(os.path.dirname(SAIDA_APP), exist_ok=True)
+
+    prefixo = "https://www.pciconcursos.com.br/noticias/"
+    para_app = [{
+        "slug": i["url_edital"][len(prefixo):],
+        "titulo": i["titulo"], "orgao": i["orgao"], "local": i["local"],
+        "nivel": i["nivel"], "vagas": i["vagas"], "salario": i["salario"],
+        "salario_ate": i["salario_ate"], "inscricoes_ate": i["inscricoes_ate"],
+        "status": i["status"], "url_edital": i["url_edital"],
+    } for i in unicos if i["url_edital"].startswith(prefixo)]
+    with open(SAIDA_APP, "w", encoding="utf-8") as f:
+        json.dump({"gerado_em": date.today().isoformat(), "fonte": "pciconcursos.com.br",
+                   "total": len(para_app), "concursos": para_app},
+                  f, ensure_ascii=False, separators=(",", ":"))
+    print(f"[app] {len(para_app)} concursos -> {SAIDA_APP}")
     with open(SAIDA, "w", encoding="utf-8") as f:
         f.write(gerar_sql(unicos))
     with open(SAIDA_JSON, "w", encoding="utf-8") as f:

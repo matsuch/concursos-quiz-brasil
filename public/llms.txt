@@ -4,18 +4,23 @@
 > listagem de concursos com inscrições abertas, banco de questões, flashcards,
 > simulados e planner de estudos. Sem cadastro pago e sem anúncio.
 
-O site é uma aplicação React renderizada no cliente. Rastreador que não executa
-JavaScript recebe HTML sem conteúdo — as páginas abaixo descrevem o que existe
-em cada endereço, e a listagem de concursos é a parte com dado factual próprio.
+As páginas de concurso e a listagem são pré-renderizadas: o HTML servido já traz
+o conteúdo, sem depender de JavaScript. As demais rotas são renderizadas no
+cliente e chegam vazias para quem não executa JS.
 
 ## Conteúdo público
 
 - [Início](https://passar-concursos.vercel.app/): visão geral, concursos em
   destaque e acesso às demais áreas.
-- [Concursos abertos](https://passar-concursos.vercel.app/concursos): concursos
-  públicos com inscrição aberta no Brasil, com órgão, unidade da federação,
-  número de vagas, teto salarial, escolaridade exigida, prazo final de inscrição
-  e link para o edital de origem. Atualizado semanalmente por coleta automática.
+- [Concursos abertos](https://passar-concursos.vercel.app/concursos): índice de
+  todos os concursos públicos com inscrição aberta no Brasil. Atualizado
+  semanalmente por coleta automática.
+- Uma página por concurso, em `/concursos/{slug}`, com órgão, unidade da
+  federação, número de vagas, remuneração, escolaridade exigida, prazo final de
+  inscrição e link para o edital de origem. Os endereços estão todos no
+  [sitemap](https://passar-concursos.vercel.app/sitemap.xml).
+- [Dados em JSON](https://passar-concursos.vercel.app/dados/concursos.json): a
+  mesma listagem em formato legível por máquina, que é a fonte das páginas.
 - [Questões](https://passar-concursos.vercel.app/quiz): questões de concurso por
   matéria. A resolução exige conta; o enunciado é visível sem login.
 

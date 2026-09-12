@@ -16,7 +16,7 @@
  * sendo só o que é estático de verdade.
  */
 
-import { writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { writeFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const BASE = 'https://passar-concursos.vercel.app';
@@ -42,11 +42,24 @@ const ROTAS = [
 
 const hoje = new Date().toISOString().slice(0, 10);
 
+// Uma entrada por concurso. É o grosso do sitemap e o único conteúdo próprio do
+// site — a lista sai do mesmo instantâneo que a aplicação lê, então sitemap e
+// site nunca discordam sobre o que existe.
+const dados = JSON.parse(readFileSync('public/dados/concursos.json', 'utf-8'));
+for (const c of dados.concursos) {
+  ROTAS.push({
+    caminho: `/concursos/${c.slug}`,
+    changefreq: 'weekly',
+    priority: '0.7',
+    lastmod: dados.gerado_em,
+  });
+}
+
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${ROTAS.map(r => `  <url>
-    <loc>${BASE}${r.caminho}</loc>
-    <lastmod>${hoje}</lastmod>
+    <loc>${BASE}${r.caminho.replace(/&/g, '&amp;')}</loc>
+    <lastmod>${r.lastmod ?? hoje}</lastmod>
     <changefreq>${r.changefreq}</changefreq>
     <priority>${r.priority}</priority>
   </url>`).join('\n')}
@@ -60,4 +73,4 @@ if (!existsSync(DIST)) {
 
 mkdirSync(DIST, { recursive: true });
 writeFileSync(join(DIST, 'sitemap.xml'), xml, 'utf-8');
-console.log(`[sitemap] ${ROTAS.length} URLs, lastmod ${hoje} -> ${DIST}/sitemap.xml`);
+console.log(`[sitemap] ${ROTAS.length} URLs (${dados.concursos.length} concursos) -> ${DIST}/sitemap.xml`);

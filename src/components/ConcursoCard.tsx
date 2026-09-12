@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Banknote, Users, ExternalLink, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface ConcursoCardProps {
   titulo: string;
@@ -14,6 +15,7 @@ interface ConcursoCardProps {
   status: "destaque" | "breve" | "aberto";
   urlEdital?: string | null;
   id?: string; // Adicionado para schema markup
+  slug?: string | null;
 }
 
 const ConcursoCard = ({
@@ -28,6 +30,7 @@ const ConcursoCard = ({
   status,
   urlEdital,
   id,
+  slug,
 }: ConcursoCardProps) => {
   const statusConfig = {
     destaque: {
@@ -175,7 +178,15 @@ const ConcursoCard = ({
               className="text-lg font-semibold leading-tight mb-2"
               itemProp="title"
             >
-              {titulo}
+              {/* Link interno para a pagina do concurso: e o caminho que o
+                  rastreador segue ate ela, e o que evita pagina orfa. */}
+              {slug ? (
+                <Link to={`/concursos/${slug}`} className="hover:text-primary transition-colors">
+                  {titulo}
+                </Link>
+              ) : (
+                titulo
+              )}
             </h3>
             
             <div 

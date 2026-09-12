@@ -102,6 +102,19 @@ autoral, redação tem. A FCC ficou de fora: o `robots.txt` dela tem
 O seed é idempotente (`ON CONFLICT` no índice único de `url_edital`), então
 recoletar atualiza prazo, vagas e status em vez de duplicar.
 
+### O site lê o instantâneo, não a tabela
+
+A partir de `src/dados/concursos.ts`, a aplicação lê `public/dados/concursos.json`
+— gerado pela coleta e versionado — em vez de consultar `public.concursos`. O
+motivo está no cabeçalho daquele arquivo: sitemap e pré-renderização precisam
+saber quais URLs existem em tempo de build, sem credencial; banco e seed podiam
+divergir; e o compute do Neon suspende após 5 min ocioso, fazendo o primeiro
+visitante pagar o tempo de religar na página de entrada.
+
+A tabela continua existindo e sendo preenchida pelo workflow. Se não houver uso
+futuro para ela, o passo "Aplicar no Neon" e a própria tabela podem sair — aí
+nada na listagem de concursos depende de credencial.
+
 **Para a coleta semanal aplicar sozinha**, cadastre o secret
 `NEON_DATABASE_URL` em *Settings → Secrets and variables → Actions*. Sem ele a
 coleta roda igual e gera o seed, só não grava no banco. Nenhuma outra parte do
