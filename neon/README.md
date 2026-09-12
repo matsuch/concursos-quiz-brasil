@@ -49,8 +49,9 @@ O custo é assumido e tratado: `delete_user_data()` substitui o cascade, e os
 
 ## Validação
 
-Aplicado num Postgres 16 limpo com stub das tabelas de auth e de
-`auth.user_id()`. Verificado com ids em formato texto (`usr_2a9f1c4b7e`):
+Aplicado num Postgres 16 limpo com stub fiel ao projeto real (`neon_auth.user`
+com `id uuid`). Verificado nas duas formas de retorno de `auth.user_id()`,
+`uuid` e `text`:
 
 - schema e seed aplicam sem erro
 - upsert de profile idempotente (substituto do trigger)
@@ -61,8 +62,10 @@ Aplicado num Postgres 16 limpo com stub das tabelas de auth e de
 
 ## Pendências a confirmar no projeto real
 
-1. **Tipo do id em `neon_auth.user`.** O schema usa `TEXT`, que acomoda tanto
-   texto quanto UUID, mas confirme antes de assumir qualquer join.
+1. ~~Tipo do id em `neon_auth.user`~~ — **resolvido: é `uuid`.** As colunas
+   seguem `TEXT` para não amarrar o schema ao formato do provedor, e as
+   policies comparam com `auth.user_id()::text`, o que funciona tanto se a
+   função devolver `text` quanto `uuid`. Ambos os casos testados.
 2. **`@neondatabase/neon-js` está em `0.7.0-beta`.** API pode mudar.
 3. **OAuth do Google no Capacitor.** O deep link `io.concursos.brasil://`
    precisa ser reconfigurado no Neon Auth e testado no Android.

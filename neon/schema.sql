@@ -7,9 +7,14 @@
 --   1. auth.uid()  →  auth.user_id()
 --      Função equivalente do Neon. Rename mecânico nas policies.
 --
---   2. user_id / created_by: UUID  →  TEXT
---      Managed Better Auth usa ids em texto. TEXT também acomoda o formato
---      UUID, caso a instalação use ids nesse formato.
+--   2. user_id / created_by: UUID  →  TEXT, com comparação por auth.user_id()::text
+--      Verificado no projeto real: neon_auth.user.id é UUID. A coluna fica
+--      TEXT mesmo assim, para o schema não depender do formato de id do
+--      provedor de auth — o mesmo motivo de não haver FK (ver abaixo).
+--      Como Postgres não converte text e uuid implicitamente, toda policy
+--      compara com auth.user_id()::text: no-op se a função devolver text,
+--      canônico se devolver uuid. Imune aos dois casos, já que o tipo de
+--      retorno só se conhece com a Data API habilitada.
 --
 --   3. Sem FK para a tabela de usuários. DECISÃO DELIBERADA, ver abaixo.
 --
@@ -37,7 +42,7 @@
 -- No Supabase um trigger em auth.users criava a linha em profiles. No Neon as
 -- tabelas de auth são gerenciadas pelo serviço, não convém pendurar trigger.
 -- O profile passa a ser criado pelo app no primeiro acesso autenticado, com um
--- upsert em profiles — a policy de INSERT já permite (auth.user_id() = user_id)
+-- upsert em profiles — a policy de INSERT já permite (auth.user_id()::text = user_id)
 -- e user_id é UNIQUE, então a operação é idempotente.
 -- =============================================================================
 
@@ -514,75 +519,75 @@ CREATE POLICY "Questões de simulado são visíveis por todos"
 CREATE POLICY "Profiles são visíveis por todos"
   ON public.profiles FOR SELECT USING (true);
 CREATE POLICY "Usuário cria o próprio profile"
-  ON public.profiles FOR INSERT WITH CHECK (auth.user_id() = user_id);
+  ON public.profiles FOR INSERT WITH CHECK (auth.user_id()::text = user_id);
 CREATE POLICY "Usuário atualiza o próprio profile"
-  ON public.profiles FOR UPDATE USING (auth.user_id() = user_id);
+  ON public.profiles FOR UPDATE USING (auth.user_id()::text = user_id);
 
 -- --- questions: leitura pública, escrita do autor ----------------------------
 
 CREATE POLICY "Questões são visíveis por todos"
   ON public.questions FOR SELECT USING (true);
 CREATE POLICY "Usuário autenticado cria questões"
-  ON public.questions FOR INSERT WITH CHECK (auth.user_id() = created_by);
+  ON public.questions FOR INSERT WITH CHECK (auth.user_id()::text = created_by);
 CREATE POLICY "Usuário atualiza as próprias questões"
-  ON public.questions FOR UPDATE USING (auth.user_id() = created_by);
+  ON public.questions FOR UPDATE USING (auth.user_id()::text = created_by);
 CREATE POLICY "Usuário apaga as próprias questões"
-  ON public.questions FOR DELETE USING (auth.user_id() = created_by);
+  ON public.questions FOR DELETE USING (auth.user_id()::text = created_by);
 
 -- --- flashcards: leitura pública, escrita do autor ---------------------------
 
 CREATE POLICY "Flashcards são visíveis por todos"
   ON public.flashcards FOR SELECT USING (true);
 CREATE POLICY "Usuário autenticado cria flashcards"
-  ON public.flashcards FOR INSERT WITH CHECK (auth.user_id() = created_by);
+  ON public.flashcards FOR INSERT WITH CHECK (auth.user_id()::text = created_by);
 CREATE POLICY "Usuário atualiza os próprios flashcards"
-  ON public.flashcards FOR UPDATE USING (auth.user_id() = created_by);
+  ON public.flashcards FOR UPDATE USING (auth.user_id()::text = created_by);
 CREATE POLICY "Usuário apaga os próprios flashcards"
-  ON public.flashcards FOR DELETE USING (auth.user_id() = created_by);
+  ON public.flashcards FOR DELETE USING (auth.user_id()::text = created_by);
 
 -- --- Dados por usuário -------------------------------------------------------
 -- quiz_attempts e user_badges eram públicos no schema original e foram
 -- restringidos depois, quando o ranking global saiu do ar.
 
 CREATE POLICY "Usuário vê as próprias tentativas de quiz"
-  ON public.quiz_attempts FOR SELECT USING (auth.user_id() = user_id);
+  ON public.quiz_attempts FOR SELECT USING (auth.user_id()::text = user_id);
 CREATE POLICY "Usuário cria as próprias tentativas de quiz"
-  ON public.quiz_attempts FOR INSERT WITH CHECK (auth.user_id() = user_id);
+  ON public.quiz_attempts FOR INSERT WITH CHECK (auth.user_id()::text = user_id);
 
 CREATE POLICY "Usuário vê as próprias badges"
-  ON public.user_badges FOR SELECT USING (auth.user_id() = user_id);
+  ON public.user_badges FOR SELECT USING (auth.user_id()::text = user_id);
 CREATE POLICY "Usuário recebe as próprias badges"
-  ON public.user_badges FOR INSERT WITH CHECK (auth.user_id() = user_id);
+  ON public.user_badges FOR INSERT WITH CHECK (auth.user_id()::text = user_id);
 
 CREATE POLICY "Usuário vê o próprio progresso de flashcards"
-  ON public.flashcard_progress FOR SELECT USING (auth.user_id() = user_id);
+  ON public.flashcard_progress FOR SELECT USING (auth.user_id()::text = user_id);
 CREATE POLICY "Usuário cria o próprio progresso de flashcards"
-  ON public.flashcard_progress FOR INSERT WITH CHECK (auth.user_id() = user_id);
+  ON public.flashcard_progress FOR INSERT WITH CHECK (auth.user_id()::text = user_id);
 CREATE POLICY "Usuário atualiza o próprio progresso de flashcards"
-  ON public.flashcard_progress FOR UPDATE USING (auth.user_id() = user_id);
+  ON public.flashcard_progress FOR UPDATE USING (auth.user_id()::text = user_id);
 
 CREATE POLICY "Usuário vê as próprias tentativas de simulado"
-  ON public.simulado_attempts FOR SELECT USING (auth.user_id() = user_id);
+  ON public.simulado_attempts FOR SELECT USING (auth.user_id()::text = user_id);
 CREATE POLICY "Usuário cria as próprias tentativas de simulado"
-  ON public.simulado_attempts FOR INSERT WITH CHECK (auth.user_id() = user_id);
+  ON public.simulado_attempts FOR INSERT WITH CHECK (auth.user_id()::text = user_id);
 
 -- study_blocks não tem user_id: a posse vem do ciclo dono do bloco
 CREATE POLICY "Usuário vê os próprios blocos de estudo"
   ON public.study_blocks FOR SELECT
   USING (EXISTS (SELECT 1 FROM public.study_cycles
-                 WHERE id = study_blocks.cycle_id AND user_id = auth.user_id()));
+                 WHERE id = study_blocks.cycle_id AND user_id = auth.user_id()::text));
 CREATE POLICY "Usuário cria os próprios blocos de estudo"
   ON public.study_blocks FOR INSERT
   WITH CHECK (EXISTS (SELECT 1 FROM public.study_cycles
-                      WHERE id = study_blocks.cycle_id AND user_id = auth.user_id()));
+                      WHERE id = study_blocks.cycle_id AND user_id = auth.user_id()::text));
 CREATE POLICY "Usuário atualiza os próprios blocos de estudo"
   ON public.study_blocks FOR UPDATE
   USING (EXISTS (SELECT 1 FROM public.study_cycles
-                 WHERE id = study_blocks.cycle_id AND user_id = auth.user_id()));
+                 WHERE id = study_blocks.cycle_id AND user_id = auth.user_id()::text));
 CREATE POLICY "Usuário apaga os próprios blocos de estudo"
   ON public.study_blocks FOR DELETE
   USING (EXISTS (SELECT 1 FROM public.study_cycles
-                 WHERE id = study_blocks.cycle_id AND user_id = auth.user_id()));
+                 WHERE id = study_blocks.cycle_id AND user_id = auth.user_id()::text));
 
 -- CRUD completo restrito ao dono, idêntico para as sete tabelas abaixo
 DO $$
@@ -596,16 +601,16 @@ BEGIN
   LOOP
     EXECUTE format(
       'CREATE POLICY "Usuário vê os próprios registros" ON public.%I
-         FOR SELECT USING (auth.user_id() = user_id)', t);
+         FOR SELECT USING (auth.user_id()::text = user_id)', t);
     EXECUTE format(
       'CREATE POLICY "Usuário cria os próprios registros" ON public.%I
-         FOR INSERT WITH CHECK (auth.user_id() = user_id)', t);
+         FOR INSERT WITH CHECK (auth.user_id()::text = user_id)', t);
     EXECUTE format(
       'CREATE POLICY "Usuário atualiza os próprios registros" ON public.%I
-         FOR UPDATE USING (auth.user_id() = user_id)', t);
+         FOR UPDATE USING (auth.user_id()::text = user_id)', t);
     EXECUTE format(
       'CREATE POLICY "Usuário apaga os próprios registros" ON public.%I
-         FOR DELETE USING (auth.user_id() = user_id)', t);
+         FOR DELETE USING (auth.user_id()::text = user_id)', t);
   END LOOP;
 END;
 $$;
@@ -613,11 +618,11 @@ $$;
 -- notifications: o usuário lê, marca como lida e apaga as próprias.
 -- A criação fica com o service_role (edge function), nunca com o cliente.
 CREATE POLICY "Usuário vê as próprias notificações"
-  ON public.notifications FOR SELECT USING (auth.user_id() = user_id);
+  ON public.notifications FOR SELECT USING (auth.user_id()::text = user_id);
 CREATE POLICY "Usuário atualiza as próprias notificações"
-  ON public.notifications FOR UPDATE USING (auth.user_id() = user_id);
+  ON public.notifications FOR UPDATE USING (auth.user_id()::text = user_id);
 CREATE POLICY "Usuário apaga as próprias notificações"
-  ON public.notifications FOR DELETE USING (auth.user_id() = user_id);
+  ON public.notifications FOR DELETE USING (auth.user_id()::text = user_id);
 CREATE POLICY "Service role cria notificações"
   ON public.notifications FOR INSERT TO service_role WITH CHECK (true);
 
@@ -626,7 +631,7 @@ CREATE POLICY "Service role cria notificações"
 -- ÍNDICES POR USUÁRIO
 -- =============================================================================
 -- Sem FK para a tabela de auth, estes índices passam a ser a única estrutura
--- que sustenta os filtros do RLS (auth.user_id() = user_id) em toda leitura.
+-- que sustenta os filtros do RLS (auth.user_id()::text = user_id) em toda leitura.
 
 CREATE INDEX idx_user_badges_user            ON public.user_badges (user_id);
 CREATE INDEX idx_question_notes_user         ON public.question_notes (user_id);
