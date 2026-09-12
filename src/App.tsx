@@ -19,12 +19,10 @@ import Planner from "./pages/Planner";
 import Anotacoes from "./pages/Anotacoes";
 import { HelmetProvider } from 'react-helmet-async';
 import { Analytics } from "@vercel/analytics/react";
-import { useAndroidBackButton } from "@/hooks/useAndroidBackButton";
 
 const queryClient = new QueryClient();
 
 function AppRoutes() {
-  useAndroidBackButton();
   return (
     <AuthProvider>
         <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
