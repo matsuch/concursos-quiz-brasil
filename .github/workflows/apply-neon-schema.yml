@@ -74,17 +74,56 @@ jobs:
           echo "Tabelas já presentes em public: $EXISTENTES"
           echo "TABELAS_EXISTENTES=$EXISTENTES" >> "$GITHUB_ENV"
 
-      - name: Exigir o Neon Auth habilitado
+      - name: Diagnóstico do ambiente Neon
+        run: |
+          # Roda antes de qualquer escrita. As policies do schema dependem de uma
+          # funcao de identidade; qual e o nome exato e qual recurso do Neon a
+          # instala (Auth? Data API?) precisa ser observado, nao suposto.
+          echo "## Diagnóstico do projeto" >> "$GITHUB_STEP_SUMMARY"
+
+          bloco() {
+            echo ""; echo "=== $1 ==="
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "**$1**" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            psql "$PGURL" -tA -c "$2" | tee -a "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          }
+
+          bloco "Schemas existentes" \
+            "select nspname from pg_namespace where nspname not like 'pg\_%' and nspname <> 'information_schema' order by 1;"
+
+          bloco "Funções candidatas a identidade (qualquer schema)" \
+            "select n.nspname || '.' || p.proname || '(' || pg_get_function_identity_arguments(p.oid) || ') -> ' || pg_get_function_result(p.oid)
+             from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+             where p.proname in ('user_id','uid','jwt','session_user_id','current_user_id')
+                or n.nspname in ('auth','neon_auth')
+             order by 1;"
+
+          bloco "Tabelas em neon_auth" \
+            "select table_name from information_schema.tables where table_schema = 'neon_auth' order by 1;"
+
+          bloco "Tipo de neon_auth.users_sync.id" \
+            "select column_name || ' : ' || data_type from information_schema.columns
+             where table_schema = 'neon_auth' and table_name = 'users_sync' order by ordinal_position;"
+
+          bloco "Roles (candidatos a role da Data API)" \
+            "select rolname from pg_roles where rolname not like 'pg\_%' order by 1;"
+
+          bloco "Extensões instaladas" \
+            "select extname from pg_extension order by 1;"
+
+      - name: Exigir a função de identidade usada pelas policies
         run: |
           FN=$(psql "$PGURL" -tAc "select count(*) from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='auth' and p.proname='user_id';")
           if [ "$FN" != "1" ]; then
-            echo "::error::auth.user_id() não existe — o Neon Auth não está habilitado neste projeto."
+            echo "::error::auth.user_id() não existe neste banco."
             echo ""
-            echo "Todas as 60 policies de RLS dependem dessa função. Sem ela o schema"
-            echo "aplica pela metade: as tabelas entram e a primeira policy falha."
-            echo ""
-            echo "Habilite em: console do Neon -> seu projeto -> Auth -> Enable Auth."
-            echo "Depois rode este workflow de novo."
+            echo "As policies do schema dependem dessa função. Veja o diagnóstico"
+            echo "acima para o que existe de fato: se houver uma função equivalente"
+            echo "com outro nome ou schema, o neon/schema.sql precisa ser ajustado;"
+            echo "se não houver nenhuma, falta habilitar o recurso do Neon que a"
+            echo "instala (Auth e/ou Data API)."
             exit 1
           fi
           echo "auth.user_id() presente, seguindo."
