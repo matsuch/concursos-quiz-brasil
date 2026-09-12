@@ -103,9 +103,11 @@ jobs:
           bloco "Tabelas em neon_auth" \
             "select table_name from information_schema.tables where table_schema = 'neon_auth' order by 1;"
 
-          bloco "Tipo de neon_auth.users_sync.id" \
+          # A Managed Better Auth escreve direto em neon_auth.user; a users_sync
+          # do Neon Auth legado (Stack Auth) nao existe neste modelo.
+          bloco "Colunas de neon_auth.user (tipo do id decide o tipo de user_id no schema)" \
             "select column_name || ' : ' || data_type from information_schema.columns
-             where table_schema = 'neon_auth' and table_name = 'users_sync' order by ordinal_position;"
+             where table_schema = 'neon_auth' and table_name = 'user' order by ordinal_position;"
 
           bloco "Roles (candidatos a role da Data API)" \
             "select rolname from pg_roles where rolname not like 'pg\_%' order by 1;"
