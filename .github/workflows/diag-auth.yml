@@ -1,0 +1,31 @@
+name: Diagnóstico do cadastro
+
+# Reproduz o cadastro exatamente como o navegador do usuário faz, variando só o
+# cabeçalho Origin, para separar "origem não confiável" de qualquer outra causa.
+#
+# Motivo: o cadastro falhou em produção pelo Google e por e-mail/senha. O
+# Better Auth exige Origin e só aceita origens cadastradas como confiáveis, e o
+# domínio real do site (passar-concursos.vercel.app) não estava na lista --
+# estava lá um estuda-concursos.vercel.app, que nem serve o site.
+#
+# Roda no runner porque a sessão do Claude Code não alcança *.neon.tech.
+# Gatilho por push, e não workflow_dispatch, porque o arquivo ainda não está no
+# branch padrão. Não usa credencial: são endpoints públicos.
+
+on:
+  push:
+    paths:
+      - '.github/workflows/diag-auth.yml'
+      - 'scripts/diag/**'
+  workflow_dispatch:
+
+env:
+  AUTH_URL: https://ep-steep-waterfall-ac5tzxmb.neonauth.sa-east-1.aws.neon.tech/neondb/auth
+
+jobs:
+  diagnosticar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Testar cadastro por origem
+        run: bash scripts/diag/auth.sh
