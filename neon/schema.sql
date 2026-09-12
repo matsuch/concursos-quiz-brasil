@@ -16,17 +16,16 @@
 --   4. Sem trigger de criação de profile. Ver 'Criação de profile' abaixo.
 --
 -- -----------------------------------------------------------------------------
--- Por que não há FK para neon_auth.users_sync
+-- Por que não há FK para a tabela de usuários
 -- -----------------------------------------------------------------------------
--- O Neon permite REFERENCES neon_auth.users_sync(id), mas a tabela é populada
--- de forma ASSÍNCRONA após o cadastro (normalmente < 1s). Com FK rígida, uma
--- escrita logo após o signup pode falhar porque o usuário ainda não sincronizou
--- — corrida real, não teórica, já que o app cria o profile logo na entrada.
+-- A Managed Better Auth mantém os usuários em neon_auth.user (verificado no
+-- projeto: o schema neon_auth traz account, session, jwks, user e afins; a
+-- users_sync do Neon Auth legado não existe neste modelo).
 --
--- Além disso, acoplar o schema à tabela do provedor de auth foi exatamente o
--- que tornou cara a saída do Supabase. Mantendo user_id como TEXT indexado, o
--- schema fica portátil e a posse é garantida pelo RLS, que já filtra por
--- auth.user_id() em toda tabela por usuário.
+-- Não se cria FK para lá de propósito: acoplar o schema à tabela do provedor
+-- de auth foi exatamente o que tornou cara a saída do Supabase. Mantendo
+-- user_id como TEXT indexado, o schema fica portátil e a posse é garantida
+-- pelo RLS, que já filtra por auth.user_id() em toda tabela por usuário.
 --
 -- O custo é real: sem ON DELETE CASCADE, apagar um usuário deixa órfãos. Por
 -- isso existe public.delete_user_data() no fim deste arquivo — chame-a ao
@@ -35,8 +34,8 @@
 -- -----------------------------------------------------------------------------
 -- Criação de profile
 -- -----------------------------------------------------------------------------
--- No Supabase um trigger em auth.users criava a linha em profiles. No Neon não
--- há tabela de auth própria para disparar trigger, e users_sync é assíncrona.
+-- No Supabase um trigger em auth.users criava a linha em profiles. No Neon as
+-- tabelas de auth são gerenciadas pelo serviço, não convém pendurar trigger.
 -- O profile passa a ser criado pelo app no primeiro acesso autenticado, com um
 -- upsert em profiles — a policy de INSERT já permite (auth.user_id() = user_id)
 -- e user_id é UNIQUE, então a operação é idempotente.

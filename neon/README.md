@@ -38,12 +38,10 @@ anote as duas URLs para as variáveis `VITE_NEON_AUTH_URL` e
 | Criação do profile | trigger em `auth.users` | upsert pelo app no 1º acesso |
 | Exclusão de conta | `ON DELETE CASCADE` | `public.delete_user_data(user_id)` |
 
-### Por que não há FK para `neon_auth.users_sync`
+### Por que não há FK para a tabela de usuários
 
-O Neon permite a FK, mas a tabela é populada de forma **assíncrona** após o
-cadastro. Com FK rígida, uma escrita logo após o signup pode falhar porque o
-usuário ainda não sincronizou — e o app cria o profile logo na entrada, então a
-corrida é real. Além disso, amarrar o schema à tabela do provedor de auth foi
+A Managed Better Auth mantém os usuários em `neon_auth.user`. Não se cria FK
+para lá de propósito: amarrar o schema à tabela do provedor de auth foi
 justamente o que encareceu a saída do Supabase.
 
 O custo é assumido e tratado: `delete_user_data()` substitui o cascade, e os
@@ -51,7 +49,7 @@ O custo é assumido e tratado: `delete_user_data()` substitui o cascade, e os
 
 ## Validação
 
-Aplicado num Postgres 16 limpo com stub de `neon_auth.users_sync` e de
+Aplicado num Postgres 16 limpo com stub das tabelas de auth e de
 `auth.user_id()`. Verificado com ids em formato texto (`usr_2a9f1c4b7e`):
 
 - schema e seed aplicam sem erro
@@ -63,9 +61,8 @@ Aplicado num Postgres 16 limpo com stub de `neon_auth.users_sync` e de
 
 ## Pendências a confirmar no projeto real
 
-1. **Tipo de `neon_auth.users_sync.id`.** As fontes divergem entre `text` e
-   `uuid`. O schema usa `TEXT`, que acomoda os dois formatos, mas confirme
-   antes de assumir qualquer join.
+1. **Tipo do id em `neon_auth.user`.** O schema usa `TEXT`, que acomoda tanto
+   texto quanto UUID, mas confirme antes de assumir qualquer join.
 2. **`@neondatabase/neon-js` está em `0.7.0-beta`.** API pode mudar.
 3. **OAuth do Google no Capacitor.** O deep link `io.concursos.brasil://`
    precisa ser reconfigurado no Neon Auth e testado no Android.
