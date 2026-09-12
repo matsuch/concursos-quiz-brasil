@@ -72,10 +72,36 @@ jobs:
             uid=$(jq -r '.user.id // empty' <<<"$body")
             [ -n "$sess" ] && [ -n "$uid" ] || { echo "    sem token/uid no corpo" >&2; return 1; }
 
-            # plugin jwt do Better Auth: troca a sessão por um JWT assinado
-            jwt=$(curl -sS "$AUTH_URL/token" -H "Authorization: Bearer $sess" -H "$ORIGEM" \
-                  | jq -r '.token // empty')
-            [ -n "$jwt" ] || { echo "    /token nao devolveu JWT" >&2; return 1; }
+            # O JWT assinado (o que a Data API aceita) nao e o token de sessao.
+            # O plugin jwt do Better Auth expoe as duas formas abaixo; qual
+            # delas responde depende da versao, entao tentamos ambas e
+            # registramos a que funcionou.
+            local hdrs tokresp tokcode
+            jwt=""
+
+            # (a) cabecalho set-auth-jwt na propria resposta de sign-in
+            hdrs=$(curl -sS -D - -o /dev/null -X POST "$AUTH_URL/sign-in/email" \
+              -H 'Content-Type: application/json' -H "$ORIGEM" \
+              -d "{\"email\":\"$email\",\"password\":\"$SENHA\"}")
+            jwt=$(grep -i '^set-auth-jwt:' <<<"$hdrs" | tr -d '\r' | cut -d' ' -f2- | head -1)
+            [ -n "$jwt" ] && echo "    JWT obtido via cabecalho set-auth-jwt" >&2
+
+            # (b) GET /token com a sessao
+            if [ -z "$jwt" ]; then
+              tokresp=$(curl -sS "$AUTH_URL/token" -H "Authorization: Bearer $sess" \
+                        -H "$ORIGEM" -w '\n%{http_code}')
+              tokcode=$(tail -n1 <<<"$tokresp"); tokresp=$(sed '$d' <<<"$tokresp")
+              echo "    GET /token -> HTTP $tokcode; corpo: $(head -c 300 <<<"$tokresp")" >&2
+              jwt=$(jq -r '.token // .jwt // .access_token // empty' <<<"$tokresp" 2>/dev/null)
+              [ -n "$jwt" ] && echo "    JWT obtido via GET /token" >&2
+            fi
+
+            [ -n "$jwt" ] || { echo "    nao foi possivel obter JWT por nenhuma via" >&2; return 1; }
+
+            # um JWT tem tres partes separadas por ponto; valida o formato
+            if [ "$(tr -cd '.' <<<"$jwt" | wc -c)" != "2" ]; then
+              echo "    valor obtido nao parece um JWT" >&2; return 1
+            fi
 
             echo "$uid $jwt"
           }
