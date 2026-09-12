@@ -4,7 +4,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
-import { SubscriptionProvider } from "@/hooks/useSubscription";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Navbar from "@/components/Navbar";
@@ -16,7 +15,6 @@ import ConcursosPage from "@/pages/Concursos";
 import NotFound from "./pages/NotFound";
 import SimuladoPage from "./pages/Simulado";
 import MyAccount from "./pages/MyAccount";
-import Planos from "./pages/Planos";
 import Planner from "./pages/Planner";
 import Anotacoes from "./pages/Anotacoes";
 import { HelmetProvider } from 'react-helmet-async';
@@ -29,7 +27,6 @@ function AppRoutes() {
   useAndroidBackButton();
   return (
     <AuthProvider>
-      <SubscriptionProvider>
         <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
           <Navbar />
           <main style={{ flex: 1, overflow: "auto" }}>
@@ -39,7 +36,6 @@ function AppRoutes() {
               {/* Rotas públicas */}
               <Route path="/concursos" element={<ConcursosPage />} />
               <Route path="/quiz" element={<Quiz />} />
-              <Route path="/planos" element={<Planos />} />
               <Route path="/anotacoes" element={<Anotacoes />} />
               <Route path="/auth" element={<Auth />} />
 
@@ -47,7 +43,7 @@ function AppRoutes() {
               <Route
                 path="/planner"
                 element={
-                  <ProtectedRoute requiredPlan="Básico">
+                  <ProtectedRoute>
                     <Planner />
                   </ProtectedRoute>
                 }
@@ -55,7 +51,7 @@ function AppRoutes() {
               <Route
                 path="/estudo"
                 element={
-                  <ProtectedRoute requiredPlan="Básico">
+                  <ProtectedRoute>
                     <Estudo />
                   </ProtectedRoute>
                 }
@@ -63,7 +59,7 @@ function AppRoutes() {
               <Route
                 path="/simulado"
                 element={
-                  <ProtectedRoute requiredPlan="Avançado">
+                  <ProtectedRoute>
                     <SimuladoPage />
                   </ProtectedRoute>
                 }
@@ -82,7 +78,6 @@ function AppRoutes() {
             </Routes>
           </main>
         </div>
-      </SubscriptionProvider>
     </AuthProvider>
   );
 }

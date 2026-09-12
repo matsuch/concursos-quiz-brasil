@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import ConcursoCard from "@/components/ConcursoCard";
-import PricingSection from "@/components/PricingSection";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookOpen, Notebook, Loader2, ChevronLeft, ChevronRight, Crown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { useSubscription } from "@/hooks/useSubscription";
 import { Helmet } from 'react-helmet-async';
 
 interface Concurso {
@@ -33,12 +31,7 @@ const Home = () => {
     breve: 0
   });
 
-  // Adicionado: hooks de autenticação e assinatura
   const { user, loading: authLoading } = useAuth();
-  const { isSubscriptionValid, loading: subscriptionLoading } = useSubscription();
-
-  const showSubscribeButton = !user || !isSubscriptionValid();
-  const showPricingSection = !user || !isSubscriptionValid();
 
   useEffect(() => {
     fetchData();
@@ -222,8 +215,7 @@ const Home = () => {
     );
   };
 
-  // Adicionado: Se estiver carregando autenticação ou assinatura
-  if (authLoading || subscriptionLoading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -287,33 +279,16 @@ const Home = () => {
                   Questões Oficiais
                 </Button>
 
-                {/* Botão "Assine agora" - só aparece se necessário */}
-                {showSubscribeButton && (
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    onClick={() => navigate("/planos")}
-                    className="w-full sm:w-auto bg-[#10b981] hover:bg-[#059669] transition-colors text-base lg:text-lg px-6 lg:px-8 py-6 lg:py-7"
-                    aria-label="Assinar planos premium para concursos"
-                  >
-                    <Crown className="w-5 h-5 lg:w-6 lg:h-6 mr-2" />
-                    Assine agora
-                  </Button>
-                )}
-                
-                {/* Botão Flashcards - só para usuários com assinatura */}
-                {!showSubscribeButton && (
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    onClick={() => navigate("/estudo")}
-                    className="w-full sm:w-auto bg-[#10b981] hover:bg-[#059669] text-white transition-colors text-base lg:text-lg px-6 lg:px-8 py-6 lg:py-7"
-                    aria-label="Acessar flashcards personalizados"
-                  >
-                    <BookOpen className="w-5 h-5 lg:w-6 lg:h-6 mr-2" />
-                    Flashcards
-                  </Button>
-                )}
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={() => navigate("/estudo")}
+                  className="w-full sm:w-auto bg-[#10b981] hover:bg-[#059669] text-white transition-colors text-base lg:text-lg px-6 lg:px-8 py-6 lg:py-7"
+                  aria-label="Acessar flashcards personalizados"
+                >
+                  <BookOpen className="w-5 h-5 lg:w-6 lg:h-6 mr-2" />
+                  Flashcards
+                </Button>
               </div>
             </div>
           </div>
@@ -540,7 +515,6 @@ const Home = () => {
         </section>
 
         {/* Pricing Section - só aparece se necessário */}
-        {showPricingSection && <PricingSection />}
         
       </div>
     </>

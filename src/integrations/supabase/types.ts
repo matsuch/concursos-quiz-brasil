@@ -14,33 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      badge_audit: {
-        Row: {
-          action: string
-          badge_id: string
-          changed_at: string
-          id: string
-          reason: string | null
-          user_id: string
-        }
-        Insert: {
-          action: string
-          badge_id: string
-          changed_at?: string
-          id?: string
-          reason?: string | null
-          user_id: string
-        }
-        Update: {
-          action?: string
-          badge_id?: string
-          changed_at?: string
-          id?: string
-          reason?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
       badges: {
         Row: {
           category: string
@@ -119,102 +92,6 @@ export type Database = {
         }
         Relationships: []
       }
-      courses: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          id: string
-          title: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          title?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          title?: string | null
-        }
-        Relationships: []
-      }
-      duel_questions: {
-        Row: {
-          duel_id: string
-          id: string
-          question_id: string
-          question_order: number
-        }
-        Insert: {
-          duel_id: string
-          id?: string
-          question_id: string
-          question_order: number
-        }
-        Update: {
-          duel_id?: string
-          id?: string
-          question_id?: string
-          question_order?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "duel_questions_duel_id_fkey"
-            columns: ["duel_id"]
-            isOneToOne: false
-            referencedRelation: "duels"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "duel_questions_question_id_fkey"
-            columns: ["question_id"]
-            isOneToOne: false
-            referencedRelation: "questions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      duels: {
-        Row: {
-          created_at: string
-          finished_at: string | null
-          id: string
-          player1_id: string
-          player1_score: number | null
-          player2_id: string | null
-          player2_score: number | null
-          status: string | null
-          subject: string
-          winner_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          finished_at?: string | null
-          id?: string
-          player1_id: string
-          player1_score?: number | null
-          player2_id?: string | null
-          player2_score?: number | null
-          status?: string | null
-          subject: string
-          winner_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          finished_at?: string | null
-          id?: string
-          player1_id?: string
-          player1_score?: number | null
-          player2_id?: string | null
-          player2_score?: number | null
-          status?: string | null
-          subject?: string
-          winner_id?: string | null
-        }
-        Relationships: []
-      }
       edital_topics: {
         Row: {
           completed_at: string | null
@@ -254,30 +131,6 @@ export type Database = {
           topic?: string
           updated_at?: string
           user_id?: string
-        }
-        Relationships: []
-      }
-      estatisticas: {
-        Row: {
-          id: string
-          taxa_aprovacao: number | null
-          total_concursos: number | null
-          total_questoes: number | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          taxa_aprovacao?: number | null
-          total_concursos?: number | null
-          total_questoes?: number | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          taxa_aprovacao?: number | null
-          total_concursos?: number | null
-          total_questoes?: number | null
-          updated_at?: string | null
         }
         Relationships: []
       }
@@ -342,62 +195,6 @@ export type Database = {
           subject?: string
         }
         Relationships: []
-      }
-      mind_maps: {
-        Row: {
-          created_at: string
-          id: string
-          nodes: Json
-          subject: string
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          nodes: Json
-          subject: string
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          nodes?: Json
-          subject?: string
-          title?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      modules: {
-        Row: {
-          course_id: string | null
-          id: string
-          order_index: number | null
-          title: string | null
-        }
-        Insert: {
-          course_id?: string | null
-          id?: string
-          order_index?: number | null
-          title?: string | null
-        }
-        Update: {
-          course_id?: string | null
-          id?: string
-          order_index?: number | null
-          title?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "modules_course_id_fkey"
-            columns: ["course_id"]
-            isOneToOne: false
-            referencedRelation: "courses"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       profiles: {
         Row: {
@@ -862,63 +659,6 @@ export type Database = {
           },
         ]
       }
-      subscriptions: {
-        Row: {
-          cancel_at_period_end: boolean | null
-          canceled_at: string | null
-          created_at: string | null
-          currency: string | null
-          current_period_end: string | null
-          current_period_start: string | null
-          id: string
-          plan_amount: number
-          plan_name: string
-          status: string
-          stripe_customer_id: string | null
-          stripe_price_id: string | null
-          stripe_subscription_id: string | null
-          trial_end: string | null
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          cancel_at_period_end?: boolean | null
-          canceled_at?: string | null
-          created_at?: string | null
-          currency?: string | null
-          current_period_end?: string | null
-          current_period_start?: string | null
-          id?: string
-          plan_amount: number
-          plan_name: string
-          status: string
-          stripe_customer_id?: string | null
-          stripe_price_id?: string | null
-          stripe_subscription_id?: string | null
-          trial_end?: string | null
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          cancel_at_period_end?: boolean | null
-          canceled_at?: string | null
-          created_at?: string | null
-          currency?: string | null
-          current_period_end?: string | null
-          current_period_start?: string | null
-          id?: string
-          plan_amount?: number
-          plan_name?: string
-          status?: string
-          stripe_customer_id?: string | null
-          stripe_price_id?: string | null
-          stripe_subscription_id?: string | null
-          trial_end?: string | null
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
       user_badges: {
         Row: {
           badge_id: string
@@ -948,93 +688,8 @@ export type Database = {
           },
         ]
       }
-      user_progress: {
-        Row: {
-          completed: boolean | null
-          completed_at: string | null
-          user_id: string
-          video_id: string
-        }
-        Insert: {
-          completed?: boolean | null
-          completed_at?: string | null
-          user_id: string
-          video_id: string
-        }
-        Update: {
-          completed?: boolean | null
-          completed_at?: string | null
-          user_id?: string
-          video_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_progress_video_id_fkey"
-            columns: ["video_id"]
-            isOneToOne: false
-            referencedRelation: "videos"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      videos: {
-        Row: {
-          duration: string | null
-          id: string
-          module_id: string | null
-          order_index: number | null
-          title: string | null
-          url: string | null
-        }
-        Insert: {
-          duration?: string | null
-          id?: string
-          module_id?: string | null
-          order_index?: number | null
-          title?: string | null
-          url?: string | null
-        }
-        Update: {
-          duration?: string | null
-          id?: string
-          module_id?: string | null
-          order_index?: number | null
-          title?: string | null
-          url?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "videos_module_id_fkey"
-            columns: ["module_id"]
-            isOneToOne: false
-            referencedRelation: "modules"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
     }
     Views: {
-      profiles_ranking: {
-        Row: {
-          display_name: string | null
-          quizzes_completed: number | null
-          total_points: number | null
-          user_id: string | null
-        }
-        Insert: {
-          display_name?: string | null
-          quizzes_completed?: number | null
-          total_points?: number | null
-          user_id?: string | null
-        }
-        Update: {
-          display_name?: string | null
-          quizzes_completed?: number | null
-          total_points?: number | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
 
       study_plan_proposals: {
         Row: {
@@ -1125,40 +780,8 @@ export type Database = {
           }
         ]
       }
-      user_subscription_details: {
-        Row: {
-          cancel_at_period_end: boolean | null
-          canceled_at: string | null
-          created_at: string | null
-          currency: string | null
-          current_period_end: string | null
-          current_period_start: string | null
-          email: string | null
-          id: string | null
-          plan_amount: number | null
-          plan_name: string | null
-          status: string | null
-          status_display: string | null
-          stripe_customer_id: string | null
-          stripe_price_id: string | null
-          stripe_subscription_id: string | null
-          trial_end: string | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Relationships: []
-      }
     }
     Functions: {
-      get_profiles_ranking: {
-        Args: never
-        Returns: {
-          display_name: string
-          id: string
-          total_points: number
-          user_id: string
-        }[]
-      }
     }
     Enums: {
       [_ in never]: never
