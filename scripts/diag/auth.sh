@@ -9,6 +9,12 @@
 #
 # O 429 e um achado por si: o Neon Auth limita tentativas de cadastro por IP,
 # e quem tentou varias vezes seguidas pode estar esbarrando nisso.
+#
+# VEREDITO (rodada 2, com o controle valido):
+#   origem nao cadastrada -> HTTP 403 {"code":"INVALID_ORIGIN"}
+#   passar-concursos.vercel.app -> HTTP 200
+# Ou seja: origem fora da lista e recusada, e o dominio de producao estava
+# fora da lista. Era essa a causa da falha do cadastro, nos dois caminhos.
 set -uo pipefail
 
 SUF="$(date +%s)-$RANDOM"
