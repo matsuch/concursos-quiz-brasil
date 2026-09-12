@@ -22,6 +22,7 @@ interface Concurso {
   status: "destaque" | "breve" | "aberto";
   urlEdital?: string | null;
   salario?: number | null;
+  salarioAte?: boolean;
 }
 
 interface Filters {
@@ -80,7 +81,8 @@ const ConcursosPage = () => {
           nivel: c.nivel,
           status: c.status as "destaque" | "breve" | "aberto",
           urlEdital: c.url_edital,
-          salario: c.salario
+          salario: c.salario,
+          salarioAte: c.salario_ate ?? false
         }));
 
         setConcursos(formatados);
@@ -570,6 +572,7 @@ const ConcursosPage = () => {
                             <ConcursoCard
                               {...concurso}
                               salario={concurso.salario ?? 0}
+                              salarioAte={concurso.salarioAte ?? false}
                             />
                           </div>
                         ))}

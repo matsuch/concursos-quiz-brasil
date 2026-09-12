@@ -15,7 +15,7 @@ autoral do site. Fato não tem direito autoral; redação tem.
 Estrutura da página (conferida no HTML real em scratch/recon/)
 -------------------------------------------------------------
     <div id="concursos">
-      <div class="ua"><div class="uf">SP</div>...</div>   <- marca a UF da seção
+      <div id="SP" class="ua"><div class="uf">SÃO PAULO</div></div>  <- marca a UF
       <div class="da|na" data-url="...">                  <- um concurso
         <div class="ca"><a title="TÍTULO">ÓRGÃO</a>
           <div class="cd">355 vagas | Cargo | Médio / Superior</div>
@@ -37,6 +37,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import urllib.robotparser
+import unicodedata
 from datetime import date, datetime
 
 from bs4 import BeautifulSoup
@@ -60,6 +61,40 @@ UFS = {
     "MT", "PA", "PB", "PE", "PI", "PR", "RJ", "RN", "RO", "RR", "RS", "SC",
     "SE", "SP", "TO",
 }
+
+# As paginas regionais escrevem o estado por extenso no marcador visivel
+# ("SAO PAULO"), enquanto o id do mesmo elemento traz a sigla -- as ancoras
+# do indice (#SP) provam isso. A primeira coleta leu so o texto, nao achou
+# sigla nenhuma e carimbou os 530 registros como "Nacional", matando o filtro
+# por estado. Agora o id vem primeiro e o nome por extenso e o segundo caminho.
+NOME_PARA_UF = {
+    "ACRE": "AC", "ALAGOAS": "AL", "AMAZONAS": "AM", "AMAPA": "AP",
+    "BAHIA": "BA", "CEARA": "CE", "DISTRITO FEDERAL": "DF",
+    "ESPIRITO SANTO": "ES", "GOIAS": "GO", "MARANHAO": "MA",
+    "MINAS GERAIS": "MG", "MATO GROSSO DO SUL": "MS", "MATO GROSSO": "MT",
+    "PARA": "PA", "PARAIBA": "PB", "PERNAMBUCO": "PE", "PIAUI": "PI",
+    "PARANA": "PR", "RIO DE JANEIRO": "RJ", "RIO GRANDE DO NORTE": "RN",
+    "RONDONIA": "RO", "RORAIMA": "RR", "RIO GRANDE DO SUL": "RS",
+    "SANTA CATARINA": "SC", "SERGIPE": "SE", "SAO PAULO": "SP",
+    "TOCANTINS": "TO",
+}
+
+
+def sem_acento(t: str) -> str:
+    return "".join(c for c in unicodedata.normalize("NFD", t)
+                   if unicodedata.category(c) != "Mn")
+
+
+def resolver_uf(el) -> str:
+    """UF de um marcador de secao, pelo id (sigla) ou pelo nome por extenso."""
+    ident = (el.get("id") or "").strip().upper()
+    if ident in UFS:
+        return ident
+    marca = el.find("div", class_="uf")
+    texto = sem_acento(marca.get_text(strip=True)).upper() if marca else ""
+    if texto in UFS:
+        return texto
+    return NOME_PARA_UF.get(texto, "Nacional")
 
 # Um concurso de porte vira "destaque" na home. O critério é numérico e fica
 # registrado aqui para não virar curadoria informal: muitas vagas ou salário alto.
@@ -169,10 +204,7 @@ def extrair_pagina(html: str, url_origem: str) -> list:
         classes = el.get("class") or []
 
         if "ua" in classes:
-            marca = el.find("div", class_="uf")
-            if marca:
-                texto = marca.get_text(strip=True).upper()
-                uf_atual = texto if texto in UFS else "Nacional"
+            uf_atual = resolver_uf(el)
             continue
 
         if not ({"da", "na"} & set(classes)):
@@ -205,6 +237,8 @@ def extrair_pagina(html: str, url_origem: str) -> list:
 
         vagas = parse_vagas(cabeca)
         salario = parse_salario(cabeca)
+        # "Vagas ate R$ X" e teto da faixa do concurso, nao salario de cargo.
+        salario_ate = bool(salario) and bool(re.search(r"at[ée]\s*R\$", cabeca, re.I))
 
         status = "aberto"
         if inicio and inicio > hoje:
@@ -219,6 +253,7 @@ def extrair_pagina(html: str, url_origem: str) -> list:
             "nivel": parse_nivel(nivel_txt),
             "vagas": vagas,
             "salario": salario,
+            "salario_ate": salario_ate,
             "inscricoes_ate": fim.isoformat(),
             "status": status,
             "url_edital": url,
@@ -250,14 +285,15 @@ def gerar_sql(itens: list) -> str:
     for i in itens:
         linhas.append(
             "INSERT INTO public.concursos "
-            "(titulo, orgao, local, nivel, vagas, salario, inscricoes_ate, status, url_edital) VALUES ("
+            "(titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ("
             f"{sql_texto(i['titulo'])}, {sql_texto(i['orgao'])}, {sql_texto(i['local'])}, "
             f"{sql_texto(i['nivel'])}, {i['vagas']}, "
-            f"{i['salario'] if i['salario'] is not None else 'NULL'}, "
+            f"{i['salario'] if i['salario'] is not None else 'NULL'}, {str(i['salario_ate']).lower()}, "
             f"{sql_texto(i['inscricoes_ate'])}::date, {sql_texto(i['status'])}, {sql_texto(i['url_edital'])})\n"
             "ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET\n"
             "  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,\n"
             "  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,\n"
+            "  salario_ate = EXCLUDED.salario_ate,\n"
             "  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;"
         )
     return "\n".join(linhas) + "\n"
@@ -284,7 +320,15 @@ def main() -> int:
                 print(f"[erro] {url}: HTTP {e.code}")
                 continue
             itens = extrair_pagina(html, url)
-            print(f"[ok] {url}: {len(itens)} concursos")
+            com_uf = sum(1 for i in itens if i["local"] != "Nacional")
+            print(f"[ok] {url}: {len(itens)} concursos ({com_uf} com UF)")
+            # Numa pagina regional, nenhum item com UF significa que o marcador
+            # de secao mudou de forma e todos cairiam como "Nacional" -- foi o
+            # que aconteceu na primeira coleta, calado. Aqui isso e falha.
+            if itens and com_uf == 0 and "nacional" not in url:
+                print(f"::error::{url}: nenhum item recebeu UF. "
+                      "O marcador de secao mudou; conferir antes de gravar.")
+                return 1
             todos += itens
             time.sleep(PAUSA_SEGUNDOS)
 
@@ -314,13 +358,18 @@ def main() -> int:
     for i in unicos:
         por_status[i["status"]] = por_status.get(i["status"], 0) + 1
         por_nivel[i["nivel"]] = por_nivel.get(i["nivel"], 0) + 1
+    por_local: dict = {}
+    for i in unicos:
+        por_local[i["local"]] = por_local.get(i["local"], 0) + 1
     print(f"\nTotal: {len(unicos)} | status: {por_status} | nível: {por_nivel}")
+    print(f"Por UF: {dict(sorted(por_local.items()))}")
 
     resumo = os.environ.get("GITHUB_STEP_SUMMARY")
     if resumo:
         with open(resumo, "a", encoding="utf-8") as f:
             f.write(f"### Concursos extraídos\n\n- Total: **{len(unicos)}**\n")
-            f.write(f"- Por status: `{por_status}`\n- Por nível: `{por_nivel}`\n\n")
+            f.write(f"- Por status: `{por_status}`\n- Por nível: `{por_nivel}`\n")
+            f.write(f"- Por UF: `{dict(sorted(por_local.items()))}`\n\n")
             f.write("| Órgão | UF | Vagas | Salário | Até |\n|---|---|---|---|---|\n")
             for i in unicos[:25]:
                 f.write(f"| {i['orgao'][:50]} | {i['local']} | {i['vagas']} | "

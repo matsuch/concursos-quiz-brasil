@@ -54,6 +54,7 @@ export type Database = {
           nivel: string
           orgao: string
           salario: number | null
+          salario_ate: boolean
           status: string
           titulo: string
           url_edital: string | null
@@ -67,6 +68,7 @@ export type Database = {
           nivel: string
           orgao: string
           salario?: number | null
+          salario_ate?: boolean
           status: string
           titulo: string
           url_edital?: string | null
@@ -80,6 +82,7 @@ export type Database = {
           nivel?: string
           orgao?: string
           salario?: number | null
+          salario_ate?: boolean
           status?: string
           titulo?: string
           url_edital?: string | null

@@ -10,6 +10,7 @@ interface ConcursoCardProps {
   inscricoesAte: string;
   nivel: string;
   salario: number | null;
+  salarioAte?: boolean;
   status: "destaque" | "breve" | "aberto";
   urlEdital?: string | null;
   id?: string; // Adicionado para schema markup
@@ -23,6 +24,7 @@ const ConcursoCard = ({
   inscricoesAte,
   nivel,
   salario,
+  salarioAte = false,
   status,
   urlEdital,
   id,
@@ -212,8 +214,11 @@ const ConcursoCard = ({
               {salario ? (
                 <>
                   <meta itemProp="currency" content="BRL" />
+                  {/* A fonte quase sempre publica o teto da faixa do concurso,
+                      e não o salário de um cargo. Exibir sem o "até" afirmaria
+                      um número que ninguém vai receber. */}
                   <span itemProp="value">
-                    R$ {salario.toLocaleString('pt-BR')}
+                    {salarioAte ? 'até ' : ''}R$ {salario.toLocaleString('pt-BR')}
                   </span>
                   <meta itemProp="unitText" content="MONTH" />
                 </>
