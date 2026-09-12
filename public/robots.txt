@@ -1,15 +1,53 @@
-User-agent: *
-Allow: /
+# Passar Concursos — https://passar-concursos.vercel.app
+#
+# Um único grupo por conjunto de regras. A versão anterior tinha dois grupos
+# "User-agent: *", e pela especificação o robô aplica só o primeiro que casa —
+# o segundo era letra morta.
+#
+# Atenção ao empilhamento abaixo: quando um agente é nomeado, ele passa a usar
+# SÓ o grupo dele e ignora o "*" por inteiro. Por isso os agentes de IA estão
+# num grupo único que repete as mesmas restrições, e não um por bloco — senão
+# cada um deles ficaria liberado a rastrear as áreas logadas.
 
-# Bloquear arquivos e diretórios que não devem ser indexados
+# Sem "Allow: /": ele é redundante (o que não está proibido já é permitido) e
+# ambíguo. Pela RFC 9309 a regra mais específica vence, então o Disallow ainda
+# valeria; mas parser que aplica a primeira correspondência liberaria tudo.
+# Sem ele, os dois modelos chegam ao mesmo resultado.
+User-agent: *
 Disallow: /api/
-Disallow: /*.json$
-Disallow: /admin/
-Disallow: /_next/static/
+Disallow: /minha-conta
+Disallow: /planner
+Disallow: /estudo
+Disallow: /simulado
+Disallow: /anotacoes
 
-# Sitemap
+# --- Rastreadores de IA -----------------------------------------------------
+# O "*" acima já os cobriria; estão nomeados para a intenção ficar explícita e
+# para ser aqui que se muda de ideia. Os dois papéis são diferentes:
+#
+#   treino     — o conteúdo pode entrar no treinamento do modelo
+#   busca/cit. — o bot busca ao vivo e cita a fonte, trazendo visita
+#
+# Ambos liberados hoje: o objetivo é ser encontrado. Para sair só do treino e
+# manter a citação, mova GPTBot, ClaudeBot, Google-Extended, Applebot-Extended
+# e CCBot para um grupo com "Disallow: /", deixando os de busca aqui.
+
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: CCBot
+Disallow: /api/
+Disallow: /minha-conta
+Disallow: /planner
+Disallow: /estudo
+Disallow: /simulado
+Disallow: /anotacoes
+
 Sitemap: https://passar-concursos.vercel.app/sitemap.xml
-
-# Crawl-delay para bots específicos
-User-agent: *
-Crawl-delay: 1

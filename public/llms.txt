@@ -1,0 +1,47 @@
+# Passar Concursos
+
+> Plataforma gratuita de preparação para concursos públicos no Brasil:
+> listagem de concursos com inscrições abertas, banco de questões, flashcards,
+> simulados e planner de estudos. Sem cadastro pago e sem anúncio.
+
+O site é uma aplicação React renderizada no cliente. Rastreador que não executa
+JavaScript recebe HTML sem conteúdo — as páginas abaixo descrevem o que existe
+em cada endereço, e a listagem de concursos é a parte com dado factual próprio.
+
+## Conteúdo público
+
+- [Início](https://passar-concursos.vercel.app/): visão geral, concursos em
+  destaque e acesso às demais áreas.
+- [Concursos abertos](https://passar-concursos.vercel.app/concursos): concursos
+  públicos com inscrição aberta no Brasil, com órgão, unidade da federação,
+  número de vagas, teto salarial, escolaridade exigida, prazo final de inscrição
+  e link para o edital de origem. Atualizado semanalmente por coleta automática.
+- [Questões](https://passar-concursos.vercel.app/quiz): questões de concurso por
+  matéria. A resolução exige conta; o enunciado é visível sem login.
+
+## Sobre os dados de concursos
+
+Origem: listagem pública do PCI Concursos, cujo robots.txt permite o rastreio da
+seção. Só se extrai dado factual — órgão, vagas, salário, nível, prazo — e cada
+registro guarda o link para a página de origem, onde está o edital.
+
+Ressalvas que importam para quem for citar:
+
+- O salário exibido costuma ser o TETO da faixa do concurso, não o salário de um
+  cargo específico. Quando é teto, aparece como "até R$ x".
+- "Vagas a definir" significa cadastro de reserva ou edital que não publica o
+  número — não significa zero vaga.
+- A escolaridade indicada é a MENOR exigida pelo concurso, quando o edital
+  abrange mais de um nível.
+- Concurso com inscrição encerrada é removido a cada coleta.
+
+Para conferência, o edital original prevalece sempre sobre o que está aqui.
+
+## Áreas que exigem login
+
+Planner de estudos, ciclos, revisões, anotações, simulados e conta do usuário.
+Não há conteúdo indexável nesses endereços.
+
+## Contato
+
+Repositório: https://github.com/matsuch/concursos-quiz-brasil
