@@ -1,0 +1,131 @@
+name: Aplicar schema no Neon
+
+# Rodar manualmente: aba Actions -> "Aplicar schema no Neon" -> Run workflow.
+#
+# Existe porque a sessão do Claude Code não alcança *.neon.tech (política de
+# egress), então a aplicação do schema precisa partir de um runner com rede
+# aberta. O runner do GitHub tem.
+#
+# A connection string vem do secret NEON_DATABASE_URL, se cadastrado:
+#   Settings -> Secrets and variables -> Actions -> New repository secret
+#
+# Como alternativa, pode ser passada no disparo pelo input 'database_url'.
+# ATENÇÃO: um valor passado por input fica registrado nos metadados da execução,
+# visível a quem tem acesso de leitura ao repositório. Use o secret sempre que
+# puder, e rotacione a senha depois se usar o input.
+
+on:
+  workflow_dispatch:
+    inputs:
+      database_url:
+        description: 'Connection string (deixe vazio para usar o secret NEON_DATABASE_URL)'
+        type: string
+        required: false
+        default: ''
+      aplicar_seed:
+        description: 'Aplicar também o seed (badges, questões, flashcards)'
+        type: boolean
+        default: true
+      forcar_em_banco_nao_vazio:
+        description: 'Prosseguir mesmo se o schema já existir (perigoso)'
+        type: boolean
+        default: false
+
+jobs:
+  aplicar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar cliente Postgres
+        run: |
+          if ! command -v psql >/dev/null; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
+          fi
+          psql --version
+
+      - name: Resolver credencial
+        env:
+          URL_SECRET: ${{ secrets.NEON_DATABASE_URL }}
+          URL_INPUT: ${{ inputs.database_url }}
+        run: |
+          PGURL="${URL_INPUT:-$URL_SECRET}"
+          if [ -z "$PGURL" ]; then
+            echo "::error::Sem credencial: cadastre o secret NEON_DATABASE_URL ou informe o input database_url."
+            exit 1
+          fi
+          echo "::add-mask::$PGURL"
+          echo "PGURL=$PGURL" >> "$GITHUB_ENV"
+          if [ -n "$URL_INPUT" ]; then
+            echo "::warning::Credencial recebida por input — fica nos metadados da execução. Rotacione a senha depois."
+          fi
+
+      - name: Conferir conexão e estado atual
+        run: |
+          echo "Conectado em:"
+          psql "$PGURL" -tAc "select current_database() || ' @ ' || version();"
+
+          EXISTENTES=$(psql "$PGURL" -tAc \
+            "select count(*) from pg_tables where schemaname='public';")
+          echo "Tabelas já presentes em public: $EXISTENTES"
+          echo "TABELAS_EXISTENTES=$EXISTENTES" >> "$GITHUB_ENV"
+
+      - name: Abortar se o banco não estiver vazio
+        if: ${{ !inputs.forcar_em_banco_nao_vazio }}
+        run: |
+          if [ "${TABELAS_EXISTENTES}" != "0" ]; then
+            echo "::error::O schema public já tem ${TABELAS_EXISTENTES} tabela(s)."
+            echo "O schema.sql usa CREATE TABLE e falharia no meio, deixando o banco pela metade."
+            echo "Se a intenção é mesmo reaplicar, limpe o schema antes ou rode com 'forcar' marcado."
+            exit 1
+          fi
+          echo "Banco vazio, seguindo."
+
+      - name: Aplicar schema
+        run: psql "$PGURL" -v ON_ERROR_STOP=1 -f neon/schema.sql
+
+      - name: Aplicar seed
+        if: ${{ inputs.aplicar_seed }}
+        run: psql "$PGURL" -v ON_ERROR_STOP=1 -f neon/seed.sql
+
+      - name: Verificar resultado
+        run: |
+          echo "### Resultado da aplicação" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Item | Valor |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
+
+          linha() { echo "| $1 | $2 |" >> "$GITHUB_STEP_SUMMARY"; }
+
+          linha "Tabelas em public" \
+            "$(psql "$PGURL" -tAc "select count(*) from pg_tables where schemaname='public';")"
+          linha "Tabelas com RLS ativo" \
+            "$(psql "$PGURL" -tAc "select count(*) from pg_tables t join pg_class c on c.relname=t.tablename where t.schemaname='public' and c.relrowsecurity;")"
+          linha "Policies RLS" \
+            "$(psql "$PGURL" -tAc "select count(*) from pg_policies where schemaname='public';")"
+          linha "Badges" \
+            "$(psql "$PGURL" -tAc "select count(*) from public.badges;")"
+          linha "Questões" \
+            "$(psql "$PGURL" -tAc "select count(*) from public.questions;")"
+          linha "Flashcards" \
+            "$(psql "$PGURL" -tAc "select count(*) from public.flashcards;")"
+
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "#### Pendências a confirmar" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          # O tipo de neon_auth.users_sync.id estava em aberto: as fontes
+          # divergiam entre text e uuid. Aqui a dúvida se resolve.
+          TIPO=$(psql "$PGURL" -tAc "select data_type from information_schema.columns where table_schema='neon_auth' and table_name='users_sync' and column_name='id';" 2>/dev/null)
+          if [ -n "$TIPO" ]; then
+            echo "- Tipo de \`neon_auth.users_sync.id\`: **$TIPO**" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "- \`neon_auth.users_sync\` não existe ainda — habilite o Auth no console do Neon." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          FN=$(psql "$PGURL" -tAc "select count(*) from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='auth' and p.proname='user_id';" 2>/dev/null)
+          if [ "$FN" = "1" ]; then
+            echo "- \`auth.user_id()\` existe: **sim** (RLS vai funcionar)" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "- ⚠️ \`auth.user_id()\` **não existe** — habilite o Auth no console do Neon, senão o RLS bloqueia tudo." >> "$GITHUB_STEP_SUMMARY"
+          fi
