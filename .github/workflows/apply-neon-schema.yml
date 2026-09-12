@@ -26,6 +26,10 @@ on:
         description: 'Aplicar também o seed (badges, questões, flashcards)'
         type: boolean
         default: true
+      resetar_schema_public:
+        description: 'DESTRUTIVO: apagar tudo em public antes de aplicar (só se não houver dados)'
+        type: boolean
+        default: false
       forcar_em_banco_nao_vazio:
         description: 'Prosseguir mesmo se o schema já existir (perigoso)'
         type: boolean
@@ -69,6 +73,35 @@ jobs:
             "select count(*) from pg_tables where schemaname='public';")
           echo "Tabelas já presentes em public: $EXISTENTES"
           echo "TABELAS_EXISTENTES=$EXISTENTES" >> "$GITHUB_ENV"
+
+      - name: Exigir o Neon Auth habilitado
+        run: |
+          FN=$(psql "$PGURL" -tAc "select count(*) from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='auth' and p.proname='user_id';")
+          if [ "$FN" != "1" ]; then
+            echo "::error::auth.user_id() não existe — o Neon Auth não está habilitado neste projeto."
+            echo ""
+            echo "Todas as 60 policies de RLS dependem dessa função. Sem ela o schema"
+            echo "aplica pela metade: as tabelas entram e a primeira policy falha."
+            echo ""
+            echo "Habilite em: console do Neon -> seu projeto -> Auth -> Enable Auth."
+            echo "Depois rode este workflow de novo."
+            exit 1
+          fi
+          echo "auth.user_id() presente, seguindo."
+
+      - name: Resetar schema public
+        if: \${{ inputs.resetar_schema_public }}
+        run: |
+          LINHAS=$(psql "$PGURL" -tAc "select coalesce(sum(n_live_tup),0) from pg_stat_user_tables where schemaname='public';")
+          echo "Linhas atualmente em public: $LINHAS"
+          if [ "$LINHAS" -gt 0 ] && [ "${{ inputs.forcar_em_banco_nao_vazio }}" != "true" ]; then
+            echo "::error::Há $LINHAS linha(s) em public. Reset abortado para não destruir dados."
+            echo "Se a perda for intencional, marque também 'forcar_em_banco_nao_vazio'."
+            exit 1
+          fi
+          psql "$PGURL" -v ON_ERROR_STOP=1 -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+          echo "Schema public recriado vazio."
+          echo "TABELAS_EXISTENTES=0" >> "$GITHUB_ENV"
 
       - name: Abortar se o banco não estiver vazio
         if: ${{ !inputs.forcar_em_banco_nao_vazio }}
