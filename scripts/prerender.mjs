@@ -130,7 +130,10 @@ for (const c of dados.concursos) {
     '@type': 'JobPosting',
     title: c.titulo,
     description: descricao,
-    datePosted: c.inscricoes_ate,
+    // datePosted e validThrough iguais diria que o anuncio foi publicado no
+    // dia em que expira. A data de coleta e a melhor aproximacao honesta de
+    // quando este registro passou a existir aqui.
+    datePosted: dados.gerado_em,
     validThrough: c.inscricoes_ate,
     employmentType: 'FULL_TIME',
     hiringOrganization: { '@type': 'Organization', name: c.orgao },

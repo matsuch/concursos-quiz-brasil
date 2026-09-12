@@ -31,12 +31,14 @@ export default function ConcursoDetalhe() {
   const [concurso, setConcurso] = useState<ConcursoDados | null>(null);
   const [relacionados, setRelacionados] = useState<ConcursoDados[]>([]);
   const [estado, setEstado] = useState<'carregando' | 'ok' | 'ausente'>('carregando');
+  const [geradoEm, setGeradoEm] = useState('');
 
   useEffect(() => {
     let ativo = true;
     carregarConcursos()
-      .then(({ concursos }) => {
+      .then(({ concursos, gerado_em }) => {
         if (!ativo) return;
+        setGeradoEm(gerado_em);
         const achado = concursos.find(c => c.slug === slug) ?? null;
         setConcurso(achado);
         setEstado(achado ? 'ok' : 'ausente');
@@ -99,7 +101,9 @@ export default function ConcursoDetalhe() {
     '@type': 'JobPosting',
     title: concurso.titulo,
     description: descricao,
-    datePosted: concurso.inscricoes_ate,
+    // Mesma razão do template: datePosted igual a validThrough diria que o
+    // anúncio foi publicado no dia em que expira.
+    datePosted: geradoEm || concurso.inscricoes_ate,
     validThrough: concurso.inscricoes_ate,
     employmentType: 'FULL_TIME',
     hiringOrganization: { '@type': 'Organization', name: concurso.orgao },
