@@ -616,15 +616,21 @@ END;
 $$;
 
 -- notifications: o usuário lê, marca como lida e apaga as próprias.
--- A criação fica com o service_role (edge function), nunca com o cliente.
+--
+-- Não há policy de INSERT, de propósito. Notificação é gerada pelo sistema, e
+-- um usuário não deve poder forjar uma para si. Sem policy de INSERT, o RLS
+-- nega a escrita a qualquer cliente da Data API (anonymous/authenticated),
+-- enquanto o código servidor que conecta como dono do banco continua podendo
+-- inserir — donos de tabela não passam por RLS.
+--
+-- (No Supabase isto era "FOR INSERT TO service_role". O Neon não tem esse
+--  role: os da Data API são anonymous, authenticated e authenticator.)
 CREATE POLICY "Usuário vê as próprias notificações"
   ON public.notifications FOR SELECT USING (auth.user_id()::text = user_id);
 CREATE POLICY "Usuário atualiza as próprias notificações"
   ON public.notifications FOR UPDATE USING (auth.user_id()::text = user_id);
 CREATE POLICY "Usuário apaga as próprias notificações"
   ON public.notifications FOR DELETE USING (auth.user_id()::text = user_id);
-CREATE POLICY "Service role cria notificações"
-  ON public.notifications FOR INSERT TO service_role WITH CHECK (true);
 
 
 -- =============================================================================
