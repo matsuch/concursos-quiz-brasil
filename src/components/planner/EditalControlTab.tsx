@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Plus, Trash2, CheckCircle2, Circle, ChevronDown, ChevronRight, BookOpen } from 'lucide-react';
 import { AIStudyPlanGenerator } from './AIStudyPlanGenerator';
+import { StudyPlanInterestDialog } from './StudyPlanInterestDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useStudyPlanner, EditalTopic } from '@/hooks/useStudyPlanner';
+import { IA_PLANO_ESTUDOS_HABILITADA } from '@/config/features';
 
 const SUBJECTS = [
   'Direito Constitucional',
@@ -83,7 +85,9 @@ export function EditalControlTab() {
           <p className="text-sm text-muted-foreground">Acompanhe seu progresso em cada tópico do edital</p>
         </div>
         <div className="flex gap-2">
-          <AIStudyPlanGenerator />
+          {/* Gerador de IA é recurso pago e está desligado (src/config/features.ts);
+              no lugar dele fica o aviso + formulário de interesse. */}
+          {IA_PLANO_ESTUDOS_HABILITADA ? <AIStudyPlanGenerator /> : <StudyPlanInterestDialog />}
           <Dialog open={isAddingTopic} onOpenChange={setIsAddingTopic}>
             <DialogTrigger asChild>
               <Button size="sm" className="rounded-lg shadow-sm text-sm px-3 py-2 h-auto">

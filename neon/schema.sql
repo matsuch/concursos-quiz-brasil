@@ -379,6 +379,34 @@ CREATE INDEX idx_notifications_user_unread
 
 
 -- =============================================================================
+-- INTERESSE EM PLANOS PAGOS
+-- =============================================================================
+
+-- A geração de plano de estudos com IA custa dinheiro (chamada de LLM por
+-- requisição) e por isso fica desligada enquanto o site roda a custo zero
+-- (ver src/config/features.ts). No lugar dela o app mostra um aviso de
+-- "somente planos pagos" e um formulário de interesse, que cai aqui.
+--
+-- É a única tabela de captação do produto: serve para medir demanda antes de
+-- ligar qualquer serviço pago.
+--
+-- user_id é UNIQUE de propósito — um interesse por pessoa. O app grava com
+-- upsert em cima dessa restrição, então reenviar o formulário atualiza a
+-- resposta em vez de acumular duplicata.
+CREATE TABLE public.plan_interest (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id TEXT NOT NULL UNIQUE,
+  email TEXT NOT NULL,
+  whatsapp TEXT,
+  concurso TEXT,
+  message TEXT,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+);
+-- Sem CREATE INDEX: o UNIQUE em user_id já cria o índice que o RLS usa.
+
+
+-- =============================================================================
 -- TRIGGERS
 -- =============================================================================
 
@@ -400,6 +428,10 @@ CREATE TRIGGER update_edital_topics_updated_at
 
 CREATE TRIGGER update_study_notes_updated_at
   BEFORE UPDATE ON public.study_notes
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_plan_interest_updated_at
+  BEFORE UPDATE ON public.plan_interest
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 CREATE TRIGGER update_study_calendar_events_updated_at
@@ -499,6 +531,7 @@ ALTER TABLE public.study_calendar_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.study_plan_proposals  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.study_notes           ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.notifications         ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.plan_interest         ENABLE ROW LEVEL SECURITY;
 
 -- --- Conteúdo público: leitura liberada, sem policy de escrita --------------
 -- Sem policy de INSERT/UPDATE/DELETE, o RLS nega a escrita a qualquer cliente
@@ -592,14 +625,14 @@ CREATE POLICY "Usuário apaga os próprios blocos de estudo"
   USING (EXISTS (SELECT 1 FROM public.study_cycles
                  WHERE id = study_blocks.cycle_id AND user_id = auth.user_id()::text));
 
--- CRUD completo restrito ao dono, idêntico para as sete tabelas abaixo
+-- CRUD completo restrito ao dono, idêntico para as oito tabelas abaixo
 DO $$
 DECLARE
   t TEXT;
 BEGIN
   FOREACH t IN ARRAY ARRAY[
     'study_cycles', 'edital_topics', 'study_reviews', 'study_calendar_events',
-    'study_plan_proposals', 'study_notes', 'question_notes'
+    'study_plan_proposals', 'study_notes', 'question_notes', 'plan_interest'
   ]
   LOOP
     EXECUTE format(
@@ -684,6 +717,7 @@ BEGIN
   DELETE FROM public.quiz_attempts         WHERE user_id = p_user_id;
   DELETE FROM public.simulado_attempts     WHERE user_id = p_user_id;
   DELETE FROM public.notifications         WHERE user_id = p_user_id;
+  DELETE FROM public.plan_interest         WHERE user_id = p_user_id;
   DELETE FROM public.user_badges           WHERE user_id = p_user_id;
 
   -- Conteúdo público criado pelo usuário é preservado, apenas desassociado
