@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { db } from '@/integrations/neon/client';
 import { useAuth } from './useAuth';
 import { useToast } from './use-toast';
 
@@ -38,7 +38,7 @@ export function useStudyProposals() {
     queryFn: async () => {
       if (!user) return [];
 
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('study_plan_proposals')
         .select('*')
         .eq('user_id', user.id)
@@ -58,7 +58,7 @@ export function useStudyProposals() {
     queryFn: async () => {
       if (!user) return [];
 
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('study_plan_proposals')
         .select('*')
         .eq('user_id', user.id)
@@ -86,7 +86,7 @@ export function useStudyProposals() {
       if (!user) throw new Error('Usuário não autenticado');
 
       // Buscar a proposta completa
-      const { data: proposal, error: fetchError } = await supabase
+      const { data: proposal, error: fetchError } = await db
         .from('study_plan_proposals')
         .select('*')
         .eq('id', proposalId)
@@ -107,7 +107,7 @@ export function useStudyProposals() {
         }));
 
       if (topicsToCreate.length > 0) {
-        const { error: topicsError } = await supabase
+        const { error: topicsError } = await db
           .from('edital_topics')
           .insert(topicsToCreate);
 
@@ -173,7 +173,7 @@ export function useStudyProposals() {
 
       if (eventsToCreate.length > 0) {
         // CORREÇÃO: mudar de 'calendar_events' para 'study_calendar_events'
-        const { error: eventsError } = await supabase
+        const { error: eventsError } = await db
           .from('study_calendar_events')  // Nome correto da tabela
           .insert(eventsToCreate);
 
@@ -181,7 +181,7 @@ export function useStudyProposals() {
       }
 
       // Atualizar status da proposta
-      const { error: updateError } = await supabase
+      const { error: updateError } = await db
         .from('study_plan_proposals')
         .update({ status: 'approved' })
         .eq('id', proposalId);
@@ -215,7 +215,7 @@ export function useStudyProposals() {
   // Rejeitar proposta
   const rejectProposal = useMutation({
     mutationFn: async (proposalId: string) => {
-      const { error } = await supabase
+      const { error } = await db
         .from('study_plan_proposals')
         .update({ status: 'rejected' })
         .eq('id', proposalId);

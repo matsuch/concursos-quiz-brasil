@@ -1,6 +1,6 @@
 // hooks/useQuizData.ts
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/integrations/neon/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -38,7 +38,7 @@ export function useQuizData() {
     setError(null);
 
     try {
-      let query = supabase
+      let query = db
         .from("questions")
         .select("*");
 
@@ -94,7 +94,7 @@ export function useQuizData() {
 
     try {
       // Save quiz attempt
-      await supabase.from("quiz_attempts").insert({
+      await db.from("quiz_attempts").insert({
         user_id: user.id,
         subject: subject,
         correct_answers: score,
@@ -104,14 +104,14 @@ export function useQuizData() {
       });
 
       // Update profile stats
-      const { data: profile } = await supabase
+      const { data: profile } = await db
         .from("profiles")
         .select("total_points, quizzes_completed")
         .eq("user_id", user.id)
         .maybeSingle();
 
       if (profile) {
-        await supabase
+        await db
           .from("profiles")
           .update({
             total_points: (profile.total_points || 0) + pointsEarned,

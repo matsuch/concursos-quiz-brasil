@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { db } from '@/integrations/neon/client';
 import { useAuth } from './useAuth';
 import { useToast } from './use-toast';
 
@@ -74,7 +74,7 @@ export function useStudyPlanner() {
   const { data: cycles = [], isLoading: cyclesLoading } = useQuery({
     queryKey: ['study-cycles', user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('study_cycles')
         .select('*')
         .order('created_at', { ascending: false });
@@ -87,7 +87,7 @@ export function useStudyPlanner() {
   const { data: blocks = [], isLoading: blocksLoading } = useQuery({
     queryKey: ['study-blocks', user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('study_blocks')
         .select('*')
         .order('order_index', { ascending: true });
@@ -101,7 +101,7 @@ export function useStudyPlanner() {
   const { data: topics = [], isLoading: topicsLoading } = useQuery({
     queryKey: ['edital-topics', user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('edital_topics')
         .select('*')
         .order('subject', { ascending: true })
@@ -116,7 +116,7 @@ export function useStudyPlanner() {
   const { data: reviews = [], isLoading: reviewsLoading } = useQuery({
     queryKey: ['study-reviews', user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('study_reviews')
         .select('*')
         .order('scheduled_date', { ascending: true });
@@ -129,7 +129,7 @@ export function useStudyPlanner() {
   // Mutations
   const createCycle = useMutation({
     mutationFn: async (cycle: { name: string; duration_days: number }) => {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('study_cycles')
         .insert({ ...cycle, user_id: user!.id })
         .select()
@@ -148,7 +148,7 @@ export function useStudyPlanner() {
 
   const createBlock = useMutation({
     mutationFn: async (block: { cycle_id: string; subject: string; duration_minutes: number; order_index: number; color: string }) => {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('study_blocks')
         .insert(block)
         .select()
@@ -167,7 +167,7 @@ export function useStudyPlanner() {
 
   const deleteBlock = useMutation({
     mutationFn: async (blockId: string) => {
-      const { error } = await supabase
+      const { error } = await db
         .from('study_blocks')
         .delete()
         .eq('id', blockId);
@@ -181,7 +181,7 @@ export function useStudyPlanner() {
 
   const createTopic = useMutation({
     mutationFn: async (topic: { subject: string; topic: string; subtopic?: string; priority?: number }) => {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('edital_topics')
         .insert({ ...topic, user_id: user!.id })
         .select()
@@ -200,7 +200,7 @@ export function useStudyPlanner() {
 
   const toggleTopic = useMutation({
     mutationFn: async ({ id, is_completed }: { id: string; is_completed: boolean }) => {
-      const { error } = await supabase
+      const { error } = await db
         .from('edital_topics')
         .update({ 
           is_completed, 
@@ -216,7 +216,7 @@ export function useStudyPlanner() {
 
   const deleteTopic = useMutation({
     mutationFn: async (topicId: string) => {
-      const { error } = await supabase
+      const { error } = await db
         .from('edital_topics')
         .delete()
         .eq('id', topicId);
@@ -230,7 +230,7 @@ export function useStudyPlanner() {
 
   const createReview = useMutation({
     mutationFn: async (review: { subject: string; topic_name: string; review_type: '24h' | '7d' | '30d'; scheduled_date: string; topic_id?: string }) => {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('study_reviews')
         .insert({ ...review, user_id: user!.id })
         .select()
@@ -249,7 +249,7 @@ export function useStudyPlanner() {
 
   const toggleReview = useMutation({
     mutationFn: async ({ id, is_completed }: { id: string; is_completed: boolean }) => {
-      const { error } = await supabase
+      const { error } = await db
         .from('study_reviews')
         .update({ 
           is_completed, 
@@ -265,7 +265,7 @@ export function useStudyPlanner() {
 
   const deleteReview = useMutation({
     mutationFn: async (reviewId: string) => {
-      const { error } = await supabase
+      const { error } = await db
         .from('study_reviews')
         .delete()
         .eq('id', reviewId);
@@ -281,7 +281,7 @@ export function useStudyPlanner() {
   const { data: calendarEvents, refetch: refetchCalendarEvents } = useQuery({
     queryKey: ['calendarEvents', user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('study_calendar_events')
         .select('*')
         .eq('user_id', user?.id)
@@ -295,7 +295,7 @@ export function useStudyPlanner() {
   // Criar evento
   const createCalendarEvent = useMutation({
     mutationFn: async (event: Omit<StudyCalendarEvent, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('study_calendar_events')
         .insert([{ ...event, user_id: user?.id }])
         .select()
@@ -311,7 +311,7 @@ export function useStudyPlanner() {
   // Atualizar evento
   const updateCalendarEvent = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<StudyCalendarEvent> & { id: string }) => {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('study_calendar_events')
         .update(updates)
         .eq('id', id)
@@ -328,7 +328,7 @@ export function useStudyPlanner() {
   // Deletar evento
   const deleteCalendarEvent = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      const { error } = await db
         .from('study_calendar_events')
         .delete()
         .eq('id', id);

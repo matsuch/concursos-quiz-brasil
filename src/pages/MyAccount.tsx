@@ -6,7 +6,7 @@ import {
   Medal, Sparkles, TrendingUp, Users, CheckCircle2, Heart,
   Coffee, Rocket, Target, Zap, Star, Shield, Flame,
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { db } from '@/integrations/neon/client';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -68,15 +68,15 @@ const MyAccount = () => {
     try {
       setLoading(true);
       setError(null);
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      const { data: { user }, error: authError } = await db.auth.getUser();
       if (authError || !user) { setIsAuthenticated(false); setLoading(false); return; }
       setIsAuthenticated(true);
       setUserId(user.id);
       setUserEmail(user.email ?? null);
 
       const [profileResult, badgesResult] = await Promise.all([
-        supabase.from('profiles').select('*').eq('user_id', user.id).single(),
-        supabase.from('user_badges').select('id, unlocked_at, badges(name, icon, rarity)').eq('user_id', user.id).limit(5),
+        db.from('profiles').select('*').eq('user_id', user.id).single(),
+        db.from('user_badges').select('id, unlocked_at, badges(name, icon, rarity)').eq('user_id', user.id).limit(5),
       ]);
 
 

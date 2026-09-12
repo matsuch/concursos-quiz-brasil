@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { db } from '@/integrations/neon/client';
 import { useStudyPlanner } from '@/hooks/useStudyPlanner';
 import { addWeeks, setDay, setHours, setMinutes, addMinutes, startOfWeek, format } from 'date-fns';
 
@@ -127,7 +127,7 @@ export function AIStudyPlanGenerator() {
   const handleGenerate = async () => {
     setIsLoading(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session } } = await db.auth.getSession();
       if (!session) {
         toast({ title: 'Você precisa estar logado', variant: 'destructive' });
         return;
@@ -158,7 +158,7 @@ export function AIStudyPlanGenerator() {
         };
 
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-study-plan`,
+        "/api/generate-study-plan",
         {
           method: 'POST',
           headers: {

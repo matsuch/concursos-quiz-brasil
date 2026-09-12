@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { db } from '@/integrations/neon/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
@@ -35,7 +35,7 @@ export function NotificationsPopover() {
     queryFn: async () => {
       if (!user) return [];
 
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('notifications')
         .select('*')
         .eq('user_id', user.id)
@@ -53,7 +53,7 @@ export function NotificationsPopover() {
 
   const markAsRead = useMutation({
     mutationFn: async (notificationId: string) => {
-      const { error } = await supabase
+      const { error } = await db
         .from('notifications')
         .update({ is_read: true })
         .eq('id', notificationId);
@@ -67,7 +67,7 @@ export function NotificationsPopover() {
 
   const markAllAsRead = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase
+      const { error } = await db
         .from('notifications')
         .update({ is_read: true })
         .eq('user_id', user?.id)

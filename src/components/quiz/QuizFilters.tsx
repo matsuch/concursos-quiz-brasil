@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import { RotateCcw, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/integrations/neon/client";
 import { toast } from "sonner";
 
 interface QuizFiltersProps {
@@ -41,7 +41,7 @@ export function QuizFilters({ filters, onFilterChange, loading }: QuizFiltersPro
       setLoadingFilters(true);
 
       // Construir query com os filtros já aplicados
-      let query = supabase.from("questions").select("subject, difficulty, is_official, assunto, banca, prova");
+      let query = db.from("questions").select("subject, difficulty, is_official, assunto, banca, prova");
 
       // Aplicar filtros existentes para filtrar as opções disponíveis
       if (filters.subject) {

@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { CheckCircle2, XCircle, Play, BookOpen, Loader2, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/integrations/neon/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Helmet } from 'react-helmet-async';
@@ -57,7 +57,7 @@ const SimuladoPage = () => {
   const fetchSimulados = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from("simulados")
         .select("*")
         .order("created_at", { ascending: false });
@@ -75,7 +75,7 @@ const SimuladoPage = () => {
   const fetchQuestions = async (simuladoId: string) => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from("simulado_questions")
         .select("*")
         .eq("simulado_id", simuladoId)
@@ -133,7 +133,7 @@ const SimuladoPage = () => {
     if (user && selectedSimulado) {
       try {
         // Save simulado attempt
-        await supabase.from("simulado_attempts").insert({
+        await db.from("simulado_attempts").insert({
           user_id: user.id,
           simulado_id: selectedSimulado.id,
           correct_answers: correctAnswers,
@@ -143,14 +143,14 @@ const SimuladoPage = () => {
         });
 
         // Update profile stats
-        const { data: profile } = await supabase
+        const { data: profile } = await db
           .from("profiles")
           .select("total_points, simulados_completed")
           .eq("user_id", user.id)
           .maybeSingle();
 
         if (profile) {
-          await supabase
+          await db
             .from("profiles")
             .update({
               total_points: (profile.total_points || 0) + pointsEarned,

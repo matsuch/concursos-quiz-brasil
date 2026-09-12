@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { db } from '@/integrations/neon/client';
 import { useAuth } from '@/hooks/useAuth';
 
 export interface QuestionNote {
@@ -20,7 +20,7 @@ export function useQuestionNotes(questionId?: string) {
     queryKey: ['question-note', questionId, user?.id],
     queryFn: async () => {
       if (!user || !questionId) return null;
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('question_notes')
         .select('*')
         .eq('user_id', user.id)
@@ -38,7 +38,7 @@ export function useQuestionNotes(questionId?: string) {
     queryKey: ['all-question-notes', user?.id],
     queryFn: async () => {
       if (!user) return [];
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('question_notes')
         .select('*, questions(id, question, subject)')
         .eq('user_id', user.id)
@@ -55,7 +55,7 @@ export function useQuestionNotes(questionId?: string) {
       if (!user) throw new Error('User not authenticated');
       
       // Upsert - insert or update
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('question_notes')
         .upsert(
           { user_id: user.id, question_id: questionId, content },
@@ -75,7 +75,7 @@ export function useQuestionNotes(questionId?: string) {
 
   const deleteNote = useMutation({
     mutationFn: async (noteId: string) => {
-      const { error } = await supabase
+      const { error } = await db
         .from('question_notes')
         .delete()
         .eq('id', noteId);

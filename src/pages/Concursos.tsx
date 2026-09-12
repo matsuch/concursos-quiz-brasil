@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, Filter, MapPin, Calendar, Banknote, Users, ChevronRight, Loader2, Sparkles, AlertCircle, Clock } from "lucide-react";
 import ConcursoCard from "@/components/ConcursoCard";
 import { SeoHead } from "@/components/SeoHead";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/integrations/neon/client";
 import { Helmet } from 'react-helmet-async';
 
 interface Concurso {
@@ -61,7 +61,7 @@ const ConcursosPage = () => {
     try {
       setLoading(true);
       
-      const { data: concursosData, error } = await supabase
+      const { data: concursosData, error } = await db
         .from("concursos")
         .select("*")
         .order("inscricoes_ate", { ascending: true })
