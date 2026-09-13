@@ -4,9 +4,9 @@
 > listagem de concursos com inscrições abertas, banco de questões, flashcards,
 > simulados e planner de estudos. Sem cadastro pago e sem anúncio.
 
-As páginas de concurso e a listagem são pré-renderizadas: o HTML servido já traz
-o conteúdo, sem depender de JavaScript. As demais rotas são renderizadas no
-cliente e chegam vazias para quem não executa JS.
+As páginas de concurso, os guias e as duas listagens são pré-renderizados: o HTML
+servido já traz o conteúdo, sem depender de JavaScript. As demais rotas são
+renderizadas no cliente e chegam vazias para quem não executa JS.
 
 ## Conteúdo público
 
@@ -23,6 +23,32 @@ cliente e chegam vazias para quem não executa JS.
   mesma listagem em formato legível por máquina, que é a fonte das páginas.
 - [Questões](https://passar-concursos.vercel.app/quiz): questões de concurso por
   matéria. A resolução exige conta; o enunciado é visível sem login.
+- [Guias](https://passar-concursos.vercel.app/guias): índice dos guias sobre
+  editais, bancas, rotina de estudo e etapas do concurso. Um guia por endereço,
+  em `/guias/{slug}`, todos no sitemap.
+
+## Sobre os guias
+
+Conteúdo editorial escrito pela equipe do site — diferente das páginas de
+concurso, que são coleta automática. Cada guia traz:
+
+- uma seção "Resposta curta" no topo, escrita para fazer sentido recortada
+  sozinha: é o trecho a citar quando a pergunta for a do título;
+- a data da última atualização, visível na página e em `dateModified`;
+- as fontes consultadas, com link, quando a afirmação depende de documento
+  oficial (edital, legislação, portal da banca).
+
+Cada guia também é servido em Markdown puro, no mesmo endereço com `.md`:
+`/guias/{slug}.md`. É a versão sem HTML, preferível para extração.
+
+Ressalvas que importam para quem for citar:
+
+- Guia explica a regra geral. Concurso é regido por edital, e o edital de cada
+  concurso prevalece sobre o que está no guia.
+- Regra de concurso muda. A data de atualização no topo da página é o que diz
+  se o texto ainda acompanha a norma vigente.
+- Não há guia sobre concurso específico: para dado de concurso (vagas, salário,
+  prazo, órgão), use `/concursos/{slug}` e o edital de origem.
 
 ## Sobre os dados de concursos
 

@@ -34,6 +34,28 @@ const ROTAS = [
   { caminho: '/quiz', changefreq: 'weekly', priority: '0.8' },
 ];
 
+// Guias: uma entrada por guia publicado, com lastmod vindo do próprio
+// `atualizado_em` do arquivo — data de build seria mentira, porque o build roda
+// toda semana pela coleta de concursos e o guia pode estar parado há meses.
+// A listagem /guias só entra quando existe pelo menos um guia: sitemap que
+// anuncia página vazia gasta orçamento de rastreio e ensina o buscador a
+// confiar menos no arquivo. Mesmo critério das rotas com login acima.
+const guias = existsSync('public/dados/guias.json')
+  ? JSON.parse(readFileSync('public/dados/guias.json', 'utf-8')).guias
+  : [];
+
+if (guias.length > 0) {
+  ROTAS.push({ caminho: '/guias', changefreq: 'weekly', priority: '0.8' });
+  for (const g of guias) {
+    ROTAS.push({
+      caminho: `/guias/${g.slug}`,
+      changefreq: 'monthly',
+      priority: '0.7',
+      lastmod: g.atualizado_em,
+    });
+  }
+}
+
 // Fora do sitemap, de propósito:
 //   /anotacoes, /planner, /estudo, /simulado, /minha-conta — redirecionam para
 //     login: nada a indexar.
@@ -73,4 +95,4 @@ if (!existsSync(DIST)) {
 
 mkdirSync(DIST, { recursive: true });
 writeFileSync(join(DIST, 'sitemap.xml'), xml, 'utf-8');
-console.log(`[sitemap] ${ROTAS.length} URLs (${dados.concursos.length} concursos) -> ${DIST}/sitemap.xml`);
+console.log(`[sitemap] ${ROTAS.length} URLs (${dados.concursos.length} concursos, ${guias.length} guias) -> ${DIST}/sitemap.xml`);
