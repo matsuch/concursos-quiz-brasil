@@ -580,6 +580,31 @@ CREATE POLICY "Usuário atualiza as próprias questões"
 CREATE POLICY "Usuário apaga as próprias questões"
   ON public.questions FOR DELETE USING (auth.user_id()::text = created_by);
 
+-- A policy acima libera as linhas, mas RLS só filtra o que o GRANT já deixou
+-- passar. Sem este GRANT o visitante deslogado — que chega na Data API como
+-- `anonymous`, o db_anon_role do projeto — leva "permission denied" na página
+-- /quiz, ainda que a policy diga "visíveis por todos".
+--
+-- O GRANT é por coluna: `ai_explanation` fica de fora porque a explicação da
+-- IA é recurso de quem tem conta, e `created_by` porque identifica o autor.
+-- Consequência para o app: sem sessão a query precisa listar as colunas, já
+-- que "select=*" pede a tabela inteira e volta negado.
+-- O role só existe depois que a Data API é habilitada no console, e este
+-- arquivo roda em banco novo: sem o IF não daria para aplicar o schema antes
+-- de habilitá-la.
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anonymous') THEN
+    GRANT SELECT (
+      id, question, options, correct_answer,
+      subject, difficulty, is_official, assunto, banca, prova
+    ) ON public.questions TO anonymous;
+  ELSE
+    RAISE NOTICE 'role "anonymous" nao existe: habilite a Data API e rode neon/migrations/20260913_questions_leitura_anonima.sql';
+  END IF;
+END;
+$$;
+
 -- --- flashcards: leitura pública, escrita do autor ---------------------------
 
 CREATE POLICY "Flashcards são visíveis por todos"

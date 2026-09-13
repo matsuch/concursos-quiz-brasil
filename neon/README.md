@@ -60,6 +60,28 @@ justamente o que encareceu a saída do Supabase.
 O custo é assumido e tratado: `delete_user_data()` substitui o cascade, e os
 índices por `user_id` sustentam os filtros do RLS.
 
+## Leitura pública sem sessão
+
+A Data API tem `db_anon_role = anonymous`: requisição que chega sem
+`Authorization` roda como esse role. Quem está deslogado — inclusive os
+buscadores — depende disso para ver a página `/quiz`.
+
+Duas pontas precisam estar de pé, e as duas faltavam:
+
+| Camada | O que faltava |
+|---|---|
+| App | `createClient` injeta o JWT em toda requisição e lança `AuthRequiredError` quando não há sessão. Por isso existe o `publicDb` em `src/integrations/neon/client.ts`: um `NeonPostgrestClient` sem token, usado só na leitura de conteúdo público |
+| Banco | `anonymous` não tinha GRANT nenhum. Policy de RLS não substitui GRANT: a policy filtra linhas, o GRANT é que abre a tabela para o role |
+
+O GRANT em `public.questions` é por coluna (`neon/migrations/20260913_questions_leitura_anonima.sql`).
+`ai_explanation` ficou de fora porque a explicação da IA é recurso de quem tem
+conta, e `created_by` porque identifica o autor. Consequência prática: **sem
+sessão a query precisa nomear as colunas** — `select=*` pede a tabela inteira e
+volta `permission denied`.
+
+Ao tornar outra tabela legível para deslogado, lembre das duas pontas: policy
+de SELECT *e* GRANT para `anonymous`.
+
 ## Recurso pago desligado
 
 A geração de plano de estudos com IA (`api/generate-study-plan.ts`) cobra por

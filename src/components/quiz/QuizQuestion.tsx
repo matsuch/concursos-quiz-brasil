@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ChevronRight, Sparkles, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { QuestionNoteButton } from "./QuestionNoteButton";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Question {
   id: string;
@@ -47,7 +48,7 @@ export function QuizQuestion({
   hasNext,
 }: QuizQuestionProps) {
   const [showAiExplanation, setShowAiExplanation] = useState(false);
-  const navigate = useNavigate();
+  const { user } = useAuth();
   const handleAIExplanationClick = () => {
     setShowAiExplanation(!showAiExplanation);
   };
@@ -213,26 +214,49 @@ export function QuizQuestion({
         </div>
       </Card>
 
-      {/* AI Explanation */}
+      {/* AI Explanation — recurso de quem tem conta. Sem sessão o texto nem
+          chega ao navegador: `ai_explanation` está fora do GRANT do role
+          `anonymous` (ver neon/schema.sql). */}
       {answered && (
         <Card className="p-4 sm:p-6 border-primary/30 bg-primary/5">
           <button
             onClick={handleAIExplanationClick}
+            aria-expanded={showAiExplanation}
             className="flex items-center gap-2 w-full text-left group"
           >
             <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-primary/10 text-primary">
-              <Sparkles className="h-4 w-4 sm:h-5 sm:w-5" />
+              {user ? (
+                <Sparkles className="h-4 w-4 sm:h-5 sm:w-5" />
+              ) : (
+                <Lock className="h-4 w-4 sm:h-5 sm:w-5" />
+              )}
             </div>
             <div className="flex-1">
               <span className="font-medium text-sm sm:text-base text-primary">
                 Explicação da IA
               </span>
+              {!user && (
+                <span className="block text-xs text-muted-foreground">
+                  Disponível para quem tem conta
+                </span>
+              )}
             </div>
           </button>
-          
+
           {showAiExplanation && (
             <div className="mt-3 sm:mt-4 text-xs sm:text-sm text-foreground leading-relaxed">
-              {question.ai_explanation ? (
+              {!user ? (
+                <div className="space-y-3">
+                  <p>
+                    A explicação da IA comenta a questão e justifica a alternativa
+                    correta. Ela é liberada para usuários com conta — crie a sua,
+                    é grátis, e volte para esta questão.
+                  </p>
+                  <Button asChild size="sm">
+                    <Link to="/auth?modo=cadastro">Criar conta grátis</Link>
+                  </Button>
+                </div>
+              ) : question.ai_explanation ? (
                 <p className="whitespace-pre-wrap">{question.ai_explanation}</p>
               ) : (
                 <p className="text-muted-foreground italic">
