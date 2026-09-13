@@ -383,5 +383,3 @@ Provide a concise summary containing:
 3. Which relevant skills were used.
 4. Any validation/tests performed.
 5. Any known limitations or follow-up items.
-
-Do not make a Git commit unless explicitly requested.
