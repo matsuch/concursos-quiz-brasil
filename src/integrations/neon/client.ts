@@ -1,4 +1,4 @@
-import { createClient, NeonPostgrestClient, SupabaseAuthAdapter } from '@neondatabase/neon-js';
+import { createClient, SupabaseAuthAdapter } from '@neondatabase/neon-js';
 import type { Database } from './types';
 
 /**
@@ -27,33 +27,26 @@ const DATA_API_URL =
  *
  * As queries `.from(...)` seguem inalteradas: a Data API do Neon é compatível
  * com PostgREST, o mesmo protocolo que o supabase-js falava.
+ *
+ * `allowAnonymous` é o que mantém a página de questões de pé para quem não
+ * está logado — inclusive os buscadores, que nunca estão. Sem ele o cliente
+ * lança `AuthRequiredError` antes de a requisição sair, sempre que não há
+ * sessão. A Data API sempre exige JWT: acesso anônimo não é requisição sem
+ * token, é um token anônimo. Com a opção ligada, o SDK busca um JWT curto em
+ * `GET /token/anonymous` na primeira query sem sessão e o mantém em cache até
+ * expirar; a Data API então roda a query como o role `anonymous`, que só
+ * enxerga o que tem GRANT explícito (ver neon/schema.sql). Havendo sessão,
+ * nada muda: o token do usuário tem precedência.
  */
 export const db = createClient<Database>({
   auth: {
     adapter: SupabaseAuthAdapter(),
     url: AUTH_URL,
+    allowAnonymous: true,
   },
   dataApi: {
     url: DATA_API_URL,
   },
-});
-
-/**
- * Cliente sem sessão, para o conteúdo público lido por quem não está logado.
- *
- * O `db` acima injeta o JWT em toda requisição e, quando não há sessão, lança
- * `AuthRequiredError` antes de chegar a sair a requisição — o que derrubava a
- * página de questões para o visitante deslogado (e para os buscadores, que
- * nunca estão logados). Sem header `Authorization` a Data API executa a query
- * como `anonymous`, o db_anon_role do projeto, e o RLS decide o que ele vê.
- *
- * Serve só para leitura de conteúdo público: `anonymous` não tem GRANT de
- * escrita em tabela nenhuma, e nas de conteúdo o GRANT de leitura é por coluna
- * (ver neon/schema.sql), então a query precisa nomear as colunas em vez de
- * pedir `*`.
- */
-export const publicDb = new NeonPostgrestClient<Database>({
-  dataApiUrl: DATA_API_URL,
 });
 
 /** Campos de usuário e sessão que este app consome. */

@@ -1,6 +1,6 @@
 // hooks/useQuizData.ts
 import { useState } from "react";
-import { db, publicDb } from "@/integrations/neon/client";
+import { db } from "@/integrations/neon/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -61,13 +61,13 @@ export function useQuizData() {
     setLoading(true);
     setError(null);
 
-    // Sem sessão a leitura vai pelo cliente sem token: o `db` exigiria JWT e
-    // lançaria AuthRequiredError antes mesmo de sair a requisição.
+    // Sem sessão a query roda como o role `anonymous` (token anônimo do
+    // cliente), que só tem GRANT nas colunas públicas — daí a lista explícita.
     const semSessao = !user;
 
     try {
       let query = semSessao
-        ? publicDb.from("questions").select(COLUNAS_PUBLICAS)
+        ? db.from("questions").select(COLUNAS_PUBLICAS)
         : db.from("questions").select("*");
 
       // Aplica filtros apenas se tiverem valor
