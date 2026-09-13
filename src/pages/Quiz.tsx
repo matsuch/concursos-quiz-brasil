@@ -191,30 +191,6 @@ const Quiz = () => {
               </section>
             )}
 
-            {!user && !loading && (
-              <Card className="p-4 sm:p-6 border-primary/30 bg-primary/5">
-                <h2 className="text-base sm:text-lg font-semibold text-foreground">
-                  Você está treinando com {QUESTOES_SEM_CONTA} questões sorteadas
-                </h2>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Sem conta, a cada visita sorteamos {QUESTOES_SEM_CONTA} questões do banco e
-                  você pode responder todas. Com uma conta gratuita você acessa o banco
-                  completo, filtra por banca, matéria e prova, guarda anotações em cada
-                  questão e libera a explicação da IA.
-                </p>
-                <div className="mt-4 flex flex-col sm:flex-row gap-2 sm:items-center">
-                  <Button asChild className="w-full sm:w-auto">
-                    <Link to="/auth?modo=cadastro">
-                      <Sparkles className="h-4 w-4 mr-2" />
-                      Criar conta grátis
-                    </Link>
-                  </Button>
-                  <Button asChild variant="outline" className="w-full sm:w-auto">
-                    <Link to="/auth">Já tenho conta</Link>
-                  </Button>
-                </div>
-              </Card>
-            )}
           </div>
         </div>
       </main>
