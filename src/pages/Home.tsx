@@ -258,7 +258,7 @@ const Home = () => {
     
       <div className="min-h-screen bg-background">
         {/* Hero Section */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-secondary/5 to-background py-12 sm:py-20">
+        <section className="relative overflow-hidden bg-background py-12 sm:py-20">
           <div className="container mx-auto px-4">
             <div className="flex flex-col items-center justify-center text-center">
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold mb-4 sm:mb-6 text-blue-600 leading-tight">
