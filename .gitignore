@@ -29,3 +29,11 @@ dist-ssr
 # cache do Python dos scripts de coleta
 __pycache__/
 *.pyc
+
+# guias: derivados de content/guias/*.md por scripts/gerar-guias.mjs no build.
+# A fonte e o Markdown; versionar o derivado so cria chance de os dois
+# discordarem. (public/dados/concursos.json e diferente: ele nao e derivado de
+# nada no repositorio, e o resultado da coleta semanal.)
+public/dados/guias.json
+public/dados/guias/
+public/guias/

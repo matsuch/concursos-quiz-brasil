@@ -17,6 +17,8 @@ import ConcursoDetalhe from "./pages/Concurso";
 import Estudo from "./pages/Estudo";
 import Auth from "./pages/Auth";
 import ConcursosPage from "@/pages/Concursos";
+import GuiasPage from "@/pages/Guias";
+import GuiaPage from "./pages/Guia";
 import NotFound from "./pages/NotFound";
 import SimuladoPage from "./pages/Simulado";
 import MyAccount from "./pages/MyAccount";
@@ -41,6 +43,11 @@ function AppRoutes() {
               {/* Uma URL por concurso: e o unico conteudo proprio e factual
                   do site, e sem endereco proprio nao ha o que indexar nem citar. */}
               <Route path="/concursos/:slug" element={<ConcursoDetalhe />} />
+              {/* Guias: conteudo editorial, publico para logado e deslogado.
+                  Uma URL por guia, como nos concursos — sem endereco proprio
+                  nao ha o que indexar nem o que citar. */}
+              <Route path="/guias" element={<GuiasPage />} />
+              <Route path="/guias/:slug" element={<GuiaPage />} />
               <Route path="/quiz" element={<Quiz />} />
               <Route path="/anotacoes" element={<Anotacoes />} />
               <Route path="/auth" element={<Auth />} />
