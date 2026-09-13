@@ -62,15 +62,17 @@ O custo é assumido e tratado: `delete_user_data()` substitui o cascade, e os
 
 ## Leitura pública sem sessão
 
-A Data API tem `db_anon_role = anonymous`: requisição que chega sem
-`Authorization` roda como esse role. Quem está deslogado — inclusive os
-buscadores — depende disso para ver a página `/quiz`.
+A Data API **sempre** exige JWT: acesso anônimo não é requisição sem token, é
+um *token anônimo*. Com `allowAnonymous: true` na config de auth, o SDK busca
+um JWT curto em `GET /token/anonymous` na primeira query sem sessão, guarda em
+cache até expirar, e a Data API troca para o role `anonymous`. Quem está
+deslogado — inclusive os buscadores — depende disso para ver a página `/quiz`.
 
 Duas pontas precisam estar de pé, e as duas faltavam:
 
 | Camada | O que faltava |
 |---|---|
-| App | `createClient` injeta o JWT em toda requisição e lança `AuthRequiredError` quando não há sessão. Por isso existe o `publicDb` em `src/integrations/neon/client.ts`: um `NeonPostgrestClient` sem token, usado só na leitura de conteúdo público |
+| App | Sem `allowAnonymous`, `createClient` lança `AuthRequiredError` antes de a requisição sair sempre que não há sessão (`src/integrations/neon/client.ts`) |
 | Banco | `anonymous` não tinha GRANT nenhum. Policy de RLS não substitui GRANT: a policy filtra linhas, o GRANT é que abre a tabela para o role |
 
 O GRANT em `public.questions` é por coluna (`neon/migrations/20260913_questions_leitura_anonima.sql`).
