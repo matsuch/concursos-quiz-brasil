@@ -1,4 +1,4 @@
-import { createClient, SupabaseAuthAdapter } from '@neondatabase/neon-js';
+import { createClient, NeonPostgrestClient, SupabaseAuthAdapter } from '@neondatabase/neon-js';
 import type { Database } from './types';
 
 /**
@@ -36,6 +36,24 @@ export const db = createClient<Database>({
   dataApi: {
     url: DATA_API_URL,
   },
+});
+
+/**
+ * Cliente sem sessão, para o conteúdo público lido por quem não está logado.
+ *
+ * O `db` acima injeta o JWT em toda requisição e, quando não há sessão, lança
+ * `AuthRequiredError` antes de chegar a sair a requisição — o que derrubava a
+ * página de questões para o visitante deslogado (e para os buscadores, que
+ * nunca estão logados). Sem header `Authorization` a Data API executa a query
+ * como `anonymous`, o db_anon_role do projeto, e o RLS decide o que ele vê.
+ *
+ * Serve só para leitura de conteúdo público: `anonymous` não tem GRANT de
+ * escrita em tabela nenhuma, e nas de conteúdo o GRANT de leitura é por coluna
+ * (ver neon/schema.sql), então a query precisa nomear as colunas em vez de
+ * pedir `*`.
+ */
+export const publicDb = new NeonPostgrestClient<Database>({
+  dataApiUrl: DATA_API_URL,
 });
 
 /** Campos de usuário e sessão que este app consome. */

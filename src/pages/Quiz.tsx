@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Helmet } from 'react-helmet-async';
 import { QuizFilters } from "@/components/quiz/QuizFilters";
 import { QuizQuestion } from "@/components/quiz/QuizQuestion";
-import { useQuizData } from "@/hooks/useQuizData";
+import { QUESTOES_SEM_CONTA, useQuizData } from "@/hooks/useQuizData";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 interface Filters {
   subject: string;
@@ -32,37 +34,32 @@ const Quiz = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [answered, setAnswered] = useState(false);
   const [score, setScore] = useState(0);
-  const navigate = useNavigate();
 
   const { questions, loading, error, fetchQuestions } = useQuizData();
   const { user, loading: authLoading } = useAuth();
 
+  // Espera a sessão resolver antes de buscar: quem está logado leva o banco
+  // inteiro, quem não está leva a amostra sorteada, e quem acabou de entrar
+  // precisa que a lista seja refeita.
   useEffect(() => {
-    fetchQuestions(filters);
-  }, []);
+    if (authLoading) return;
 
-  useEffect(() => {
     fetchQuestions(filters);
     setCurrentQuestionIndex(0);
     setSelectedAnswer(null);
     setAnswered(false);
-  }, [filters]);
+  }, [filters, user, authLoading]);
 
   const handleSelectOption = (index: number) => {
     if (answered) return;
     setSelectedAnswer(index);
   };
 
+  // Responder é livre, com ou sem conta: o que exige conta é a explicação da
+  // IA, gatilho tratado dentro de QuizQuestion.
   const handleSubmitAnswer = () => {
     if (selectedAnswer === null || answered) return;
-    
-    if (!user) {
-      console.log("Usuário não logado, redirecionando para /auth");
-      navigate("/auth");
-      return;
-    }
-    
-    console.log("Usuário logado, processando resposta...");
+
     setAnswered(true);
     if (selectedAnswer === questions[currentQuestionIndex].correct_answer) {
       setScore(score + 1);
@@ -192,6 +189,31 @@ const Quiz = () => {
                   hasNext={currentQuestionIndex < questions.length - 1}
                 />
               </section>
+            )}
+
+            {!user && !loading && (
+              <Card className="p-4 sm:p-6 border-primary/30 bg-primary/5">
+                <h2 className="text-base sm:text-lg font-semibold text-foreground">
+                  Você está treinando com {QUESTOES_SEM_CONTA} questões sorteadas
+                </h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Sem conta, a cada visita sorteamos {QUESTOES_SEM_CONTA} questões do banco e
+                  você pode responder todas. Com uma conta gratuita você acessa o banco
+                  completo, filtra por banca, matéria e prova, guarda anotações em cada
+                  questão e libera a explicação da IA.
+                </p>
+                <div className="mt-4 flex flex-col sm:flex-row gap-2 sm:items-center">
+                  <Button asChild className="w-full sm:w-auto">
+                    <Link to="/auth?modo=cadastro">
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Criar conta grátis
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full sm:w-auto">
+                    <Link to="/auth">Já tenho conta</Link>
+                  </Button>
+                </div>
+              </Card>
             )}
           </div>
         </div>

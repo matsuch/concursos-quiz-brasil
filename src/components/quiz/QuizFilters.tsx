@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import { RotateCcw, Loader2 } from "lucide-react";
-import { db } from "@/integrations/neon/client";
+import { db, publicDb } from "@/integrations/neon/client";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
 interface QuizFiltersProps {
@@ -21,6 +22,7 @@ interface QuizFiltersProps {
 }
 
 export function QuizFilters({ filters, onFilterChange, loading }: QuizFiltersProps) {
+  const { user } = useAuth();
   const [loadingFilters, setLoadingFilters] = useState(true);
   const [availableOptions, setAvailableOptions] = useState({
     subjects: [] as string[],
@@ -34,14 +36,18 @@ export function QuizFilters({ filters, onFilterChange, loading }: QuizFiltersPro
   // Carrega as opções de filtros baseado nos filtros já aplicados
   useEffect(() => {
     fetchAvailableOptions();
-  }, [filters]);
+  }, [filters, user]);
 
   const fetchAvailableOptions = async () => {
     try {
       setLoadingFilters(true);
 
-      // Construir query com os filtros já aplicados
-      let query = db.from("questions").select("subject, difficulty, is_official, assunto, banca, prova");
+      // Construir query com os filtros já aplicados. Sem sessão a leitura vai
+      // pelo cliente sem token (o `db` exigiria JWT); estas seis colunas estão
+      // no GRANT do role `anonymous`, então a lista de opções é a mesma para
+      // quem está logado e para quem não está.
+      const client = user ? db : publicDb;
+      let query = client.from("questions").select("subject, difficulty, is_official, assunto, banca, prova");
 
       // Aplicar filtros existentes para filtrar as opções disponíveis
       if (filters.subject) {
