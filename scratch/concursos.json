@@ -1,17 +1,5 @@
 [
   {
-    "titulo": "UNESP abre concurso para professor substituto com doutorado em Assis - SP",
-    "orgao": "UNESP - Universidade Estadual Paulista",
-    "local": "SP",
-    "nivel": "Superior",
-    "vagas": 1,
-    "salario": 3511.9,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-12",
-    "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/unesp-abre-concurso-para-professor-substituto-com-doutorado-em-assis-sp"
-  },
-  {
     "titulo": "Prefeitura de Frei Rogério - SC divulga retificações de processo seletivo",
     "orgao": "Prefeitura de Frei Rogério",
     "local": "SC",
@@ -370,18 +358,6 @@
     "inscricoes_ate": "2026-09-14",
     "status": "destaque",
     "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-pien-pr-abre-processo-seletivo-com-salarios-de-ate-17253"
-  },
-  {
-    "titulo": "Transpetro publica retificações de processos seletivos para diversos cargos",
-    "orgao": "Transpetro - Petrobras Transporte S.A.",
-    "local": "Nacional",
-    "nivel": "Médio",
-    "vagas": 0,
-    "salario": 15034.81,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-14",
-    "status": "destaque",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/transpetro-publica-retificacoes-de-processos-seletivos-para-diversos-cargos"
   },
   {
     "titulo": "UFMG abre concursos públicos com três vagas para professores",
@@ -1966,6 +1942,18 @@
     "inscricoes_ate": "2026-09-21",
     "status": "destaque",
     "url_edital": "https://www.pciconcursos.com.br/noticias/cisop-pr-abre-concurso-publico-com-salarios-de-ate-15471"
+  },
+  {
+    "titulo": "Transpetro publica retificações de processos seletivos para diversos cargos",
+    "orgao": "Transpetro - Petrobras Transporte S.A.",
+    "local": "Nacional",
+    "nivel": "Médio",
+    "vagas": 0,
+    "salario": 15034.81,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-09-21",
+    "status": "destaque",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/transpetro-publica-retificacoes-de-processos-seletivos-para-diversos-cargos"
   },
   {
     "titulo": "Prefeitura de Jaguaribe - CE abre concursos públicos com vagas imediatas e cadastro de reserva",

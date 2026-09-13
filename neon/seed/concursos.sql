@@ -1,7 +1,7 @@
 -- Gerado por scripts/scrape/concursos.py — NÃO editar à mão.
 -- Fonte: pciconcursos.com.br (robots.txt permite /concursos/)
--- Coletado em: 2026-09-12T19:30:23.205704Z
--- Linhas: 530
+-- Coletado em: 2026-09-13T01:39:10.592777Z
+-- Linhas: 529
 --
 -- Idempotente: o índice único parcial em url_edital sustenta o ON CONFLICT,
 -- então reaplicar atualiza a linha em vez de duplicar.
@@ -9,12 +9,6 @@
 CREATE UNIQUE INDEX IF NOT EXISTS idx_concursos_url_edital
   ON public.concursos (url_edital) WHERE url_edital IS NOT NULL;
 
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('UNESP abre concurso para professor substituto com doutorado em Assis - SP', 'UNESP - Universidade Estadual Paulista', 'SP', 'Superior', 1, 3511.9, true, '2026-09-12'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/unesp-abre-concurso-para-professor-substituto-com-doutorado-em-assis-sp')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
 INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Frei Rogério - SC divulga retificações de processo seletivo', 'Prefeitura de Frei Rogério', 'SC', 'Fundamental', 0, 36619.86, true, '2026-09-13'::date, 'destaque', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-frei-rogerio-sc-divulga-retificacoes-de-processo-seletivo')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
@@ -190,12 +184,6 @@ ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
 INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Piên - PR abre processo seletivo com salários de até R$ 17.253,23', 'Prefeitura de Piên', 'PR', 'Fundamental', 0, 17253.23, true, '2026-09-14'::date, 'destaque', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-pien-pr-abre-processo-seletivo-com-salarios-de-ate-17253')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Transpetro publica retificações de processos seletivos para diversos cargos', 'Transpetro - Petrobras Transporte S.A.', 'Nacional', 'Médio', 0, 15034.81, true, '2026-09-14'::date, 'destaque', 'https://www.pciconcursos.com.br/noticias/transpetro-publica-retificacoes-de-processos-seletivos-para-diversos-cargos')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
@@ -988,6 +976,12 @@ ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
 INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('CISOP - PR abre concurso público com salários de até R$ 15.471,12', 'CISOP - Consórcio Intermunicipal de Saúde do Oeste do Paraná', 'PR', 'Fundamental', 31, 15471.12, true, '2026-09-21'::date, 'destaque', 'https://www.pciconcursos.com.br/noticias/cisop-pr-abre-concurso-publico-com-salarios-de-ate-15471')
+ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
+  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
+  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
+  salario_ate = EXCLUDED.salario_ate,
+  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Transpetro publica retificações de processos seletivos para diversos cargos', 'Transpetro - Petrobras Transporte S.A.', 'Nacional', 'Médio', 0, 15034.81, true, '2026-09-21'::date, 'destaque', 'https://www.pciconcursos.com.br/noticias/transpetro-publica-retificacoes-de-processos-seletivos-para-diversos-cargos')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
