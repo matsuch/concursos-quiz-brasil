@@ -581,9 +581,9 @@ CREATE POLICY "Usuário apaga as próprias questões"
   ON public.questions FOR DELETE USING (auth.user_id()::text = created_by);
 
 -- A policy acima libera as linhas, mas RLS só filtra o que o GRANT já deixou
--- passar. Sem este GRANT o visitante deslogado — que chega na Data API como
--- `anonymous`, o db_anon_role do projeto — leva "permission denied" na página
--- /quiz, ainda que a policy diga "visíveis por todos".
+-- passar. Sem este GRANT o visitante deslogado — que chega na Data API com um
+-- JWT anônimo e portanto como o role `anonymous` — leva "permission denied" na
+-- página /quiz, ainda que a policy diga "visíveis por todos".
 --
 -- O GRANT é por coluna: `ai_explanation` fica de fora porque a explicação da
 -- IA é recurso de quem tem conta, e `created_by` porque identifica o autor.

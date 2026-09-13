@@ -8,13 +8,14 @@
 -- Contexto: a página /quiz é pública, mas quebrava para o visitante deslogado.
 -- Faltavam as duas pontas:
 --
---   1. O cliente do Neon exigia token antes de sair a requisição
---      (AuthRequiredError) — resolvido no app, em src/integrations/neon/client.ts.
---   2. O role `anonymous` (o `db_anon_role` da Data API, usado quando a
---      requisição chega sem Authorization) não tinha GRANT nenhum em
---      public.questions. Só `authenticated` tinha. A policy de RLS
---      "Questões são visíveis por todos" (USING true) não basta: RLS filtra
---      linhas, o GRANT é que abre a tabela para o role.
+--   1. O cliente do Neon não pedia token anônimo e lançava AuthRequiredError
+--      antes de a requisição sair — resolvido no app com `allowAnonymous` em
+--      src/integrations/neon/client.ts. (A Data API sempre exige JWT: acesso
+--      anônimo é um token anônimo, não uma requisição sem token.)
+--   2. O role `anonymous`, para o qual a Data API troca ao receber esse token,
+--      não tinha GRANT nenhum em public.questions. Só `authenticated` tinha.
+--      A policy de RLS "Questões são visíveis por todos" (USING true) não
+--      basta: RLS filtra linhas, o GRANT é que abre a tabela para o role.
 --
 -- O GRANT é por coluna, e não na tabela inteira, de propósito: `ai_explanation`
 -- fica de fora porque a explicação da IA é recurso de usuário logado, e
