@@ -82,6 +82,44 @@ Para religar: `true` na chave, e cadastrar `DATABASE_URL` e `OPENAI_API_KEY`
 nas variáveis de ambiente da Vercel. A aba "Propostas" do planner volta junto,
 já que ela só existe para revisar o que a IA gerou.
 
+## Dados reais (scraping)
+
+`concursos` é populada por coleta automática, não à mão:
+
+| Peça | O que faz |
+|---|---|
+| `.github/workflows/scrape.yml` | Roda a coleta no runner do GitHub (a sessão do Claude Code não alcança a web aberta) |
+| `scripts/scrape/job.json` | Parâmetros da execução; editar e dar push é o gatilho |
+| `scripts/scrape/recon.py` | Baixa o HTML cru das fontes, para o parser ser escrito contra a página real |
+| `scripts/scrape/concursos.py` | Extrai e gera `neon/seed/concursos.sql` |
+
+Fonte: **pciconcursos.com.br**, cujo `robots.txt` libera `/concursos/`. Extrai-se
+só dado factual — órgão, vagas, salário, nível, prazo — e cada linha guarda o
+link de volta para a origem. Nada de texto de notícia: fato não tem direito
+autoral, redação tem. A FCC ficou de fora: o `robots.txt` dela tem
+`Disallow: /concursos/`.
+
+O seed é idempotente (`ON CONFLICT` no índice único de `url_edital`), então
+recoletar atualiza prazo, vagas e status em vez de duplicar.
+
+### O site lê o instantâneo, não a tabela
+
+A partir de `src/dados/concursos.ts`, a aplicação lê `public/dados/concursos.json`
+— gerado pela coleta e versionado — em vez de consultar `public.concursos`. O
+motivo está no cabeçalho daquele arquivo: sitemap e pré-renderização precisam
+saber quais URLs existem em tempo de build, sem credencial; banco e seed podiam
+divergir; e o compute do Neon suspende após 5 min ocioso, fazendo o primeiro
+visitante pagar o tempo de religar na página de entrada.
+
+A tabela continua existindo e sendo preenchida pelo workflow. Se não houver uso
+futuro para ela, o passo "Aplicar no Neon" e a própria tabela podem sair — aí
+nada na listagem de concursos depende de credencial.
+
+**Para a coleta semanal aplicar sozinha**, cadastre o secret
+`NEON_DATABASE_URL` em *Settings → Secrets and variables → Actions*. Sem ele a
+coleta roda igual e gera o seed, só não grava no banco. Nenhuma outra parte do
+workflow usa credencial.
+
 ## Validação
 
 Aplicado num Postgres 16 limpo com stub fiel ao projeto real (`neon_auth.user`

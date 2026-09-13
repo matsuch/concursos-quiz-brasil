@@ -1,0 +1,137 @@
+name: Scraping de dados reais
+
+# Existe porque a sessão do Claude Code não alcança a web aberta: a política de
+# egress do ambiente nega tudo fora de uma allowlist (GitHub, npm, PyPI). O
+# runner do GitHub tem rede aberta, então é daqui que o scraping parte.
+#
+# Dois modos:
+#   recon      — baixa o HTML cru das fontes para scratch/recon/ e commita, para
+#                que o parser seja escrito contra a página real, e não às cegas.
+#   concursos  — roda o parser e gera neon/seed/concursos.sql, também commitado.
+#
+# Em ambos os modos o robots.txt de cada host é consultado ANTES da primeira
+# requisição, e a URL é pulada se o robots não permitir.
+#
+# Como disparar: editar scripts/scrape/job.json e dar push. O gatilho é o push
+# nesse arquivo, e não workflow_dispatch, porque dispatch só funciona depois que
+# o workflow chega ao branch padrão — e aqui a coleta precisa rodar antes disso.
+# O commit de resposta do job usa o GITHUB_TOKEN, que por regra do GitHub não
+# dispara novos workflows; o filtro de paths garante o mesmo por outra via.
+#
+# Nenhuma credencial é usada aqui: o resultado volta como arquivo no repositório
+# e a aplicação no banco acontece depois, à parte.
+
+on:
+  # Semanal: concurso expira rápido, e uma listagem parada é pior que vazia.
+  # Só dispara a partir do branch padrão — regra do GitHub para schedule.
+  schedule:
+    - cron: '0 9 * * 1'   # segunda, 06:00 em Brasília
+  push:
+    paths:
+      - 'scripts/scrape/**'
+      - '.github/workflows/scrape.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Ler o job
+        id: job
+        run: |
+          python - <<'PY' >> "$GITHUB_ENV"
+          import json
+          j = json.load(open('scripts/scrape/job.json'))
+          print('MODO=' + j.get('modo', 'nenhum'))
+          urls = j.get('urls', [])
+          print('URLS<<FIM_URLS')
+          for u in urls:
+              print(u)
+          print('FIM_URLS')
+          PY
+          echo "job.json lido; modo em MODO, urls em URLS."
+
+      - name: Instalar dependências de parsing
+        if: ${{ env.MODO != 'recon' && env.MODO != 'nenhum' }}
+        run: pip install --quiet beautifulsoup4 lxml
+
+      - name: Reconhecimento
+        if: ${{ env.MODO == 'recon' }}
+        run: python scripts/scrape/recon.py
+
+      - name: Extrair concursos
+        if: ${{ env.MODO == 'concursos' }}
+        run: python scripts/scrape/concursos.py
+
+      # A coleta roda sem credencial nenhuma. A aplicação precisa de uma, e é
+      # por isso que ela vive num passo separado, que simplesmente não faz nada
+      # se o secret não existir: o seed fica gerado no repositório de qualquer
+      # forma, e a coleta nunca falha por falta de credencial.
+      - name: Aplicar no Neon
+        if: ${{ env.MODO == 'concursos' }}
+        env:
+          PGURL: ${{ secrets.NEON_DATABASE_URL }}
+        run: |
+          if [ -z "$PGURL" ]; then
+            echo "::warning::Secret NEON_DATABASE_URL ausente — seed gerado, mas não aplicado."
+            echo "Cadastre em Settings -> Secrets and variables -> Actions." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          if ! command -v psql >/dev/null; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
+          fi
+
+          ANTES=$(psql "$PGURL" -tAc "select count(*) from public.concursos;")
+
+          # Inscrição encerrada só atrapalha quem está procurando concurso.
+          psql "$PGURL" -v ON_ERROR_STOP=1 \
+            -c "DELETE FROM public.concursos WHERE inscricoes_ate < current_date;"
+
+          # O seed é idempotente (ON CONFLICT em url_edital), então reaplicar
+          # atualiza prazo, vagas e status em vez de duplicar.
+          psql "$PGURL" -v ON_ERROR_STOP=1 -f neon/seed/concursos.sql
+
+          DEPOIS=$(psql "$PGURL" -tAc "select count(*) from public.concursos;")
+          echo "### Aplicado no Neon" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Antes: **$ANTES** | Depois: **$DEPOIS**" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commitar resultado
+        if: ${{ env.MODO != 'nenhum' }}
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          # Um pathspec inexistente faz o git add inteiro falhar e nao preparar
+          # nada -- foi o que engoliu o resultado da primeira execucao. Cada
+          # caminho entra separado, e so se existir.
+          # public/dados e o que a aplicacao le em producao: fora daqui, a coleta
+          # semanal regeneraria o instantaneo e nunca o publicaria, deixando o
+          # site congelado nos dados da ultima vez -- em silencio.
+          for caminho in scratch neon/seed public/dados; do
+            [ -e "$caminho" ] && git add -A "$caminho"
+          done
+          if git diff --cached --quiet; then
+            echo "Nada novo para commitar."
+            exit 0
+          fi
+          if git diff --cached --name-only | grep -q '^public/dados/'; then
+            echo "Instantâneo da aplicação atualizado — o deploy vai publicar os dados novos." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          git commit -m "Resultado do scraping (modo: ${MODO})"
+          for tentativa in 1 2 3; do
+            git pull --rebase origin "${GITHUB_REF_NAME}" && \
+              git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            echo "Push falhou (tentativa $tentativa), repetindo..."
+            sleep $((tentativa * 4))
+          done
+          echo "::error::Não foi possível empurrar o resultado."
+          exit 1

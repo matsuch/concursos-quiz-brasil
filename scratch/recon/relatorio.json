@@ -1,0 +1,104 @@
+[
+  {
+    "url": "https://www.pciconcursos.com.br/concursos/",
+    "buscado_em": "2026-09-12T15:40:09.006134+00:00",
+    "robots_permite": true,
+    "status": 200,
+    "content_type": "text/html; charset=UTF-8",
+    "bytes": 552965,
+    "arquivo": "scratch/recon/www.pciconcursos.com.br_concursos.html",
+    "resultado": "ok"
+  },
+  {
+    "url": "https://www.pciconcursos.com.br/concursos/nacional/",
+    "buscado_em": "2026-09-12T15:40:11.588778+00:00",
+    "robots_permite": true,
+    "status": 200,
+    "content_type": "text/html; charset=UTF-8",
+    "bytes": 38230,
+    "arquivo": "scratch/recon/www.pciconcursos.com.br_concursos_nacional.html",
+    "resultado": "ok"
+  },
+  {
+    "url": "https://concursosnobrasil.com.br/concursos/",
+    "buscado_em": "2026-09-12T15:40:13.702718+00:00",
+    "robots_permite": true,
+    "status": 200,
+    "content_type": "text/html; charset=UTF-8",
+    "bytes": 87363,
+    "arquivo": "scratch/recon/concursosnobrasil.com.br_concursos.html",
+    "resultado": "ok"
+  },
+  {
+    "url": "https://www.jcconcursos.com.br/concursos/",
+    "buscado_em": "2026-09-12T15:40:16.082351+00:00",
+    "robots_permite": true,
+    "status": 200,
+    "content_type": "text/html; charset=utf-8",
+    "bytes": 118460,
+    "arquivo": "scratch/recon/www.jcconcursos.com.br_concursos.html",
+    "resultado": "ok"
+  },
+  {
+    "url": "https://www.folhadirigida.com.br/concursos",
+    "buscado_em": "2026-09-12T15:40:19.905821+00:00",
+    "robots_permite": true,
+    "status": 200,
+    "content_type": "text/html; charset=utf-8",
+    "bytes": 609862,
+    "arquivo": "scratch/recon/www.folhadirigida.com.br_concursos.html",
+    "resultado": "ok"
+  },
+  {
+    "url": "https://conhecimento.fgv.br/concursos",
+    "buscado_em": "2026-09-12T15:40:22.469240+00:00",
+    "robots_permite": true,
+    "status": 200,
+    "content_type": "text/html; charset=UTF-8",
+    "bytes": 51671,
+    "arquivo": "scratch/recon/conhecimento.fgv.br_concursos.html",
+    "resultado": "ok"
+  },
+  {
+    "url": "https://conhecimento.fgv.br/concursos/encerrados",
+    "buscado_em": "2026-09-12T15:40:25.181454+00:00",
+    "robots_permite": true,
+    "resultado": "HTTPError 404"
+  },
+  {
+    "url": "https://www.cebraspe.org.br/concursos/",
+    "buscado_em": "2026-09-12T15:40:35.557086+00:00",
+    "robots_permite": true,
+    "status": 200,
+    "content_type": "text/html",
+    "bytes": 16788,
+    "arquivo": "scratch/recon/www.cebraspe.org.br_concursos.html",
+    "resultado": "ok"
+  },
+  {
+    "url": "https://www.cebraspe.org.br/concursos/encerrados",
+    "buscado_em": "2026-09-12T15:40:38.943500+00:00",
+    "robots_permite": true,
+    "status": 200,
+    "content_type": "text/html",
+    "bytes": 16788,
+    "arquivo": "scratch/recon/www.cebraspe.org.br_concursos_encerrados.html",
+    "resultado": "ok"
+  },
+  {
+    "url": "https://www.concursosfcc.com.br/",
+    "buscado_em": "2026-09-12T15:40:41.551950+00:00",
+    "robots_permite": true,
+    "status": 200,
+    "content_type": "text/html; charset=ISO-8859-1",
+    "bytes": 8847,
+    "arquivo": "scratch/recon/www.concursosfcc.com.br.html",
+    "resultado": "ok"
+  },
+  {
+    "url": "https://www.concursosfcc.com.br/concursos/encerrados",
+    "buscado_em": "2026-09-12T15:40:44.517824+00:00",
+    "robots_permite": false,
+    "resultado": "pulado: robots.txt não permite"
+  }
+]

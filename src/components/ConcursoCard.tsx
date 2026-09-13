@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Banknote, Users, ExternalLink, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface ConcursoCardProps {
   titulo: string;
@@ -10,9 +11,11 @@ interface ConcursoCardProps {
   inscricoesAte: string;
   nivel: string;
   salario: number | null;
+  salarioAte?: boolean;
   status: "destaque" | "breve" | "aberto";
   urlEdital?: string | null;
   id?: string; // Adicionado para schema markup
+  slug?: string | null;
 }
 
 const ConcursoCard = ({
@@ -23,9 +26,11 @@ const ConcursoCard = ({
   inscricoesAte,
   nivel,
   salario,
+  salarioAte = false,
   status,
   urlEdital,
   id,
+  slug,
 }: ConcursoCardProps) => {
   const statusConfig = {
     destaque: {
@@ -173,7 +178,15 @@ const ConcursoCard = ({
               className="text-lg font-semibold leading-tight mb-2"
               itemProp="title"
             >
-              {titulo}
+              {/* Link interno para a pagina do concurso: e o caminho que o
+                  rastreador segue ate ela, e o que evita pagina orfa. */}
+              {slug ? (
+                <Link to={`/concursos/${slug}`} className="hover:text-primary transition-colors">
+                  {titulo}
+                </Link>
+              ) : (
+                titulo
+              )}
             </h3>
             
             <div 
@@ -212,8 +225,11 @@ const ConcursoCard = ({
               {salario ? (
                 <>
                   <meta itemProp="currency" content="BRL" />
+                  {/* A fonte quase sempre publica o teto da faixa do concurso,
+                      e não o salário de um cargo. Exibir sem o "até" afirmaria
+                      um número que ninguém vai receber. */}
                   <span itemProp="value">
-                    R$ {salario.toLocaleString('pt-BR')}
+                    {salarioAte ? 'até ' : ''}R$ {salario.toLocaleString('pt-BR')}
                   </span>
                   <meta itemProp="unitText" content="MONTH" />
                 </>
@@ -225,9 +241,16 @@ const ConcursoCard = ({
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Users className="w-4 h-4 flex-shrink-0" />
-            <span itemProp="totalJobOpenings">
-              {vagas} vaga{vagas !== 1 ? "s" : ""}
-            </span>
+            {/* Boa parte dos concursos reais é cadastro de reserva, ou não
+                publica o número no edital. Nesses casos a fonte não informa e
+                vagas chega 0 — "0 vagas" seria afirmar algo falso. */}
+            {vagas > 0 ? (
+              <span itemProp="totalJobOpenings">
+                {vagas} vaga{vagas !== 1 ? "s" : ""}
+              </span>
+            ) : (
+              <span>Vagas a definir</span>
+            )}
             <span 
               className="text-xs px-2 py-0.5 rounded-full bg-muted ml-auto"
               itemProp="qualifications"

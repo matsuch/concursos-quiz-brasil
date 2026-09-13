@@ -1,0 +1,52 @@
+# Passar Concursos
+
+> Plataforma gratuita de preparação para concursos públicos no Brasil:
+> listagem de concursos com inscrições abertas, banco de questões, flashcards,
+> simulados e planner de estudos. Sem cadastro pago e sem anúncio.
+
+As páginas de concurso e a listagem são pré-renderizadas: o HTML servido já traz
+o conteúdo, sem depender de JavaScript. As demais rotas são renderizadas no
+cliente e chegam vazias para quem não executa JS.
+
+## Conteúdo público
+
+- [Início](https://passar-concursos.vercel.app/): visão geral, concursos em
+  destaque e acesso às demais áreas.
+- [Concursos abertos](https://passar-concursos.vercel.app/concursos): índice de
+  todos os concursos públicos com inscrição aberta no Brasil. Atualizado
+  semanalmente por coleta automática.
+- Uma página por concurso, em `/concursos/{slug}`, com órgão, unidade da
+  federação, número de vagas, remuneração, escolaridade exigida, prazo final de
+  inscrição e link para o edital de origem. Os endereços estão todos no
+  [sitemap](https://passar-concursos.vercel.app/sitemap.xml).
+- [Dados em JSON](https://passar-concursos.vercel.app/dados/concursos.json): a
+  mesma listagem em formato legível por máquina, que é a fonte das páginas.
+- [Questões](https://passar-concursos.vercel.app/quiz): questões de concurso por
+  matéria. A resolução exige conta; o enunciado é visível sem login.
+
+## Sobre os dados de concursos
+
+Origem: listagem pública do PCI Concursos, cujo robots.txt permite o rastreio da
+seção. Só se extrai dado factual — órgão, vagas, salário, nível, prazo — e cada
+registro guarda o link para a página de origem, onde está o edital.
+
+Ressalvas que importam para quem for citar:
+
+- O salário exibido costuma ser o TETO da faixa do concurso, não o salário de um
+  cargo específico. Quando é teto, aparece como "até R$ x".
+- "Vagas a definir" significa cadastro de reserva ou edital que não publica o
+  número — não significa zero vaga.
+- A escolaridade indicada é a MENOR exigida pelo concurso, quando o edital
+  abrange mais de um nível.
+- Concurso com inscrição encerrada é removido a cada coleta.
+
+Para conferência, o edital original prevalece sempre sobre o que está aqui.
+
+## Áreas que exigem login
+
+Planner de estudos, ciclos, revisões, anotações, simulados e conta do usuário.
+Não há conteúdo indexável nesses endereços.
+
+## Contato
+
+Repositório: https://github.com/matsuch/concursos-quiz-brasil

@@ -2,13 +2,18 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { HashRouter, Routes, Route } from "react-router-dom";
+// BrowserRouter, e nao rota por hash: com "#", tudo depois dele nunca chega
+// ao servidor, e o site inteiro vira uma URL so para buscadores -- as
+// canonicals e o sitemap apontavam para rotas que ninguem sabia servir.
+// O rewrite da Vercel ja manda qualquer caminho para o index.html.
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Navbar from "@/components/Navbar";
 import Home from "./pages/Home";
 import Quiz from "./pages/Quiz";
+import ConcursoDetalhe from "./pages/Concurso";
 import Estudo from "./pages/Estudo";
 import Auth from "./pages/Auth";
 import ConcursosPage from "@/pages/Concursos";
@@ -33,6 +38,9 @@ function AppRoutes() {
 
               {/* Rotas públicas */}
               <Route path="/concursos" element={<ConcursosPage />} />
+              {/* Uma URL por concurso: e o unico conteudo proprio e factual
+                  do site, e sem endereco proprio nao ha o que indexar nem citar. */}
+              <Route path="/concursos/:slug" element={<ConcursoDetalhe />} />
               <Route path="/quiz" element={<Quiz />} />
               <Route path="/anotacoes" element={<Anotacoes />} />
               <Route path="/auth" element={<Auth />} />
@@ -87,9 +95,9 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <HashRouter>
+          <BrowserRouter>
             <AppRoutes />
-          </HashRouter>
+          </BrowserRouter>
 
           <Analytics />
 

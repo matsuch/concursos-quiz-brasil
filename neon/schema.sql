@@ -199,17 +199,27 @@ CREATE TABLE public.concursos (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   titulo TEXT NOT NULL,
   orgao TEXT NOT NULL,
-  local TEXT NOT NULL,
-  nivel TEXT NOT NULL,
-  vagas INTEGER NOT NULL,
+  local TEXT NOT NULL,           -- UF ('SP') ou 'Nacional'; a UI faz split('/')[0]
+  nivel TEXT NOT NULL,           -- Fundamental | Médio | Superior | Não informado
+  vagas INTEGER NOT NULL,        -- 0 = fonte não informa (cadastro de reserva)
   salario NUMERIC,
+  -- A listagem de origem quase sempre publica um teto ("vagas até R$ X"), e não
+  -- o salário de um cargo. Sem esta marca o card exibiria o teto como se fosse
+  -- o salário — número errado, e é o mais visível da tela.
+  salario_ate BOOLEAN NOT NULL DEFAULT false,
   inscricoes_ate DATE NOT NULL,
-  status TEXT NOT NULL,
+  status TEXT NOT NULL,          -- aberto | destaque | breve
   url_edital TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
 CREATE INDEX idx_concursos_status ON public.concursos (status, created_at DESC);
+
+-- Identidade de um concurso importado: a URL da página de origem. Sustenta o
+-- ON CONFLICT do seed gerado por scripts/scrape/concursos.py, para que
+-- recoletar atualize a linha em vez de duplicar.
+CREATE UNIQUE INDEX idx_concursos_url_edital
+  ON public.concursos (url_edital) WHERE url_edital IS NOT NULL;
 
 
 -- =============================================================================

@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookOpen, Notebook, Loader2, ChevronLeft, ChevronRight, Crown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { db } from "@/integrations/neon/client";
 import { useAuth } from "@/hooks/useAuth";
+import { carregarConcursos } from "@/dados/concursos";
 import { Helmet } from 'react-helmet-async';
 
 interface Concurso {
@@ -19,6 +19,8 @@ interface Concurso {
   status: "destaque" | "breve" | "aberto";
   urlEdital?: string | null;
   salario?: number | null;
+  salarioAte?: boolean;
+  slug: string;
 }
 
 const Home = () => {
@@ -41,18 +43,18 @@ const Home = () => {
     try {
       setLoading(true);
 
-      const { data: concursosData, error: concursosError } = await db
-        .from("concursos")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .order("salario", { ascending: false, nullsFirst: false })
-        .limit(12);
-
-      if (concursosError) {
-        console.error("Erro ao buscar concursos:", concursosError);
-      } else if (concursosData) {
-        const concursosFormatados = concursosData.map((c) => ({
-          id: c.id,
+      // Instantâneo gerado no build (ver src/dados/concursos.ts): sem ida ao
+      // banco, sem cold start do Neon na página de entrada.
+      const { concursos: dados } = await carregarConcursos();
+      const concursosFormatados = dados
+        .slice()
+        .sort((a, b) =>
+          a.inscricoes_ate.localeCompare(b.inscricoes_ate) || (b.salario ?? 0) - (a.salario ?? 0),
+        )
+        .slice(0, 12)
+        .map((c) => ({
+          id: c.slug,
+          slug: c.slug,
           titulo: c.titulo,
           orgao: c.orgao,
           vagas: c.vagas,
@@ -61,11 +63,11 @@ const Home = () => {
           nivel: c.nivel,
           status: c.status as "destaque" | "breve" | "aberto",
           urlEdital: c.url_edital,
-          salario: c.salario
+          salario: c.salario,
+          salarioAte: c.salario_ate,
         }));
 
-        setConcursos(concursosFormatados);
-      }
+      setConcursos(concursosFormatados);
     } catch (error) {
       console.error("Erro ao buscar dados:", error);
     } finally {

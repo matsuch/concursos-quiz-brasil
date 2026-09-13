@@ -25,3 +25,7 @@ dist-ssr
 
 # variaveis locais (o .env.example documenta o formato)
 .env
+
+# cache do Python dos scripts de coleta
+__pycache__/
+*.pyc

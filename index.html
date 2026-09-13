@@ -10,12 +10,14 @@
     <!-- Título e Descrição -->
     <title>Passar Concursos - Questões Oficiais, Flashcards e Plano de Estudos para Concursos Públicos</title>
     <meta name="description" content="Conquiste sua aprovação com questões oficiais, flashcards personalizados e plano de estudos. Editais recentes, simulados e ranking nacional. A melhor plataforma de preparação para concursos públicos." />
-    <meta name="keywords" content="concursos públicos, questões de concurso, flashcards, simulados, editais, plano de estudos, preparação concursos, questões oficiais, concursos abertos, concursos 2024, estudar para concurso" />
     <meta name="author" content="Passar Concursos" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     
-    <!-- Canonical -->
-    <link rel="canonical" href="https://passar-concursos.vercel.app/" />
+    <!-- Sem canonical fixa aqui: este HTML e servido para TODA rota, entao
+         declarar "/" faria /concursos e /quiz se anunciarem como copia da
+         home para quem nao executa JavaScript. Cada pagina poe a sua pelo
+         Helmet. As og:* abaixo ficam como padrao da home; corrigi-las por
+         rota depende de pre-renderizacao. -->
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -51,24 +53,30 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     
     <!-- Schema.org JSON-LD -->
+    <!--
+      Só afirmação verificável aqui. Saíram:
+        sameAs  — apontava para perfis em Facebook, Instagram e Twitter que não
+                  existem. Dado estruturado falso é dos poucos sinais que dá
+                  para errar para pior: o buscador checa e passa a desconfiar
+                  do resto.
+        offers  — "availability: InStock" não quer dizer nada para um serviço,
+                  e hoje a plataforma é gratuita.
+      Para voltar com sameAs, use só perfis que existam de verdade.
+    -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "EducationalOrganization",
       "name": "Passar Concursos",
-      "description": "Plataforma de preparação para concursos públicos com questões oficiais, flashcards e plano de estudos",
+      "description": "Plataforma gratuita de preparação para concursos públicos: questões, flashcards, simulados, planner de estudos e listagem de concursos abertos no Brasil.",
       "url": "https://passar-concursos.vercel.app",
       "logo": "https://passar-concursos.vercel.app/logo.png",
-      "sameAs": [
-        "https://www.facebook.com/PassarConcursos",
-        "https://www.instagram.com/PassarConcursos",
-        "https://twitter.com/PassarConcursos"
-      ],
-      "offers": {
-        "@type": "Offer",
-        "category": "Educação",
-        "availability": "https://schema.org/InStock"
-      }
+      "inLanguage": "pt-BR",
+      "areaServed": {
+        "@type": "Country",
+        "name": "Brasil"
+      },
+      "isAccessibleForFree": true
     }
     </script>
   </head>

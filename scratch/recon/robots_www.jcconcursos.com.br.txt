@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Sitemap: https://jcconcursos.uol.com.br/sitemap.xml
+Sitemap: https://jcconcursos.uol.com.br/sitemapgooglenews.xml
+Sitemap: https://stories.jcconcursos.com.br/sitemap.xml

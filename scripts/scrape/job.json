@@ -1,0 +1,5 @@
+{
+  "modo": "concursos",
+  "comentario": "Extrai os concursos abertos das 6 paginas regionais do PCI e gera neon/seed/concursos.sql. Parser validado localmente contra o HTML de scratch/recon/.",
+  "urls": []
+}
