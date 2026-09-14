@@ -1,7 +1,7 @@
 -- Gerado por scripts/scrape/concursos.py — NÃO editar à mão.
 -- Fonte: pciconcursos.com.br (robots.txt permite /concursos/)
--- Coletado em: 2026-09-13T01:39:10.592777Z
--- Linhas: 529
+-- Coletado em: 2026-09-14T15:24:40.987825Z
+-- Linhas: 512
 --
 -- Idempotente: o índice único parcial em url_edital sustenta o ON CONFLICT,
 -- então reaplicar atualiza a linha em vez de duplicar.
@@ -9,150 +9,6 @@
 CREATE UNIQUE INDEX IF NOT EXISTS idx_concursos_url_edital
   ON public.concursos (url_edital) WHERE url_edital IS NOT NULL;
 
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Frei Rogério - SC divulga retificações de processo seletivo', 'Prefeitura de Frei Rogério', 'SC', 'Fundamental', 0, 36619.86, true, '2026-09-13'::date, 'destaque', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-frei-rogerio-sc-divulga-retificacoes-de-processo-seletivo')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('RioSaúde - RJ abre processo seletivo para a contratação de médicos', 'RioSaúde - Empresa Pública de Saúde do Rio de Janeiro S/A', 'RJ', 'Superior', 23, 17151.28, true, '2026-09-13'::date, 'destaque', 'https://www.pciconcursos.com.br/noticias/riosaude-rj-abre-processo-seletivo-para-a-contratacao-de-medicos')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Polícia Civil - BA prorroga inscrições do concurso público para Delegado, Investigador e Escrivão', 'PCBA - Polícia Civil da Bahia', 'BA', 'Superior', 750, 16495.67, true, '2026-09-13'::date, 'destaque', 'https://www.pciconcursos.com.br/noticias/policia-civil-ba-prorroga-inscricoes-do-concurso-publico-para-delegado-investigador-e-escrivao')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Santana de Parnaíba - SP abre concursos para médicos e agentes de trânsito', 'Prefeitura de Santana de Parnaíba', 'SP', 'Médio', 21, 14975.66, true, '2026-09-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-santana-de-parnaiba-sp-abre-concursos-para-medicos-e-agentes-de-transito')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Altaneira - CE publica edital de seleção pública com vagas imediatas e cadastro de reserva', 'Prefeitura de Altaneira', 'CE', 'Médio', 65, 13800.0, true, '2026-09-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-altaneira-ce-publica-edital-de-selecao-publica-com-vagas-imediatas-e-cadastro-de-reserva')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('UNILA - PR abre concurso público para o cargo de Professor do Magistério Superior', 'UNILA - Universidade Federal da Integração Latino-Americana', 'PR', 'Superior', 6, 13288.85, true, '2026-09-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/unila-pr-abre-concurso-publico-para-o-cargo-de-professor-do-magisterio-superior')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Cuité de Mamanguape - PB retifica concurso público com salários de até R$ 11.975,00', 'Prefeitura de Cuité de Mamanguape', 'PB', 'Fundamental', 117, 11975.0, true, '2026-09-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-cuite-de-mamanguape-pb-retifica-concurso-publico-com-salarios-de-ate-11975')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Relvado - RS abre concurso para diversos cargos com salários de até R$ 8.297,67', 'Prefeitura de Relvado', 'RS', 'Médio', 1, 8297.67, true, '2026-09-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-relvado-rs-abre-concurso-para-diversos-cargos-com-salarios-de-ate-8297')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de São Pedro de Alcântara - SC abre concurso com salários de até R$ 6.460,50', 'Prefeitura de São Pedro de Alcântara', 'SC', 'Fundamental', 2, 6460.5, true, '2026-09-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-sao-pedro-de-alcantara-sc-abre-concurso-com-salarios-de-ate-6460')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('IFPI abre concurso público para cargos técnico-administrativos em educação', 'IFPI - Instituto Federal de Educação, Ciência e Tecnologia do Piauí', 'PI', 'Médio', 52, 6407.39, true, '2026-09-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/ifpi-abre-concurso-publico-para-cargos-tecnico-administrativos-em-educacao')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Conquista D''Oeste - MT abre processo seletivo com salários de até R$ 5.915,21', 'Prefeitura de Conquista D''Oeste', 'MT', 'Fundamental', 2, 5915.21, true, '2026-09-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-conquista-doeste-mt-abre-processo-seletivo-com-salarios-de-ate-5915')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('EMDAEP de Dracena - SP abre concurso com vagas imediatas e cadastro de reserva', 'EMDAEP - Empresa de Desenvolvimento, Água, Esgoto e Pavimentação de Dracena', 'SP', 'Fundamental', 9, 5604.96, true, '2026-09-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/emdaep-de-dracena-sp-abre-concurso-com-vagas-imediatas-e-cadastro-de-reserva')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Barretos - SP abre processo seletivo para a Secretaria de Saúde', 'Prefeitura do Município da Estância Turística de Barretos', 'SP', 'Superior', 0, 5595.22, true, '2026-09-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-barretos-sp-abre-processo-seletivo-para-a-secretaria-de-saude')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Pontalinda - SP reabre inscrições do processo seletivo para professores', 'Prefeitura de Pontalinda', 'SP', 'Superior', 0, 4238.06, true, '2026-09-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-pontalinda-sp-reabre-inscricoes-do-processo-seletivo-para-professores')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('FAHECE - SC anuncia processo seletivo para Técnico de Enfermagem no CEPON de Florianópolis', 'FAHECE - Fundação de Apoio ao Hemosc e Cepon', 'SC', 'Médio', 1, 3373.61, true, '2026-09-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/fahece-sc-anuncia-processo-seletivo-para-tecnico-de-enfermagem-no-cepon-de-florianopolis')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Abaetetuba - PA divulga nova retificação de concurso público', 'Prefeitura de Abaetetuba', 'PA', 'Fundamental', 342, 3242.0, true, '2026-09-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-abaetetuba-pa-divulga-nova-retificacao-de-concurso-publico')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Fortaleza - CE e IMPARH abrem seleções com vagas imediatas e para cadastro de reserva', 'SDHDS - Secretaria Municipal dos Direitos Humanos e Desenvolvimento Social de Fortaleza', 'CE', 'Médio', 14, 3090.18, true, '2026-09-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-fortaleza-ce-e-imparh-abrem-selecoes-com-vagas-imediatas-e-para-cadastro-de-reserva')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('SAMU 192 - ES publica edital de processo seletivo para Condutor Socorrista', 'SAMU 192/ES - Irmandade da Santa Casa de Misericórdia de Vitória', 'ES', 'Médio', 0, 2655.67, true, '2026-09-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/samu-192-es-publica-edital-de-processo-seletivo-para-condutor-socorrista')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('FAHECE - SC abre processos seletivos para assistentes administrativos no CEPON de Florianópolis', 'FAHECE - Fundação de Apoio ao HEMOSC e CEPON', 'SC', 'Médio', 2, 2519.21, true, '2026-09-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/fahece-sc-abre-processos-seletivos-para-assistentes-administrativos-no-cepon-de-florianopolis')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Leopoldina - MG abre seleção para Cuidador e Auxiliar de Enfermagem', 'Prefeitura de Leopoldina', 'MG', 'Médio', 2, 2060.32, true, '2026-09-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-leopoldina-mg-abre-selecao-para-cuidador-e-auxiliar-de-enfermagem')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Hospital Metropolitano Odilon Behrens - MG abre seleção para Técnico em Radiologia', 'HOB - Hospital Metropolitano Odilon Behrens', 'MG', 'Médio', 0, 1956.26, true, '2026-09-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/hospital-metropolitano-odilon-behrens-mg-abre-selecao-para-tecnico-em-radiologia')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('UEMS abre processo seletivo para professores formadores na modalidade EAD', 'UEMS - Universidade Estadual de Mato Grosso do Sul', 'MS', 'Superior', 30, 1850.0, true, '2026-09-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/uems-abre-processo-seletivo-para-professores-formadores-na-modalidade-ead')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Colina - SP abre concursos para assistente educacional e auxiliar operacional de serviços gerais', 'Prefeitura de Colina', 'SP', 'Fundamental', 2, 1721.29, true, '2026-09-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-colina-sp-abre-concursos-para-assistente-educacional-e-auxiliar-operacional-de-servicos-gerais')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('FAHECE - SC anuncia processo seletivo para o cargo de Médico Regulador das Urgências', 'FAHECE - Fundação de Apoio ao HEMOSC e CEPON', 'SC', 'Superior', 1, 138.9, true, '2026-09-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/fahece-sc-anuncia-processo-seletivo-para-o-cargo-de-medico-regulador-das-urgencias')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
 INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Tribunal de Justiça do Paraná abre concurso para o cargo de Contador', 'TJPR - Tribunal de Justiça do Paraná', 'PR', 'Superior', 2, 23264.47, true, '2026-09-14'::date, 'destaque', 'https://www.pciconcursos.com.br/noticias/tribunal-de-justica-do-parana-abre-concurso-para-o-cargo-de-contador')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
@@ -1263,12 +1119,6 @@ ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Epagri - SC abre concurso público com salários iniciais de até R$ 16.990,33', 'EPAGRI - Empresa de Pesquisa Agropecuária e Extensão Rural de Santa Catarina', 'SC', 'Médio', 40, 16990.33, true, '2026-09-24'::date, 'destaque', 'https://www.pciconcursos.com.br/noticias/epagri-sc-abre-concurso-publico-com-salarios-iniciais-de-ate-16990')
-ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
-  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
-  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
-  salario_ate = EXCLUDED.salario_ate,
-  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
 INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('FUNDACI de Ilhabela - SP abre concurso público para cargos de nível superior', 'FUNDACI - Fundação Arte e Cultura de Ilhabela', 'SP', 'Superior', 2, 12814.86, true, '2026-09-24'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/fundaci-de-ilhabela-sp-abre-concurso-publico-para-cargos-de-nivel-superior')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
@@ -1563,6 +1413,18 @@ ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('UNILA - PR abre processo seletivo para professor visitante em engenharia de materiais', 'UNILA - Universidade Federal da Integração Latino-Americana', 'PR', 'Superior', 1, 13288.85, true, '2026-09-29'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/unila-pr-abre-processo-seletivo-para-professor-visitante-em-engenharia-de-materiais')
+ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
+  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
+  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
+  salario_ate = EXCLUDED.salario_ate,
+  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('UNILA - PR abre processo seletivo para professor visitante na área de Engenharia de Materiais', 'UNILA - Universidade Federal da Integração Latino-Americana', 'PR', 'Superior', 0, 13288.85, true, '2026-09-29'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/unila-pr-abre-processo-seletivo-para-professor-visitante-na-area-de-engenharia-de-materiais')
+ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
+  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
+  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
+  salario_ate = EXCLUDED.salario_ate,
+  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
 INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Oliveira Fortes - MG publica retificação de concurso público', 'Prefeitura de Oliveira Fortes', 'MG', 'Fundamental', 67, 10331.93, true, '2026-09-29'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-oliveira-fortes-mg-publica-retificacao-de-concurso-publico')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
@@ -1575,7 +1437,7 @@ ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Lontras - SC abre concurso com salários de até R$ 8.105,36', 'Prefeitura de Lontras', 'SC', 'Fundamental', 27, 8105.36, true, '2026-09-29'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-lontras-sc-abre-concurso-com-salarios-de-ate-8105')
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Lontras - SC divulga retificação de concurso público', 'Prefeitura de Lontras', 'SC', 'Fundamental', 27, 8105.36, true, '2026-09-29'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-lontras-sc-divulga-retificacao-de-concurso-publico')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
@@ -1755,6 +1617,12 @@ ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Indaial - SC publica edital retificado de processo seletivo', 'Prefeitura de Indaial', 'SC', 'Médio', 0, 5210.87, true, '2026-10-01'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-indaial-sc-publica-edital-retificado-de-processo-seletivo')
+ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
+  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
+  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
+  salario_ate = EXCLUDED.salario_ate,
+  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
 INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Urânia - SP abre concurso público para Coordenador e Orientador Social do CRAS', 'Prefeitura de Urânia', 'SP', 'Superior', 2, 3562.8, true, '2026-10-01'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-urania-sp-abre-concurso-publico-para-coordenador-e-orientador-social-do-cras')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
@@ -1816,6 +1684,12 @@ ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
 INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('UFSJ - MG abre concurso público com 12 vagas para professores do magistério superior', 'UFSJ - Universidade Federal de São João del-Rei', 'MG', 'Superior', 12, 13753.96, true, '2026-10-04'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/ufsj-mg-abre-concurso-publico-com-12-vagas-para-professores-do-magisterio-superior')
+ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
+  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
+  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
+  salario_ate = EXCLUDED.salario_ate,
+  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('UFPel - RS abre concurso público para o cargo de Professor do Magistério Superior', 'UFPel - Universidade Federal de Pelotas', 'RS', 'Superior', 32, 13753.96, true, '2026-10-04'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/ufpel-rs-abre-concurso-publico-para-o-cargo-de-professor-do-magisterio-superior')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
@@ -2229,7 +2103,13 @@ ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Massaranduba - SC abre concurso com salários de até R$ 24.722,94', 'Prefeitura de Massaranduba', 'SC', 'Fundamental', 47, 24722.94, true, '2026-10-09'::date, 'destaque', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-massaranduba-sc-abre-concurso-com-salarios-de-ate-24722')
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Massaranduba - SC retifica edital de concurso com salários de até R$ 24.722,94', 'Prefeitura de Massaranduba', 'SC', 'Fundamental', 47, 24722.94, true, '2026-10-09'::date, 'destaque', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-massaranduba-sc-retifica-edital-de-concurso-com-salarios-de-ate-24722')
+ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
+  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
+  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
+  salario_ate = EXCLUDED.salario_ate,
+  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('UNILA - PR abre processo seletivo para professores visitantes e estrangeiros em Engenharia Química', 'UNILA - Universidade Federal da Integração Latino-Americana', 'PR', 'Superior', 4, 13288.85, true, '2026-10-09'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/unila-pr-abre-processo-seletivo-para-professores-visitantes-e-estrangeiros-em-engenharia-quimica')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
@@ -2367,25 +2247,25 @@ ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Ivaiporã - PR abre concurso público com salários de até R$ 18.106,37', 'Prefeitura de Ivaiporã', 'PR', 'Fundamental', 15, 18106.37, true, '2026-10-13'::date, 'breve', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-ivaipora-pr-abre-concurso-publico-com-salarios-de-ate-18106')
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Ivaiporã - PR abre concurso público com salários de até R$ 18.106,37', 'Prefeitura de Ivaiporã', 'PR', 'Fundamental', 15, 18106.37, true, '2026-10-13'::date, 'destaque', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-ivaipora-pr-abre-concurso-publico-com-salarios-de-ate-18106')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('UNICAMP - SP abre concurso público para Professor Doutor na Faculdade de Engenharia Mecânica', 'UNICAMP - Universidade Estadual de Campinas', 'SP', 'Superior', 1, 16994.31, true, '2026-10-13'::date, 'breve', 'https://www.pciconcursos.com.br/noticias/unicamp-sp-abre-concurso-publico-para-professor-doutor-na-faculdade-de-engenharia-mecanica')
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('UNICAMP - SP abre concurso público para Professor Doutor na Faculdade de Engenharia Mecânica', 'UNICAMP - Universidade Estadual de Campinas', 'SP', 'Superior', 1, 16994.31, true, '2026-10-13'::date, 'destaque', 'https://www.pciconcursos.com.br/noticias/unicamp-sp-abre-concurso-publico-para-professor-doutor-na-faculdade-de-engenharia-mecanica')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('UNESP abre concurso para professor assistente de Medicina em Botucatu - SP', 'UNESP - Universidade Estadual Paulista "Júlio de Mesquita Filho"', 'SP', 'Superior', 1, 16994.01, true, '2026-10-13'::date, 'breve', 'https://www.pciconcursos.com.br/noticias/unesp-abre-concurso-para-professor-assistente-de-medicina-em-botucatu-sp')
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('UNESP abre concurso para professor assistente de Medicina em Botucatu - SP', 'UNESP - Universidade Estadual Paulista "Júlio de Mesquita Filho"', 'SP', 'Superior', 1, 16994.01, true, '2026-10-13'::date, 'destaque', 'https://www.pciconcursos.com.br/noticias/unesp-abre-concurso-para-professor-assistente-de-medicina-em-botucatu-sp')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('UNESP abre concurso público para professor assistente na área de engenharia de bioprocessos em Araraquara - SP', 'UNESP - Universidade Estadual Paulista "Júlio de Mesquita Filho"', 'SP', 'Superior', 1, 16994.01, true, '2026-10-13'::date, 'breve', 'https://www.pciconcursos.com.br/noticias/unesp-abre-concurso-publico-para-professor-assistente-na-area-de-engenharia-de-bioprocessos-em-araraquara-sp')
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('UNESP abre concurso público para professor assistente na área de engenharia de bioprocessos em Araraquara - SP', 'UNESP - Universidade Estadual Paulista "Júlio de Mesquita Filho"', 'SP', 'Superior', 1, 16994.01, true, '2026-10-13'::date, 'destaque', 'https://www.pciconcursos.com.br/noticias/unesp-abre-concurso-publico-para-professor-assistente-na-area-de-engenharia-de-bioprocessos-em-araraquara-sp')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
@@ -2403,7 +2283,7 @@ ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('UFRPE abre concurso com vagas para professores do magistério superior', 'UFRPE - Universidade Federal Rural de Pernambuco', 'PE', 'Superior', 14, 13288.85, true, '2026-10-13'::date, 'breve', 'https://www.pciconcursos.com.br/noticias/ufrpe-abre-concurso-com-vagas-para-professores-do-magisterio-superior')
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('UFRPE abre concurso com vagas para professores do magistério superior', 'UFRPE - Universidade Federal Rural de Pernambuco', 'PE', 'Superior', 14, 13288.85, true, '2026-10-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/ufrpe-abre-concurso-com-vagas-para-professores-do-magisterio-superior')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
@@ -2415,7 +2295,7 @@ ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Governo do Estado do Amapá - AP publica edital de concurso com salários de até R$ 11.116,42', 'SESA - Secretaria de Estado da Saúde do Amapá', 'AP', 'Médio', 4210, 11116.42, true, '2026-10-13'::date, 'breve', 'https://www.pciconcursos.com.br/noticias/governo-do-estado-do-amapa-ap-publica-edital-de-concurso-com-salarios-de-ate-11116')
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Governo do Estado do Amapá - AP publica edital de concurso com salários de até R$ 11.116,42', 'SESA - Secretaria de Estado da Saúde do Amapá', 'AP', 'Médio', 4210, 11116.42, true, '2026-10-13'::date, 'destaque', 'https://www.pciconcursos.com.br/noticias/governo-do-estado-do-amapa-ap-publica-edital-de-concurso-com-salarios-de-ate-11116')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
@@ -2433,7 +2313,13 @@ ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Câmara de Rio Piracicaba - MG abre concurso público com salários de até R$ 4.000,00', 'Câmara de Rio Piracicaba', 'MG', 'Fundamental', 5, 4000.0, true, '2026-10-13'::date, 'breve', 'https://www.pciconcursos.com.br/noticias/camara-de-rio-piracicaba-mg-abre-concurso-publico-com-salarios-de-ate-4000')
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Câmara de Rio Piracicaba - MG publica edital retificado de concurso público', 'Câmara de Rio Piracicaba', 'MG', 'Fundamental', 5, 4000.0, true, '2026-10-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/camara-de-rio-piracicaba-mg-publica-edital-retificado-de-concurso-publico')
+ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
+  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
+  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
+  salario_ate = EXCLUDED.salario_ate,
+  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Bela Vista do Paraíso - PR abre concurso público para Assistente Social e Psicólogo', 'Prefeitura de Bela Vista do Paraíso', 'PR', 'Superior', 2, 3886.72, true, '2026-10-13'::date, 'breve', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-bela-vista-do-paraiso-pr-abre-concurso-publico-para-assistente-social-e-psicologo')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
@@ -2451,13 +2337,25 @@ ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Ivaiporã - PR abre concurso público para agentes de saúde e de endemias', 'Prefeitura de Ivaiporã', 'PR', 'Médio', 0, 3242.0, true, '2026-10-13'::date, 'breve', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-ivaipora-pr-abre-concurso-publico-para-agentes-de-saude-e-de-endemias')
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura e Câmara de Nísia Floresta - RN abrem concurso público com vagas imediatas e reservas', 'Prefeitura e Câmara de Nísia Floresta', 'RN', 'Médio', 61, 3242.0, true, '2026-10-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/prefeitura-e-camara-de-nisia-floresta-rn-abrem-concurso-publico-com-vagas-imediatas-e-reservas')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Tatuí - SP abre concurso público para cargos de nível fundamental e médio', 'Prefeitura de Tatuí', 'SP', 'Fundamental', 107, 2193.73, true, '2026-10-13'::date, 'breve', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-tatui-sp-abre-concurso-publico-para-cargos-de-nivel-fundamental-e-medio')
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Ivaiporã - PR abre concurso público para agentes de saúde e de endemias', 'Prefeitura de Ivaiporã', 'PR', 'Médio', 0, 3242.0, true, '2026-10-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-ivaipora-pr-abre-concurso-publico-para-agentes-de-saude-e-de-endemias')
+ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
+  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
+  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
+  salario_ate = EXCLUDED.salario_ate,
+  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('UFRRJ publica edital de concurso público para cargos de nível médio e técnico', 'UFRRJ - Universidade Federal Rural do Rio de Janeiro', 'RJ', 'Médio', 13, 3181.39, true, '2026-10-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/ufrrj-publica-edital-de-concurso-publico-para-cargos-de-nivel-medio-e-tecnico')
+ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
+  titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
+  nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
+  salario_ate = EXCLUDED.salario_ate,
+  inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Tatuí - SP abre concurso público para cargos de nível fundamental e médio', 'Prefeitura de Tatuí', 'SP', 'Fundamental', 107, 2193.73, true, '2026-10-13'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-tatui-sp-abre-concurso-publico-para-cargos-de-nivel-fundamental-e-medio')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
@@ -2481,7 +2379,7 @@ ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('UNICAMP - SP abre concurso público com vaga para Professor Doutor na Faculdade de Ciências Médicas', 'UNICAMP - Universidade Estadual de Campinas', 'SP', 'Superior', 1, 16994.31, true, '2026-10-14'::date, 'breve', 'https://www.pciconcursos.com.br/noticias/unicamp-sp-abre-concurso-publico-com-vaga-para-professor-doutor-na-faculdade-de-ciencias-medicas')
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('UNICAMP - SP abre concurso público com vaga para Professor Doutor na Faculdade de Ciências Médicas', 'UNICAMP - Universidade Estadual de Campinas', 'SP', 'Superior', 1, 16994.31, true, '2026-10-14'::date, 'destaque', 'https://www.pciconcursos.com.br/noticias/unicamp-sp-abre-concurso-publico-com-vaga-para-professor-doutor-na-faculdade-de-ciencias-medicas')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
@@ -2499,25 +2397,25 @@ ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('UERJ abre concurso público para professor adjunto na área de hematologia', 'UERJ - Universidade do Estado do Rio de Janeiro', 'RJ', 'Superior', 1, 6950.85, true, '2026-10-14'::date, 'breve', 'https://www.pciconcursos.com.br/noticias/uerj-abre-concurso-publico-para-professor-adjunto-na-area-de-hematologia')
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('UERJ abre concurso público para professor adjunto na área de hematologia', 'UERJ - Universidade do Estado do Rio de Janeiro', 'RJ', 'Superior', 1, 6950.85, true, '2026-10-14'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/uerj-abre-concurso-publico-para-professor-adjunto-na-area-de-hematologia')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Instituto Cultural de São Lourenço - SC abre concurso com salários de até R$ 5.855,06', 'ICSL - Instituto Cultural de São Lourenço', 'SC', 'Médio', 13, 5855.06, true, '2026-10-14'::date, 'breve', 'https://www.pciconcursos.com.br/noticias/instituto-cultural-de-sao-lourenco-sc-abre-concurso-com-salarios-de-ate-5855')
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Instituto Cultural de São Lourenço - SC abre concurso com salários de até R$ 5.855,06', 'ICSL - Instituto Cultural de São Lourenço', 'SC', 'Médio', 13, 5855.06, true, '2026-10-14'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/instituto-cultural-de-sao-lourenco-sc-abre-concurso-com-salarios-de-ate-5855')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Câmara de Dom Silvério - MG abre concurso com vagas imediatas e cadastro de reserva', 'Câmara de Dom Silvério', 'MG', 'Fundamental', 5, 3008.62, true, '2026-10-14'::date, 'breve', 'https://www.pciconcursos.com.br/noticias/camara-de-dom-silverio-mg-abre-concurso-com-vagas-imediatas-e-cadastro-de-reserva')
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Câmara de Dom Silvério - MG retifica concurso com vagas imediatas e cadastro de reserva', 'Câmara de Dom Silvério', 'MG', 'Fundamental', 5, 3008.62, true, '2026-10-14'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/camara-de-dom-silverio-mg-retifica-concurso-com-vagas-imediatas-e-cadastro-de-reserva')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Câmara de Prudente de Morais - MG abre concurso para Auxiliar Administrativo e Auxiliar de Serviços Gerais', 'Câmara de Prudente de Morais', 'MG', 'Fundamental', 3, 2600.0, true, '2026-10-14'::date, 'breve', 'https://www.pciconcursos.com.br/noticias/camara-de-prudente-de-morais-mg-abre-concurso-para-auxiliar-administrativo-e-auxiliar-de-servicos-gerais')
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Câmara de Prudente de Morais - MG abre concurso para Auxiliar Administrativo e Auxiliar de Serviços Gerais', 'Câmara de Prudente de Morais', 'MG', 'Fundamental', 3, 2600.0, true, '2026-10-14'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/camara-de-prudente-de-morais-mg-abre-concurso-para-auxiliar-administrativo-e-auxiliar-de-servicos-gerais')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
@@ -2529,13 +2427,13 @@ ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Nova Tebas - PR abre concurso público com salários de até R$ 20.616,83', 'Prefeitura de Nova Tebas', 'PR', 'Fundamental', 37, 20616.83, true, '2026-10-15'::date, 'breve', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-nova-tebas-pr-abre-concurso-publico-com-salarios-de-ate-20616')
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Nova Tebas - PR abre concurso público com salários de até R$ 20.616,83', 'Prefeitura de Nova Tebas', 'PR', 'Fundamental', 37, 20616.83, true, '2026-10-15'::date, 'destaque', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-nova-tebas-pr-abre-concurso-publico-com-salarios-de-ate-20616')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Jarinu - SP abre concurso público com salários de até R$ 11.267,00', 'Prefeitura de Jarinu', 'SP', 'Fundamental', 4, 11267.0, true, '2026-10-15'::date, 'breve', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-jarinu-sp-abre-concurso-publico-com-salarios-de-ate-11267')
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Jarinu - SP abre concurso público com salários de até R$ 11.267,00', 'Prefeitura de Jarinu', 'SP', 'Fundamental', 4, 11267.0, true, '2026-10-15'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-jarinu-sp-abre-concurso-publico-com-salarios-de-ate-11267')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
@@ -2559,7 +2457,7 @@ ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Consórcio Intermunicipal de Saúde 08 de Abril - SP abre processo seletivo para diversas áreas', 'Consórcio Intermunicipal de Saúde "08 de Abril"', 'SP', 'Fundamental', 45, 4567.06, true, '2026-10-15'::date, 'breve', 'https://www.pciconcursos.com.br/noticias/consorcio-intermunicipal-de-saude-08-de-abril-sp-abre-processo-seletivo-para-diversas-areas')
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Consórcio Intermunicipal de Saúde 08 de Abril - SP abre processo seletivo para diversas áreas', 'Consórcio Intermunicipal de Saúde "08 de Abril"', 'SP', 'Fundamental', 45, 4567.06, true, '2026-10-15'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/consorcio-intermunicipal-de-saude-08-de-abril-sp-abre-processo-seletivo-para-diversas-areas')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
@@ -2649,7 +2547,7 @@ ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Câmara de Itanhaém - SP abre concurso público com salários de até R$ 7.097,00', 'Câmara da Estância Balneária de Itanhaém', 'SP', 'Médio', 27, 7097.0, true, '2026-10-19'::date, 'breve', 'https://www.pciconcursos.com.br/noticias/camara-de-itanhaem-sp-abre-concurso-publico-com-salarios-de-ate-7097')
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Câmara de Itanhaém - SP abre concurso público com salários de até R$ 7.097,00', 'Câmara da Estância Balneária de Itanhaém', 'SP', 'Médio', 27, 7097.0, true, '2026-10-19'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/camara-de-itanhaem-sp-abre-concurso-publico-com-salarios-de-ate-7097')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
@@ -2733,7 +2631,7 @@ ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,
   salario_ate = EXCLUDED.salario_ate,
   inscricoes_ate = EXCLUDED.inscricoes_ate, status = EXCLUDED.status;
-INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Santa Maria de Jetibá - ES abre concurso público com vagas para guardas municipais', 'Prefeitura de Santa Maria de Jetibá', 'ES', 'Médio', 30, 3763.26, true, '2026-10-21'::date, 'breve', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-santa-maria-de-jetiba-es-abre-concurso-publico-com-vagas-para-guardas-municipais')
+INSERT INTO public.concursos (titulo, orgao, local, nivel, vagas, salario, salario_ate, inscricoes_ate, status, url_edital) VALUES ('Prefeitura de Santa Maria de Jetibá - ES abre concurso público com vagas para guardas municipais', 'Prefeitura de Santa Maria de Jetibá', 'ES', 'Médio', 30, 3763.26, true, '2026-10-21'::date, 'aberto', 'https://www.pciconcursos.com.br/noticias/prefeitura-de-santa-maria-de-jetiba-es-abre-concurso-publico-com-vagas-para-guardas-municipais')
 ON CONFLICT (url_edital) WHERE url_edital IS NOT NULL DO UPDATE SET
   titulo = EXCLUDED.titulo, orgao = EXCLUDED.orgao, local = EXCLUDED.local,
   nivel = EXCLUDED.nivel, vagas = EXCLUDED.vagas, salario = EXCLUDED.salario,

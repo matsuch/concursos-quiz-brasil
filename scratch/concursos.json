@@ -1,293 +1,5 @@
 [
   {
-    "titulo": "Prefeitura de Frei Rogério - SC divulga retificações de processo seletivo",
-    "orgao": "Prefeitura de Frei Rogério",
-    "local": "SC",
-    "nivel": "Fundamental",
-    "vagas": 0,
-    "salario": 36619.86,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "destaque",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-frei-rogerio-sc-divulga-retificacoes-de-processo-seletivo"
-  },
-  {
-    "titulo": "RioSaúde - RJ abre processo seletivo para a contratação de médicos",
-    "orgao": "RioSaúde - Empresa Pública de Saúde do Rio de Janeiro S/A",
-    "local": "RJ",
-    "nivel": "Superior",
-    "vagas": 23,
-    "salario": 17151.28,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "destaque",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/riosaude-rj-abre-processo-seletivo-para-a-contratacao-de-medicos"
-  },
-  {
-    "titulo": "Polícia Civil - BA prorroga inscrições do concurso público para Delegado, Investigador e Escrivão",
-    "orgao": "PCBA - Polícia Civil da Bahia",
-    "local": "BA",
-    "nivel": "Superior",
-    "vagas": 750,
-    "salario": 16495.67,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "destaque",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/policia-civil-ba-prorroga-inscricoes-do-concurso-publico-para-delegado-investigador-e-escrivao"
-  },
-  {
-    "titulo": "Prefeitura de Santana de Parnaíba - SP abre concursos para médicos e agentes de trânsito",
-    "orgao": "Prefeitura de Santana de Parnaíba",
-    "local": "SP",
-    "nivel": "Médio",
-    "vagas": 21,
-    "salario": 14975.66,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-santana-de-parnaiba-sp-abre-concursos-para-medicos-e-agentes-de-transito"
-  },
-  {
-    "titulo": "Prefeitura de Altaneira - CE publica edital de seleção pública com vagas imediatas e cadastro de reserva",
-    "orgao": "Prefeitura de Altaneira",
-    "local": "CE",
-    "nivel": "Médio",
-    "vagas": 65,
-    "salario": 13800.0,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-altaneira-ce-publica-edital-de-selecao-publica-com-vagas-imediatas-e-cadastro-de-reserva"
-  },
-  {
-    "titulo": "UNILA - PR abre concurso público para o cargo de Professor do Magistério Superior",
-    "orgao": "UNILA - Universidade Federal da Integração Latino-Americana",
-    "local": "PR",
-    "nivel": "Superior",
-    "vagas": 6,
-    "salario": 13288.85,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/unila-pr-abre-concurso-publico-para-o-cargo-de-professor-do-magisterio-superior"
-  },
-  {
-    "titulo": "Prefeitura de Cuité de Mamanguape - PB retifica concurso público com salários de até R$ 11.975,00",
-    "orgao": "Prefeitura de Cuité de Mamanguape",
-    "local": "PB",
-    "nivel": "Fundamental",
-    "vagas": 117,
-    "salario": 11975.0,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-cuite-de-mamanguape-pb-retifica-concurso-publico-com-salarios-de-ate-11975"
-  },
-  {
-    "titulo": "Prefeitura de Relvado - RS abre concurso para diversos cargos com salários de até R$ 8.297,67",
-    "orgao": "Prefeitura de Relvado",
-    "local": "RS",
-    "nivel": "Médio",
-    "vagas": 1,
-    "salario": 8297.67,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-relvado-rs-abre-concurso-para-diversos-cargos-com-salarios-de-ate-8297"
-  },
-  {
-    "titulo": "Prefeitura de São Pedro de Alcântara - SC abre concurso com salários de até R$ 6.460,50",
-    "orgao": "Prefeitura de São Pedro de Alcântara",
-    "local": "SC",
-    "nivel": "Fundamental",
-    "vagas": 2,
-    "salario": 6460.5,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-sao-pedro-de-alcantara-sc-abre-concurso-com-salarios-de-ate-6460"
-  },
-  {
-    "titulo": "IFPI abre concurso público para cargos técnico-administrativos em educação",
-    "orgao": "IFPI - Instituto Federal de Educação, Ciência e Tecnologia do Piauí",
-    "local": "PI",
-    "nivel": "Médio",
-    "vagas": 52,
-    "salario": 6407.39,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/ifpi-abre-concurso-publico-para-cargos-tecnico-administrativos-em-educacao"
-  },
-  {
-    "titulo": "Prefeitura de Conquista D'Oeste - MT abre processo seletivo com salários de até R$ 5.915,21",
-    "orgao": "Prefeitura de Conquista D'Oeste",
-    "local": "MT",
-    "nivel": "Fundamental",
-    "vagas": 2,
-    "salario": 5915.21,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-conquista-doeste-mt-abre-processo-seletivo-com-salarios-de-ate-5915"
-  },
-  {
-    "titulo": "EMDAEP de Dracena - SP abre concurso com vagas imediatas e cadastro de reserva",
-    "orgao": "EMDAEP - Empresa de Desenvolvimento, Água, Esgoto e Pavimentação de Dracena",
-    "local": "SP",
-    "nivel": "Fundamental",
-    "vagas": 9,
-    "salario": 5604.96,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/emdaep-de-dracena-sp-abre-concurso-com-vagas-imediatas-e-cadastro-de-reserva"
-  },
-  {
-    "titulo": "Prefeitura de Barretos - SP abre processo seletivo para a Secretaria de Saúde",
-    "orgao": "Prefeitura do Município da Estância Turística de Barretos",
-    "local": "SP",
-    "nivel": "Superior",
-    "vagas": 0,
-    "salario": 5595.22,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-barretos-sp-abre-processo-seletivo-para-a-secretaria-de-saude"
-  },
-  {
-    "titulo": "Prefeitura de Pontalinda - SP reabre inscrições do processo seletivo para professores",
-    "orgao": "Prefeitura de Pontalinda",
-    "local": "SP",
-    "nivel": "Superior",
-    "vagas": 0,
-    "salario": 4238.06,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-pontalinda-sp-reabre-inscricoes-do-processo-seletivo-para-professores"
-  },
-  {
-    "titulo": "FAHECE - SC anuncia processo seletivo para Técnico de Enfermagem no CEPON de Florianópolis",
-    "orgao": "FAHECE - Fundação de Apoio ao Hemosc e Cepon",
-    "local": "SC",
-    "nivel": "Médio",
-    "vagas": 1,
-    "salario": 3373.61,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/fahece-sc-anuncia-processo-seletivo-para-tecnico-de-enfermagem-no-cepon-de-florianopolis"
-  },
-  {
-    "titulo": "Prefeitura de Abaetetuba - PA divulga nova retificação de concurso público",
-    "orgao": "Prefeitura de Abaetetuba",
-    "local": "PA",
-    "nivel": "Fundamental",
-    "vagas": 342,
-    "salario": 3242.0,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-abaetetuba-pa-divulga-nova-retificacao-de-concurso-publico"
-  },
-  {
-    "titulo": "Prefeitura de Fortaleza - CE e IMPARH abrem seleções com vagas imediatas e para cadastro de reserva",
-    "orgao": "SDHDS - Secretaria Municipal dos Direitos Humanos e Desenvolvimento Social de Fortaleza",
-    "local": "CE",
-    "nivel": "Médio",
-    "vagas": 14,
-    "salario": 3090.18,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-fortaleza-ce-e-imparh-abrem-selecoes-com-vagas-imediatas-e-para-cadastro-de-reserva"
-  },
-  {
-    "titulo": "SAMU 192 - ES publica edital de processo seletivo para Condutor Socorrista",
-    "orgao": "SAMU 192/ES - Irmandade da Santa Casa de Misericórdia de Vitória",
-    "local": "ES",
-    "nivel": "Médio",
-    "vagas": 0,
-    "salario": 2655.67,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/samu-192-es-publica-edital-de-processo-seletivo-para-condutor-socorrista"
-  },
-  {
-    "titulo": "FAHECE - SC abre processos seletivos para assistentes administrativos no CEPON de Florianópolis",
-    "orgao": "FAHECE - Fundação de Apoio ao HEMOSC e CEPON",
-    "local": "SC",
-    "nivel": "Médio",
-    "vagas": 2,
-    "salario": 2519.21,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/fahece-sc-abre-processos-seletivos-para-assistentes-administrativos-no-cepon-de-florianopolis"
-  },
-  {
-    "titulo": "Prefeitura de Leopoldina - MG abre seleção para Cuidador e Auxiliar de Enfermagem",
-    "orgao": "Prefeitura de Leopoldina",
-    "local": "MG",
-    "nivel": "Médio",
-    "vagas": 2,
-    "salario": 2060.32,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-leopoldina-mg-abre-selecao-para-cuidador-e-auxiliar-de-enfermagem"
-  },
-  {
-    "titulo": "Hospital Metropolitano Odilon Behrens - MG abre seleção para Técnico em Radiologia",
-    "orgao": "HOB - Hospital Metropolitano Odilon Behrens",
-    "local": "MG",
-    "nivel": "Médio",
-    "vagas": 0,
-    "salario": 1956.26,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/hospital-metropolitano-odilon-behrens-mg-abre-selecao-para-tecnico-em-radiologia"
-  },
-  {
-    "titulo": "UEMS abre processo seletivo para professores formadores na modalidade EAD",
-    "orgao": "UEMS - Universidade Estadual de Mato Grosso do Sul",
-    "local": "MS",
-    "nivel": "Superior",
-    "vagas": 30,
-    "salario": 1850.0,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/uems-abre-processo-seletivo-para-professores-formadores-na-modalidade-ead"
-  },
-  {
-    "titulo": "Prefeitura de Colina - SP abre concursos para assistente educacional e auxiliar operacional de serviços gerais",
-    "orgao": "Prefeitura de Colina",
-    "local": "SP",
-    "nivel": "Fundamental",
-    "vagas": 2,
-    "salario": 1721.29,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-colina-sp-abre-concursos-para-assistente-educacional-e-auxiliar-operacional-de-servicos-gerais"
-  },
-  {
-    "titulo": "FAHECE - SC anuncia processo seletivo para o cargo de Médico Regulador das Urgências",
-    "orgao": "FAHECE - Fundação de Apoio ao HEMOSC e CEPON",
-    "local": "SC",
-    "nivel": "Superior",
-    "vagas": 1,
-    "salario": 138.9,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-13",
-    "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/fahece-sc-anuncia-processo-seletivo-para-o-cargo-de-medico-regulador-das-urgencias"
-  },
-  {
     "titulo": "Tribunal de Justiça do Paraná abre concurso para o cargo de Contador",
     "orgao": "TJPR - Tribunal de Justiça do Paraná",
     "local": "PR",
@@ -2508,18 +2220,6 @@
     "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-uniao-de-minas-mg-abre-vagas-para-motoristas-de-veiculos-leves-e-pesados"
   },
   {
-    "titulo": "Epagri - SC abre concurso público com salários iniciais de até R$ 16.990,33",
-    "orgao": "EPAGRI - Empresa de Pesquisa Agropecuária e Extensão Rural de Santa Catarina",
-    "local": "SC",
-    "nivel": "Médio",
-    "vagas": 40,
-    "salario": 16990.33,
-    "salario_ate": true,
-    "inscricoes_ate": "2026-09-24",
-    "status": "destaque",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/epagri-sc-abre-concurso-publico-com-salarios-iniciais-de-ate-16990"
-  },
-  {
     "titulo": "FUNDACI de Ilhabela - SP abre concurso público para cargos de nível superior",
     "orgao": "FUNDACI - Fundação Arte e Cultura de Ilhabela",
     "local": "SP",
@@ -3108,6 +2808,30 @@
     "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-fraiburgo-sc-abre-processo-seletivo-para-a-contratacao-de-agente-operacional"
   },
   {
+    "titulo": "UNILA - PR abre processo seletivo para professor visitante em engenharia de materiais",
+    "orgao": "UNILA - Universidade Federal da Integração Latino-Americana",
+    "local": "PR",
+    "nivel": "Superior",
+    "vagas": 1,
+    "salario": 13288.85,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-09-29",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/unila-pr-abre-processo-seletivo-para-professor-visitante-em-engenharia-de-materiais"
+  },
+  {
+    "titulo": "UNILA - PR abre processo seletivo para professor visitante na área de Engenharia de Materiais",
+    "orgao": "UNILA - Universidade Federal da Integração Latino-Americana",
+    "local": "PR",
+    "nivel": "Superior",
+    "vagas": 0,
+    "salario": 13288.85,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-09-29",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/unila-pr-abre-processo-seletivo-para-professor-visitante-na-area-de-engenharia-de-materiais"
+  },
+  {
     "titulo": "Prefeitura de Oliveira Fortes - MG publica retificação de concurso público",
     "orgao": "Prefeitura de Oliveira Fortes",
     "local": "MG",
@@ -3132,7 +2856,7 @@
     "url_edital": "https://www.pciconcursos.com.br/noticias/manaus-previdencia-am-abre-concurso-publico-com-salarios-de-ate-9175"
   },
   {
-    "titulo": "Prefeitura de Lontras - SC abre concurso com salários de até R$ 8.105,36",
+    "titulo": "Prefeitura de Lontras - SC divulga retificação de concurso público",
     "orgao": "Prefeitura de Lontras",
     "local": "SC",
     "nivel": "Fundamental",
@@ -3141,7 +2865,7 @@
     "salario_ate": true,
     "inscricoes_ate": "2026-09-29",
     "status": "aberto",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-lontras-sc-abre-concurso-com-salarios-de-ate-8105"
+    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-lontras-sc-divulga-retificacao-de-concurso-publico"
   },
   {
     "titulo": "UNESP abre concurso público para Professor Assistente de Odontologia em São José dos Campos - SP",
@@ -3492,6 +3216,18 @@
     "url_edital": "https://www.pciconcursos.com.br/noticias/camara-de-piratini-rs-abre-concurso-publico-para-contador-oficial-legislativo-e-servente"
   },
   {
+    "titulo": "Prefeitura de Indaial - SC publica edital retificado de processo seletivo",
+    "orgao": "Prefeitura de Indaial",
+    "local": "SC",
+    "nivel": "Médio",
+    "vagas": 0,
+    "salario": 5210.87,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-10-01",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-indaial-sc-publica-edital-retificado-de-processo-seletivo"
+  },
+  {
     "titulo": "Prefeitura de Urânia - SP abre concurso público para Coordenador e Orientador Social do CRAS",
     "orgao": "Prefeitura de Urânia",
     "local": "SP",
@@ -3622,6 +3358,18 @@
     "inscricoes_ate": "2026-10-04",
     "status": "aberto",
     "url_edital": "https://www.pciconcursos.com.br/noticias/ufsj-mg-abre-concurso-publico-com-12-vagas-para-professores-do-magisterio-superior"
+  },
+  {
+    "titulo": "UFPel - RS abre concurso público para o cargo de Professor do Magistério Superior",
+    "orgao": "UFPel - Universidade Federal de Pelotas",
+    "local": "RS",
+    "nivel": "Superior",
+    "vagas": 32,
+    "salario": 13753.96,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-10-04",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/ufpel-rs-abre-concurso-publico-para-o-cargo-de-professor-do-magisterio-superior"
   },
   {
     "titulo": "UNILA - PR abre processo seletivo para cadastro de reserva de professor visitante e estrangeiro",
@@ -4440,7 +4188,7 @@
     "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-birigui-sp-abre-concurso-publico-com-vagas-para-professores-auxiliares"
   },
   {
-    "titulo": "Prefeitura de Massaranduba - SC abre concurso com salários de até R$ 24.722,94",
+    "titulo": "Prefeitura de Massaranduba - SC retifica edital de concurso com salários de até R$ 24.722,94",
     "orgao": "Prefeitura de Massaranduba",
     "local": "SC",
     "nivel": "Fundamental",
@@ -4449,7 +4197,19 @@
     "salario_ate": true,
     "inscricoes_ate": "2026-10-09",
     "status": "destaque",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-massaranduba-sc-abre-concurso-com-salarios-de-ate-24722"
+    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-massaranduba-sc-retifica-edital-de-concurso-com-salarios-de-ate-24722"
+  },
+  {
+    "titulo": "UNILA - PR abre processo seletivo para professores visitantes e estrangeiros em Engenharia Química",
+    "orgao": "UNILA - Universidade Federal da Integração Latino-Americana",
+    "local": "PR",
+    "nivel": "Superior",
+    "vagas": 4,
+    "salario": 13288.85,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-10-09",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/unila-pr-abre-processo-seletivo-para-professores-visitantes-e-estrangeiros-em-engenharia-quimica"
   },
   {
     "titulo": "EPTC - Porto Alegre/RS abre concurso público com salários de até R$ 9.780,90",
@@ -4724,7 +4484,7 @@
     "salario": 18106.37,
     "salario_ate": true,
     "inscricoes_ate": "2026-10-13",
-    "status": "breve",
+    "status": "destaque",
     "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-ivaipora-pr-abre-concurso-publico-com-salarios-de-ate-18106"
   },
   {
@@ -4736,7 +4496,7 @@
     "salario": 16994.31,
     "salario_ate": true,
     "inscricoes_ate": "2026-10-13",
-    "status": "breve",
+    "status": "destaque",
     "url_edital": "https://www.pciconcursos.com.br/noticias/unicamp-sp-abre-concurso-publico-para-professor-doutor-na-faculdade-de-engenharia-mecanica"
   },
   {
@@ -4748,7 +4508,7 @@
     "salario": 16994.01,
     "salario_ate": true,
     "inscricoes_ate": "2026-10-13",
-    "status": "breve",
+    "status": "destaque",
     "url_edital": "https://www.pciconcursos.com.br/noticias/unesp-abre-concurso-para-professor-assistente-de-medicina-em-botucatu-sp"
   },
   {
@@ -4760,7 +4520,7 @@
     "salario": 16994.01,
     "salario_ate": true,
     "inscricoes_ate": "2026-10-13",
-    "status": "breve",
+    "status": "destaque",
     "url_edital": "https://www.pciconcursos.com.br/noticias/unesp-abre-concurso-publico-para-professor-assistente-na-area-de-engenharia-de-bioprocessos-em-araraquara-sp"
   },
   {
@@ -4796,7 +4556,7 @@
     "salario": 13288.85,
     "salario_ate": true,
     "inscricoes_ate": "2026-10-13",
-    "status": "breve",
+    "status": "aberto",
     "url_edital": "https://www.pciconcursos.com.br/noticias/ufrpe-abre-concurso-com-vagas-para-professores-do-magisterio-superior"
   },
   {
@@ -4820,7 +4580,7 @@
     "salario": 11116.42,
     "salario_ate": true,
     "inscricoes_ate": "2026-10-13",
-    "status": "breve",
+    "status": "destaque",
     "url_edital": "https://www.pciconcursos.com.br/noticias/governo-do-estado-do-amapa-ap-publica-edital-de-concurso-com-salarios-de-ate-11116"
   },
   {
@@ -4848,7 +4608,7 @@
     "url_edital": "https://www.pciconcursos.com.br/noticias/camara-de-rio-branco-ac-abre-concurso-publico-com-13-vagas-imediatas"
   },
   {
-    "titulo": "Câmara de Rio Piracicaba - MG abre concurso público com salários de até R$ 4.000,00",
+    "titulo": "Câmara de Rio Piracicaba - MG publica edital retificado de concurso público",
     "orgao": "Câmara de Rio Piracicaba",
     "local": "MG",
     "nivel": "Fundamental",
@@ -4856,8 +4616,20 @@
     "salario": 4000.0,
     "salario_ate": true,
     "inscricoes_ate": "2026-10-13",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/camara-de-rio-piracicaba-mg-publica-edital-retificado-de-concurso-publico"
+  },
+  {
+    "titulo": "Prefeitura de Bela Vista do Paraíso - PR abre concurso público para Assistente Social e Psicólogo",
+    "orgao": "Prefeitura de Bela Vista do Paraíso",
+    "local": "PR",
+    "nivel": "Superior",
+    "vagas": 2,
+    "salario": 3886.72,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-10-13",
     "status": "breve",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/camara-de-rio-piracicaba-mg-abre-concurso-publico-com-salarios-de-ate-4000"
+    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-bela-vista-do-paraiso-pr-abre-concurso-publico-para-assistente-social-e-psicologo"
   },
   {
     "titulo": "Prefeitura de Saltinho - SP abre processo seletivo para Agente Comunitário de Saúde",
@@ -4884,6 +4656,18 @@
     "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-vilhena-ro-retifica-o-edital-de-processo-seletivo-para-agentes-de-saude-e-de-endemias"
   },
   {
+    "titulo": "Prefeitura e Câmara de Nísia Floresta - RN abrem concurso público com vagas imediatas e reservas",
+    "orgao": "Prefeitura e Câmara de Nísia Floresta",
+    "local": "RN",
+    "nivel": "Médio",
+    "vagas": 61,
+    "salario": 3242.0,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-10-13",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-e-camara-de-nisia-floresta-rn-abrem-concurso-publico-com-vagas-imediatas-e-reservas"
+  },
+  {
     "titulo": "Prefeitura de Ivaiporã - PR abre concurso público para agentes de saúde e de endemias",
     "orgao": "Prefeitura de Ivaiporã",
     "local": "PR",
@@ -4892,8 +4676,20 @@
     "salario": 3242.0,
     "salario_ate": true,
     "inscricoes_ate": "2026-10-13",
-    "status": "breve",
+    "status": "aberto",
     "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-ivaipora-pr-abre-concurso-publico-para-agentes-de-saude-e-de-endemias"
+  },
+  {
+    "titulo": "UFRRJ publica edital de concurso público para cargos de nível médio e técnico",
+    "orgao": "UFRRJ - Universidade Federal Rural do Rio de Janeiro",
+    "local": "RJ",
+    "nivel": "Médio",
+    "vagas": 13,
+    "salario": 3181.39,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-10-13",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/ufrrj-publica-edital-de-concurso-publico-para-cargos-de-nivel-medio-e-tecnico"
   },
   {
     "titulo": "Prefeitura de Tatuí - SP abre concurso público para cargos de nível fundamental e médio",
@@ -4904,7 +4700,7 @@
     "salario": 2193.73,
     "salario_ate": true,
     "inscricoes_ate": "2026-10-13",
-    "status": "breve",
+    "status": "aberto",
     "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-tatui-sp-abre-concurso-publico-para-cargos-de-nivel-fundamental-e-medio"
   },
   {
@@ -4952,7 +4748,7 @@
     "salario": 16994.31,
     "salario_ate": true,
     "inscricoes_ate": "2026-10-14",
-    "status": "breve",
+    "status": "destaque",
     "url_edital": "https://www.pciconcursos.com.br/noticias/unicamp-sp-abre-concurso-publico-com-vaga-para-professor-doutor-na-faculdade-de-ciencias-medicas"
   },
   {
@@ -4988,7 +4784,7 @@
     "salario": 6950.85,
     "salario_ate": true,
     "inscricoes_ate": "2026-10-14",
-    "status": "breve",
+    "status": "aberto",
     "url_edital": "https://www.pciconcursos.com.br/noticias/uerj-abre-concurso-publico-para-professor-adjunto-na-area-de-hematologia"
   },
   {
@@ -5000,11 +4796,11 @@
     "salario": 5855.06,
     "salario_ate": true,
     "inscricoes_ate": "2026-10-14",
-    "status": "breve",
+    "status": "aberto",
     "url_edital": "https://www.pciconcursos.com.br/noticias/instituto-cultural-de-sao-lourenco-sc-abre-concurso-com-salarios-de-ate-5855"
   },
   {
-    "titulo": "Câmara de Dom Silvério - MG abre concurso com vagas imediatas e cadastro de reserva",
+    "titulo": "Câmara de Dom Silvério - MG retifica concurso com vagas imediatas e cadastro de reserva",
     "orgao": "Câmara de Dom Silvério",
     "local": "MG",
     "nivel": "Fundamental",
@@ -5012,8 +4808,8 @@
     "salario": 3008.62,
     "salario_ate": true,
     "inscricoes_ate": "2026-10-14",
-    "status": "breve",
-    "url_edital": "https://www.pciconcursos.com.br/noticias/camara-de-dom-silverio-mg-abre-concurso-com-vagas-imediatas-e-cadastro-de-reserva"
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/camara-de-dom-silverio-mg-retifica-concurso-com-vagas-imediatas-e-cadastro-de-reserva"
   },
   {
     "titulo": "Câmara de Prudente de Morais - MG abre concurso para Auxiliar Administrativo e Auxiliar de Serviços Gerais",
@@ -5024,7 +4820,7 @@
     "salario": 2600.0,
     "salario_ate": true,
     "inscricoes_ate": "2026-10-14",
-    "status": "breve",
+    "status": "aberto",
     "url_edital": "https://www.pciconcursos.com.br/noticias/camara-de-prudente-de-morais-mg-abre-concurso-para-auxiliar-administrativo-e-auxiliar-de-servicos-gerais"
   },
   {
@@ -5048,7 +4844,7 @@
     "salario": 20616.83,
     "salario_ate": true,
     "inscricoes_ate": "2026-10-15",
-    "status": "breve",
+    "status": "destaque",
     "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-nova-tebas-pr-abre-concurso-publico-com-salarios-de-ate-20616"
   },
   {
@@ -5060,7 +4856,7 @@
     "salario": 11267.0,
     "salario_ate": true,
     "inscricoes_ate": "2026-10-15",
-    "status": "breve",
+    "status": "aberto",
     "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-jarinu-sp-abre-concurso-publico-com-salarios-de-ate-11267"
   },
   {
@@ -5108,7 +4904,7 @@
     "salario": 4567.06,
     "salario_ate": true,
     "inscricoes_ate": "2026-10-15",
-    "status": "breve",
+    "status": "aberto",
     "url_edital": "https://www.pciconcursos.com.br/noticias/consorcio-intermunicipal-de-saude-08-de-abril-sp-abre-processo-seletivo-para-diversas-areas"
   },
   {
@@ -5288,7 +5084,7 @@
     "salario": 7097.0,
     "salario_ate": true,
     "inscricoes_ate": "2026-10-19",
-    "status": "breve",
+    "status": "aberto",
     "url_edital": "https://www.pciconcursos.com.br/noticias/camara-de-itanhaem-sp-abre-concurso-publico-com-salarios-de-ate-7097"
   },
   {
@@ -5456,7 +5252,7 @@
     "salario": 3763.26,
     "salario_ate": true,
     "inscricoes_ate": "2026-10-21",
-    "status": "breve",
+    "status": "aberto",
     "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-santa-maria-de-jetiba-es-abre-concurso-publico-com-vagas-para-guardas-municipais"
   },
   {
