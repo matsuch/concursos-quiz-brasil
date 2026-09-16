@@ -1,100 +1,96 @@
-# Welcome to your Lovable project
+# Concursos Quiz Brasil
 
-## Project info
+Plataforma gratuita de estudo para **concursos públicos**: catálogo de concursos
+abertos, questões comentadas, simulados cronometrados, flashcards, anotações,
+planner de estudos e guias práticos sobre como se preparar.
 
-**URL**: https://lovable.dev/projects/ef144c49-d9dc-46b2-8644-231fb7e8cf3f
+**No ar:** https://passar-concursos.vercel.app
 
-## How can I edit this code?
+## Funcionalidades
 
-There are several ways of editing your application.
+| Rota | O que faz |
+|---|---|
+| `/concursos` e `/concursos/:slug` | Catálogo de concursos (dados coletados por scraping) |
+| `/quiz` | Questões por matéria — aberto também para visitantes sem login |
+| `/simulado` | Simulado com cronômetro |
+| `/estudo` | Flashcards e revisão |
+| `/anotacoes` | Anotações pessoais |
+| `/planner` | Planner de estudos |
+| `/guias` e `/guias/:slug` | Guias em Markdown (edital, banca, recursos, cotas…) pré-renderizados para SEO |
+| `/minha-conta` | Perfil e painel de desempenho |
 
-**Use Lovable**
+O site roda inteiro em **plano gratuito**. Recursos pagos ficam desligados por
+chave em `src/config/features.ts` — por exemplo, a geração de plano de estudos
+com IA (`api/generate-study-plan.ts`), que hoje mostra um formulário de interesse
+para medir demanda antes de ligar o custo.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ef144c49-d9dc-46b2-8644-231fb7e8cf3f) and start prompting.
+## Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+- **React 18** + **TypeScript** + **Vite**
+- **Tailwind CSS** + **shadcn/ui**
+- **Neon** — Postgres com RLS, **Neon Auth** (Better Auth) e **Data API**
+- **Vercel** — hospedagem e funções serverless (`api/`)
+- **Python** — scraping do catálogo de concursos (`scripts/scrape`), rodado por GitHub Actions
+- Build com geração de guias, sitemap e prerender para SEO
 
-**Use your preferred IDE**
+## Como rodar localmente
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+Pré-requisito: Node.js 18+.
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+git clone https://github.com/matsuch/concursos-quiz-brasil.git
+cd concursos-quiz-brasil
+npm install
+cp .env.example .env   # preencha com os endpoints do seu projeto Neon
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Variáveis de ambiente
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+| Variável | Onde | Uso |
+|---|---|---|
+| `VITE_NEON_AUTH_URL` | frontend (público) | Endpoint do Neon Auth |
+| `VITE_NEON_DATA_API_URL` | frontend (público) | Endpoint da Data API |
+| `DATABASE_URL` | Vercel (segredo) | Só para a função de IA, hoje desligada |
+| `NEON_JWKS_URL` | Vercel (segredo) | Verificação do JWT na função de IA |
+| `OPENAI_API_KEY` | Vercel (segredo) | Só para a função de IA, hoje desligada |
 
-**Use GitHub Codespaces**
+Detalhes em [`.env.example`](.env.example).
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Banco de dados
 
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/ef144c49-d9dc-46b2-8644-231fb7e8cf3f) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
-
-## Stripe: trocar de HML para PRD
-
-As funções em `supabase/functions/*` agora priorizam variáveis de produção:
-
-- `STRIPE_SECRET_KEY_PRD`
-- `STRIPE_WEBHOOK_SECRET_PRD`
-
-Se não existirem, o código ainda usa fallback para `STRIPE_SECRET_KEY` e `STRIPE_WEBHOOK_SECRET`.
-
-Para atualizar no Supabase (projeto atual):
+Schema, seed e migrações ficam em [`neon/`](neon/README.md):
 
 ```sh
-supabase secrets set STRIPE_SECRET_KEY_PRD=sk_live_xxx
-supabase secrets set STRIPE_WEBHOOK_SECRET_PRD=whsec_xxx
+psql "$DATABASE_URL" -f neon/schema.sql
+psql "$DATABASE_URL" -f neon/seed.sql
 ```
 
-Depois, faça o deploy das funções:
+## Scripts
 
-```sh
-supabase functions deploy create-checkout
-supabase functions deploy get-products
-supabase functions deploy customer-portal
-supabase functions deploy create-portal-session
-supabase functions deploy cancel-subscription
-supabase functions deploy webhook-stripe
+| Comando | Descrição |
+|---|---|
+| `npm run dev` | Servidor de desenvolvimento |
+| `npm run build` | Gera guias → build Vite → sitemap → prerender |
+| `npm run preview` | Serve o build localmente |
+| `npm run lint` | ESLint |
+
+## Estrutura
+
 ```
+src/
+├── pages/           # rotas (Home, Concursos, Quiz, Simulado, Guias…)
+├── components/      # UI, quiz, planner, conta
+├── config/          # chaves de recurso (features.ts)
+├── integrations/    # cliente Neon
+└── lib/, hooks/
+api/                 # funções serverless da Vercel
+content/guias/       # guias em Markdown
+neon/                # schema, seed e migrações do Postgres
+scripts/             # geração de guias/sitemap, prerender, scraping
+.github/workflows/   # scraping agendado, schema do Neon, testes de RLS
+```
+
+## Deploy
+
+Deploy automático na Vercel a cada push na `main`.
