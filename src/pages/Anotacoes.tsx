@@ -18,6 +18,16 @@ import { Navigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Helmet } from 'react-helmet-async';
 
+/**
+ * O conteúdo das anotações vai para dangerouslySetInnerHTML. O texto é
+ * escapado ANTES de virar marcação: o que a pessoa digitar como HTML aparece
+ * como texto, e só as tags geradas pelo conversor chegam ao DOM. A única tag
+ * aceita de volta é <u>, que o botão de sublinhado insere.
+ */
+const escaparHtml = (t: string) =>
+  t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
 const SUBJECTS = [
   'Direito Constitucional',
   'Direito Administrativo',
@@ -101,17 +111,17 @@ function RichTextEditor({ value, onChange }: { value: string; onChange: (value: 
   };
 
   const parseMarkdown = (text: string) => {
-    return text
+    return escaparHtml(text)
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/<u>(.*?)<\/u>/g, '<u>$1</u>')
+      .replace(/&lt;u&gt;(.*?)&lt;\/u&gt;/g, '<u>$1</u>')
       .replace(/# (.*?)(\n|$)/g, '<h1 class="text-2xl font-bold mt-4 mb-2">$1</h1>')
       .replace(/## (.*?)(\n|$)/g, '<h2 class="text-xl font-bold mt-3 mb-2">$1</h2>')
       .replace(/### (.*?)(\n|$)/g, '<h3 class="text-lg font-bold mt-2 mb-1">$1</h3>')
       .replace(/- (.*?)(\n|$)/g, '<li class="ml-4">$1</li>')
       .replace(/1\. (.*?)(\n|$)/g, '<li class="ml-4 list-decimal">$1</li>')
       .replace(/`(.*?)`/g, '<code class="bg-muted px-1 rounded text-sm">$1</code>')
-      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-primary hover:underline" target="_blank">$1</a>')
+      .replace(/\[(.*?)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" class="text-primary hover:underline" target="_blank" rel="noopener noreferrer">$1</a>')
       .replace(/\n/g, '<br>');
   };
 
@@ -456,10 +466,10 @@ export default function Anotacoes() {
                           className="text-sm text-muted-foreground line-clamp-3 prose prose-sm dark:prose-invert max-w-none"
                           dangerouslySetInnerHTML={{ 
                             __html: note.content 
-                              ? note.content
+                              ? escaparHtml(note.content)
                                   .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                                   .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                                  .replace(/<u>(.*?)<\/u>/g, '<u>$1</u>')
+                                  .replace(/&lt;u&gt;(.*?)&lt;\/u&gt;/g, '<u>$1</u>')
                                   .replace(/# (.*?)(\n|$)/g, '<h3 class="font-bold text-base mt-1">$1</h3>')
                                   .replace(/## (.*?)(\n|$)/g, '<h4 class="font-semibold text-sm mt-1">$1</h4>')
                                   .replace(/- (.*?)(\n|$)/g, '• $1<br>')

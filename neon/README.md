@@ -60,6 +60,39 @@ justamente o que encareceu a saída do Supabase.
 O custo é assumido e tratado: `delete_user_data()` substitui o cascade, e os
 índices por `user_id` sustentam os filtros do RLS.
 
+## Exclusão de conta
+
+Duas funções, com permissões diferentes de propósito:
+
+| Função | Quem executa | Alvo |
+|---|---|---|
+| `delete_user_data(p_user_id)` | só o dono do banco | o id passado por parâmetro |
+| `delete_my_account()` | role `authenticated` | sempre `auth.user_id()` |
+
+Função nasce com `EXECUTE` para `PUBLIC`. Como `delete_user_data` é
+`SECURITY DEFINER` e recebe o alvo por parâmetro, sem o `REVOKE` qualquer
+cliente da Data API apagava os dados de qualquer usuário por
+`/rpc/delete_user_data`. **Ao criar função nova em `public`, revogue de
+`PUBLIC` e conceda só a quem precisa.**
+
+O botão "Excluir minha conta" (`src/pages/MyAccount.tsx`) chama
+`delete_my_account()`, que apaga os dados de estudo e grava o pedido em
+`account_deletion_requests`. O cadastro de login vive no Neon Auth e não é
+removido por SQL: quem administra precisa remover o usuário lá (console do
+Neon → Auth → Users) e então apagar a linha do pedido.
+
+```sql
+-- pedidos de exclusão aguardando a remoção do login
+SELECT user_id, requested_at FROM public.account_deletion_requests ORDER BY requested_at;
+```
+
+## Quem lê o quê
+
+- `profiles`: só o dono. Era leitura pública enquanto existia ranking.
+- `questions` e `flashcards`: linhas oficiais (`is_official = true`) para
+  todos; as criadas por usuário, só para o autor. O cliente não consegue
+  gravar `is_official = true` — quem marca conteúdo como oficial é o seed.
+
 ## Leitura pública sem sessão
 
 A Data API **sempre** exige JWT: acesso anônimo não é requisição sem token, é

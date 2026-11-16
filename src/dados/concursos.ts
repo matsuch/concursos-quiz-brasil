@@ -64,6 +64,37 @@ export function carregarConcursos(): Promise<Arquivo> {
   return cache;
 }
 
+/** Data de hoje (fuso do navegador) no mesmo formato de `inscricoes_ate`. */
+export function hojeIso(): string {
+  const d = new Date();
+  const mes = String(d.getMonth() + 1).padStart(2, '0');
+  const dia = String(d.getDate()).padStart(2, '0');
+  return `${d.getFullYear()}-${mes}-${dia}`;
+}
+
+/** O prazo de inscrição já passou? O último dia ainda conta como aberto. */
+export function inscricaoEncerrada(c: Pick<Concurso, 'inscricoes_ate'>, hoje = hojeIso()): boolean {
+  return c.inscricoes_ate < hoje;
+}
+
+/**
+ * Só os concursos que ainda aceitam inscrição.
+ *
+ * O arquivo é um instantâneo semanal: a coleta já descarta o que encerrou, mas
+ * entre uma coleta e outra os prazos continuam vencendo — numa semana comum, um
+ * terço da lista. Sem este filtro a listagem oferece como "aberto" concurso em
+ * que ninguém mais consegue se inscrever.
+ */
+export function apenasAbertos(lista: Concurso[], hoje = hojeIso()): Concurso[] {
+  return lista.filter(c => !inscricaoEncerrada(c, hoje));
+}
+
+/** `2026-11-09` → `09/11/2026`. */
+export function formatarDataBr(iso: string): string {
+  const [a, m, d] = iso.split('-');
+  return `${d}/${m}/${a}`;
+}
+
 /** Ordena como a home e a listagem esperam: prazo mais próximo primeiro e,
  *  em empate, maior salário. Mesma regra do gerador do seed. */
 export function ordenarPorUrgencia(lista: Concurso[]): Concurso[] {

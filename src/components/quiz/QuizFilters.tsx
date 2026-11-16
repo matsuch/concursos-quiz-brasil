@@ -140,7 +140,7 @@ export function QuizFilters({ filters, onFilterChange, loading }: QuizFiltersPro
             onValueChange={(v) => handleFilterChange("subject", v === "all" ? "" : v)}
             disabled={loadingFilters || availableOptions.subjects.length === 0}
           >
-            <SelectTrigger>
+            <SelectTrigger aria-label="Matéria">
               <SelectValue placeholder={loadingFilters ? "Carregando..." : "Matéria"} />
             </SelectTrigger>
             <SelectContent>
@@ -159,7 +159,7 @@ export function QuizFilters({ filters, onFilterChange, loading }: QuizFiltersPro
             onValueChange={(v) => handleFilterChange("difficulty", v === "all" ? "" : v)}
             disabled={loadingFilters || availableOptions.difficulties.length === 0}
           >
-            <SelectTrigger>
+            <SelectTrigger aria-label="Dificuldade">
               <SelectValue placeholder="Dificuldade" />
             </SelectTrigger>
             <SelectContent>
@@ -178,7 +178,7 @@ export function QuizFilters({ filters, onFilterChange, loading }: QuizFiltersPro
             onValueChange={(v) => handleFilterChange("is_official", v === "all" ? "" : v)}
             disabled={loadingFilters || availableOptions.is_official.length === 0}
           >
-            <SelectTrigger>
+            <SelectTrigger aria-label="Tipo de questão">
               <SelectValue placeholder="Tipo de Questão" />
             </SelectTrigger>
             <SelectContent>
@@ -201,7 +201,7 @@ export function QuizFilters({ filters, onFilterChange, loading }: QuizFiltersPro
             onValueChange={(v) => handleFilterChange("assunto", v === "all" ? "" : v)}
             disabled={loadingFilters || availableOptions.assuntos.length === 0}
           >
-            <SelectTrigger>
+            <SelectTrigger aria-label="Assunto">
               <SelectValue placeholder="Assunto" />
             </SelectTrigger>
             <SelectContent>
@@ -220,7 +220,7 @@ export function QuizFilters({ filters, onFilterChange, loading }: QuizFiltersPro
             onValueChange={(v) => handleFilterChange("banca", v === "all" ? "" : v)}
             disabled={loadingFilters || availableOptions.bancas.length === 0}
           >
-            <SelectTrigger >
+            <SelectTrigger aria-label="Banca">
               <SelectValue placeholder="Banca" />
             </SelectTrigger>
             <SelectContent>
@@ -239,7 +239,7 @@ export function QuizFilters({ filters, onFilterChange, loading }: QuizFiltersPro
             onValueChange={(v) => handleFilterChange("prova", v === "all" ? "" : v)}
             disabled={loadingFilters || availableOptions.provas.length === 0}
           >
-            <SelectTrigger>
+            <SelectTrigger aria-label="Prova">
               <SelectValue placeholder="Prova" />
             </SelectTrigger>
             <SelectContent>

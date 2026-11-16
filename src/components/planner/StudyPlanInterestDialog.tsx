@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+import { track } from '@vercel/analytics';
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Sparkles, Lock, Loader2, CheckCircle2, Send } from 'lucide-react';
@@ -76,6 +78,7 @@ export function StudyPlanInterestDialog() {
       if (error) throw error;
     },
     onSuccess: () => {
+      track('interesse_plano_pago');
       queryClient.invalidateQueries({ queryKey: ['plan-interest', user?.id] });
       toast({
         title: 'Interesse registrado! 🙌',
@@ -280,6 +283,10 @@ function InteresseForm({
           className="min-h-[90px] mt-1"
         />
       </div>
+      <p className="text-xs text-muted-foreground">
+        Usamos estes dados só para avisar você quando o recurso abrir. Veja a{' '}
+        <Link to="/privacidade" className="underline hover:text-foreground">Política de privacidade</Link>.
+      </p>
       <Button type="submit" disabled={disabled || submitting} className="w-full">
         {submitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
         {submitting ? 'Enviando...' : submitLabel}

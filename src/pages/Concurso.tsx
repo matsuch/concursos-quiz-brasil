@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { track } from '@vercel/analytics';
 import { Link, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, Banknote, Calendar, ExternalLink, MapPin, Users, GraduationCap } from 'lucide-react';
@@ -6,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { SeoHead } from '@/components/SeoHead';
-import { carregarConcursos, ordenarPorUrgencia, type Concurso as ConcursoDados } from '@/dados/concursos';
+import { apenasAbertos, carregarConcursos, inscricaoEncerrada, ordenarPorUrgencia, type Concurso as ConcursoDados } from '@/dados/concursos';
 
 const SITE = 'https://passar-concursos.vercel.app';
 
@@ -47,7 +48,7 @@ export default function ConcursoDetalhe() {
           // ficaria órfã, alcançável só pelo sitemap.
           setRelacionados(
             ordenarPorUrgencia(
-              concursos.filter(c => c.slug !== achado.slug && c.local === achado.local),
+              apenasAbertos(concursos).filter(c => c.slug !== achado.slug && c.local === achado.local),
             ).slice(0, 6),
           );
         }
@@ -96,7 +97,22 @@ export default function ConcursoDetalhe() {
     `${concurso.orgao} — ${vagasTexto} · nível ${concurso.nivel} · ${salario} · ` +
     `inscrições até ${prazo}${concurso.local !== 'Nacional' ? ` (${concurso.local})` : ''}.`;
 
-  const dadosEstruturados = [{
+  // O arquivo é semanal: entre uma coleta e outra o prazo pode vencer. A página
+  // continua existindo (alguém pode chegar por link), mas avisa e deixa de se
+  // anunciar como vaga aberta.
+  const encerrado = inscricaoEncerrada(concurso);
+
+  const migalhas = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Início', item: SITE + '/' },
+      { '@type': 'ListItem', position: 2, name: 'Concursos', item: SITE + '/concursos' },
+      { '@type': 'ListItem', position: 3, name: concurso.titulo, item: url },
+    ],
+  };
+
+  const dadosEstruturados = encerrado ? [migalhas] : [{
     '@context': 'https://schema.org',
     '@type': 'JobPosting',
     title: concurso.titulo,
@@ -124,15 +140,7 @@ export default function ConcursoDetalhe() {
         value: { '@type': 'QuantitativeValue', unitText: 'MONTH', [concurso.salario_ate ? 'maxValue' : 'value']: concurso.salario },
       },
     } : {}),
-  }, {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Início', item: SITE + '/' },
-      { '@type': 'ListItem', position: 2, name: 'Concursos', item: SITE + '/concursos' },
-      { '@type': 'ListItem', position: 3, name: concurso.titulo, item: url },
-    ],
-  }];
+  }, migalhas];
 
   return (
     <>
@@ -142,15 +150,30 @@ export default function ConcursoDetalhe() {
         canonical={url}
         structuredData={dadosEstruturados}
       />
+      {encerrado && (
+        <Helmet><meta name="robots" content="noindex, follow" /></Helmet>
+      )}
 
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         <Link to="/concursos" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
           <ArrowLeft className="w-4 h-4" /> Todos os concursos
         </Link>
 
-        <Badge variant="outline" className="mb-3">{ROTULO_STATUS[concurso.status] ?? concurso.status}</Badge>
+        <Badge variant="outline" className="mb-3">
+          {encerrado ? 'Inscrições encerradas' : (ROTULO_STATUS[concurso.status] ?? concurso.status)}
+        </Badge>
         <h1 className="text-2xl sm:text-3xl font-bold leading-tight mb-2">{concurso.titulo}</h1>
         <p className="text-muted-foreground mb-6">{concurso.orgao}</p>
+
+        {encerrado && (
+          <div role="status" className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 mb-6 text-sm">
+            <p className="font-medium text-foreground">O prazo de inscrição terminou em {prazo}.</p>
+            <p className="text-muted-foreground mt-1">
+              A página fica no ar para consulta.{' '}
+              <Link to="/concursos" className="text-primary underline">Ver concursos com inscrição aberta</Link>
+            </p>
+          </div>
+        )}
 
         <Card className="p-5 mb-6">
           <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -183,7 +206,12 @@ export default function ConcursoDetalhe() {
         </Card>
 
         <Button asChild className="w-full sm:w-auto mb-8">
-          <a href={concurso.url_edital} target="_blank" rel="noopener noreferrer">
+          <a
+            href={concurso.url_edital}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => track('clique_edital', { local: concurso.local, nivel: concurso.nivel })}
+          >
             Ver edital na fonte <ExternalLink className="w-4 h-4 ml-2" />
           </a>
         </Button>

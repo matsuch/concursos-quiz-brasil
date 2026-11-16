@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, Filter, MapPin, Calendar, Banknote, Users, ChevronRight, Loader2, Sparkles, AlertCircle, Clock } from "lucide-react";
 import ConcursoCard from "@/components/ConcursoCard";
 import { SeoHead } from "@/components/SeoHead";
-import { carregarConcursos } from '@/dados/concursos';
+import { apenasAbertos, carregarConcursos, formatarDataBr } from '@/dados/concursos';
 import { Helmet } from 'react-helmet-async';
 
 interface Concurso {
@@ -40,6 +40,7 @@ const ConcursosPage = () => {
   const [concursos, setConcursos] = useState<Concurso[]>([]);
   const [filteredConcursos, setFilteredConcursos] = useState<Concurso[]>([]);
   const [loading, setLoading] = useState(true);
+  const [geradoEm, setGeradoEm] = useState('');
   const [estados, setEstados] = useState<string[]>([]);
   const [orgaos, setOrgaos] = useState<string[]>([]);
   const [filters, setFilters] = useState<Filters>({
@@ -62,10 +63,10 @@ const ConcursosPage = () => {
   const fetchConcursos = async () => {
     try {
       setLoading(true);
-      const { concursos: dados } = await carregarConcursos();
+      const { concursos: dados, gerado_em } = await carregarConcursos();
+      setGeradoEm(gerado_em);
 
-      const formatados: Concurso[] = dados
-        .slice()
+      const formatados: Concurso[] = apenasAbertos(dados)
         .sort((a, b) =>
           a.inscricoes_ate.localeCompare(b.inscricoes_ate) || (b.salario ?? 0) - (a.salario ?? 0),
         )
@@ -289,7 +290,9 @@ const ConcursosPage = () => {
                     <span className="text-border">•</span>
                     <div className="flex items-center gap-1">
                       <Calendar className="w-4 h-4 text-primary" />
-                      Atualizado em {new Date().toLocaleDateString('pt-BR')}
+                      {/* Data da coleta, e não a de hoje: é o que diz de quando
+                          são os dados que a pessoa está lendo. */}
+                      {geradoEm ? `Dados coletados em ${formatarDataBr(geradoEm)}` : 'Atualização semanal'}
                     </div>
                   </div>
                 </div>
@@ -650,10 +653,9 @@ const ConcursosPage = () => {
                         </summary>
                         <div className="pt-4 mt-4 border-t border-border">
                           <p className="text-muted-foreground">
-                            Utilize nossas questões oficiais, flashcards e plano de estudos personalizado. 
-                            Comece pelo edital, identifique os temas mais cobrados e pratique com questões 
-                            anteriores do mesmo órgão. Mantenha uma rotina constante de estudos e faça revisões 
-                            periódicas com nossos flashcards inteligentes.
+                            Comece pelo edital: ele diz quais matérias caem e com que peso. Monte uma rotina
+                            que você consiga repetir, pratique com questões e faça revisões periódicas. Os guias
+                            do site explicam cada etapa, e o planner e os flashcards ajudam a manter o ritmo.
                           </p>
                         </div>
                       </details>

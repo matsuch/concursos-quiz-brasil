@@ -20,3 +20,27 @@
  * `DATABASE_URL` nas variáveis de ambiente da Vercel.
  */
 export const IA_PLANO_ESTUDOS_HABILITADA: boolean = false;
+
+/**
+ * Simulados.
+ *
+ * Desligado: a tabela `simulados` está vazia, e um item de menu que abre uma
+ * tela sem conteúdo é pior do que não ter o item. A rota /simulado continua
+ * existindo e mostra um aviso para quem chegar por link antigo.
+ *
+ * Para religar: cadastrar ao menos um simulado com questões e colocar `true`.
+ */
+export const SIMULADOS_HABILITADOS: boolean = false;
+
+/**
+ * Explicação da IA nas questões.
+ *
+ * Desligada: nenhuma questão do banco tem `ai_explanation` preenchida. Com a
+ * chave ligada o visitante vê "disponível para quem tem conta", cria a conta e
+ * encontra "não disponível para esta questão" — promessa que o produto não
+ * cumpre. Desligada, o bloco só aparece para quem está logado e apenas nas
+ * questões que de fato têm explicação.
+ *
+ * Para religar: preencher as explicações e colocar `true`.
+ */
+export const EXPLICACAO_IA_HABILITADA: boolean = false;

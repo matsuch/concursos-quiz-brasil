@@ -21,7 +21,7 @@ export const SeoHead = ({
   title,
   description,
   canonical = SITE + '/',
-  keywords = 'concursos públicos, questões oficiais, flashcards, plano de estudos, editais, simulados, aprovação em concursos',
+  keywords,
   ogImage = 'https://passar-concursos.vercel.app/og-image.jpg',
   structuredData = []
 }: SeoHeadProps) => {
@@ -30,7 +30,8 @@ export const SeoHead = ({
     <Helmet>
       <title>{title}</title>
       <meta name="description" content={description} />
-      <meta name="keywords" content={keywords} />
+      {/* Buscadores ignoram meta keywords; só sai se a página pedir. */}
+      {keywords && <meta name="keywords" content={keywords} />}
       <link rel="canonical" href={url} />
       
       {/* Open Graph */}

@@ -204,6 +204,14 @@ const SimuladoPage = () => {
                   <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-primary" />
                   <p className="text-muted-foreground">Carregando simulados...</p>
                 </div>
+              ) : simulados.length === 0 ? (
+                <Card className="p-8 text-center">
+                  <h2 className="text-lg font-semibold mb-2">Ainda não há simulados disponíveis</h2>
+                  <p className="text-muted-foreground mb-6">
+                    Estamos preparando os primeiros. Enquanto isso, você pode treinar com as questões por matéria.
+                  </p>
+                  <Button onClick={() => navigate("/quiz")}>Resolver questões</Button>
+                </Card>
               ) : (
                 <div className="grid gap-4">
                   {simulados.map((simulado) => (
@@ -405,8 +413,8 @@ const SimuladoPage = () => {
               <Button onClick={resetSimulado}>
                 Fazer Outro Simulado
               </Button>
-              <Button variant="outline" onClick={() => navigate("/ranking")}>
-                Ver Ranking
+              <Button variant="outline" onClick={() => navigate("/minha-conta")}>
+                Ver meu desempenho
               </Button>
             </div>
           </div>
@@ -432,10 +440,11 @@ const SimuladoPage = () => {
     <>
     <Helmet>
       <title>Simulados de Concursos Públicos | Teste seus Conhecimentos</title>
-      <meta name="description" content="Faça simulados completos de concursos públicos. Teste seus conhecimentos com questões oficiais em condições reais de prova." />
+      <meta name="description" content="Simulados cronometrados de concursos públicos." />
       <link rel="canonical" href="https://passar-concursos.vercel.app/simulado" />
+      <meta name="robots" content="noindex, nofollow" />
       <meta property="og:title" content="Simulados - Passar Concursos" />
-      <meta property="og:description" content="Simulados com questões oficiais em condições reais de prova." />
+      <meta property="og:description" content="Simulados cronometrados de concursos públicos." />
       <meta property="og:url" content="https://passar-concursos.vercel.app/simulado" />
     </Helmet>
 

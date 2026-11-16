@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import ConcursoCard from "@/components/ConcursoCard";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, Notebook, Loader2, ChevronLeft, ChevronRight, Crown } from "lucide-react";
+import { BookOpen, Notebook, Loader2, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { carregarConcursos } from "@/dados/concursos";
-import { Helmet } from 'react-helmet-async';
+import { apenasAbertos, carregarConcursos } from "@/dados/concursos";
+import { SeoHead } from "@/components/SeoHead";
 
 interface Concurso {
   id: string;
@@ -22,6 +22,41 @@ interface Concurso {
   salarioAte?: boolean;
   slug: string;
 }
+
+const SITE = "https://passar-concursos.vercel.app";
+
+const DESCRICAO =
+  "Plataforma gratuita para quem estuda para concursos públicos: lista de concursos com inscrições abertas, questões por matéria, flashcards, planner de estudos e guias práticos.";
+
+// Só o que o site entrega hoje. Não há plano pago nem assinatura: quando
+// houver, a pergunta volta — com o que de fato existir.
+const PERGUNTAS = [
+  {
+    pergunta: "O Passar Concursos é gratuito?",
+    resposta:
+      "Sim. A lista de concursos, os guias e as questões podem ser usados sem pagar nada e sem anúncios. Flashcards, planner de estudos, anotações e o painel de desempenho pedem apenas uma conta gratuita, para guardar o seu progresso.",
+  },
+  {
+    pergunta: "Preciso criar conta para usar?",
+    resposta:
+      "Não para consultar concursos abertos, ler os guias e ver questões. A conta é necessária para registrar suas respostas e usar flashcards, planner e anotações.",
+  },
+  {
+    pergunta: "De onde vêm os dados dos concursos?",
+    resposta:
+      "Da listagem pública do PCI Concursos, coletada automaticamente uma vez por semana. Cada página traz o link para a fonte. O edital original prevalece sempre sobre o que está aqui.",
+  },
+  {
+    pergunta: "Com que frequência a lista de concursos é atualizada?",
+    resposta:
+      "Toda semana. Entre uma coleta e outra, os concursos cujo prazo de inscrição termina saem da lista automaticamente.",
+  },
+  {
+    pergunta: "Posso criar meus próprios flashcards?",
+    resposta:
+      "Sim. Além dos flashcards prontos por matéria, você cria os seus para revisar o que achar mais importante. Os flashcards que você cria ficam visíveis só para você.",
+  },
+];
 
 const Home = () => {
   const navigate = useNavigate();
@@ -46,8 +81,7 @@ const Home = () => {
       // Instantâneo gerado no build (ver src/dados/concursos.ts): sem ida ao
       // banco, sem cold start do Neon na página de entrada.
       const { concursos: dados } = await carregarConcursos();
-      const concursosFormatados = dados
-        .slice()
+      const concursosFormatados = apenasAbertos(dados)
         .sort((a, b) =>
           a.inscricoes_ate.localeCompare(b.inscricoes_ate) || (b.salario ?? 0) - (a.salario ?? 0),
         )
@@ -93,55 +127,28 @@ const Home = () => {
     }));
   };
 
-  // Função para formatar data para Schema.org
-  const formatDateForSchema = (dateString: string) => {
-    if (!dateString) return "";
-    return new Date(dateString).toISOString();
-  };
-
-  // Adicionado: Gerar dados estruturados (Schema.org)
-  const generateStructuredData = () => {
-    const baseUrl = "https://passar-concursos.vercel.app";
-    
-    const structuredData = {
+  // Sem SearchAction: o site não tem página de busca, e anunciar /search
+  // seria apontar o buscador para um endereço que não existe. Sem breadcrumb:
+  // a home é a raiz, não tem trilha.
+  const dadosEstruturados = [
+    {
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "Passar Concursos",
-      "description": "Treine com questões oficiais, revise com flashcards personalizados e organize seu plano de estudos para concursos públicos.",
-      "url": baseUrl,
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": `${baseUrl}/search?q={search_term_string}`,
-        "query-input": "required name=search_term_string"
-      }
-    };
-
-    return JSON.stringify(structuredData);
-  };
-
-  // Adicionado: Breadcrumb structured data
-  const generateBreadcrumbData = () => {
-    const breadcrumbData = {
+      "description": DESCRICAO,
+      "url": SITE,
+      "inLanguage": "pt-BR",
+    },
+    {
       "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://passar-concursos.vercel.app/"
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": "Concursos Públicos",
-          "item": "https://passar-concursos.vercel.app/concursos"
-        }
-      ]
-    };
-
-    return JSON.stringify(breadcrumbData);
-  };
+      "@type": "FAQPage",
+      "mainEntity": PERGUNTAS.map(({ pergunta, resposta }) => ({
+        "@type": "Question",
+        "name": pergunta,
+        "acceptedAnswer": { "@type": "Answer", "text": resposta },
+      })),
+    },
+  ];
 
   const renderConcursos = (concursosList: Concurso[], tabKey: 'destaque' | 'aberto' | 'breve') => {
     if (concursosList.length === 0) {
@@ -181,7 +188,7 @@ const Home = () => {
               <button
                 onClick={() => handlePrev(tabKey)}
                 disabled={currentSlide[tabKey] === 0}
-                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 bg-white rounded-full p-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed z-10"
+                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 bg-card border border-border rounded-full p-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed z-10"
                 aria-label={`Anterior concurso ${tabKey}`}
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -190,7 +197,7 @@ const Home = () => {
               <button
                 onClick={() => handleNext(tabKey, concursosList.length)}
                 disabled={currentSlide[tabKey] === concursosList.length - 1}
-                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 bg-white rounded-full p-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed z-10"
+                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 bg-card border border-border rounded-full p-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed z-10"
                 aria-label={`Próximo concurso ${tabKey}`}
               >
                 <ChevronRight className="w-5 h-5" />
@@ -227,34 +234,12 @@ const Home = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Passar Concursos - Questões Oficiais e Flashcards para Concursos Públicos</title>
-        <meta name="description" content="Treine com questões oficiais, revise com flashcards personalizados e organize seu plano de estudos. Editais recentes, simulados e muito mais para concursos públicos." />
-        <meta name="keywords" content="concursos públicos, questões oficiais, flashcards, plano de estudos, editais, simulados, aprovação em concursos" />
-        <link rel="canonical" href="https://passar-concursos.vercel.app/" />
-        
-        {/* Open Graph Tags */}
-        <meta property="og:title" content="Passar Concursos - Questões Oficiais e Flashcards" />
-        <meta property="og:description" content="Treine com questões oficiais de concursos públicos e revise com flashcards personalizados para sua aprovação." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://passar-concursos.vercel.app/" />
-        <meta property="og:image" content="https://passar-concursos.vercel.app/og-image.jpg" />
-        
-        {/* Twitter Card */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Passar Concursos - Questões Oficiais e Flashcards" />
-        <meta name="twitter:description" content="Treine com questões oficiais de concursos públicos e revise com flashcards personalizados." />
-        <meta name="twitter:image" content="https://passar-concursos.vercel.app/twitter-image.jpg" />
-        
-        {/* Structured Data */}
-        <script type="application/ld+json">
-          {generateStructuredData()}
-        </script>
-        
-        <script type="application/ld+json">
-          {generateBreadcrumbData()}
-        </script>
-      </Helmet>
+      <SeoHead
+        title="Passar Concursos — concursos abertos, questões e guias de estudo gratuitos"
+        description={DESCRICAO}
+        canonical="/"
+        structuredData={dadosEstruturados}
+      />
     
       <div className="min-h-screen bg-background">
         {/* Hero Section */}
@@ -268,28 +253,26 @@ const Home = () => {
                 </span>
               </h1>
               <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mb-6 sm:mb-8 lg:mb-10 max-w-3xl">
-                Treine com <strong>questões oficiais</strong>, revise com <strong>flashcards personalizados</strong> e organize seu <strong>plano de estudos</strong> para concursos públicos.
+                Acompanhe os <strong>concursos com inscrições abertas</strong>, treine com <strong>questões por matéria</strong> e organize seus estudos. Gratuito e sem anúncios.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-6 items-center">
                 <Button
                   size="lg"
                   onClick={() => navigate("/quiz")}
                   className="w-full sm:w-auto bg-[#2563eb] hover:bg-[#1d4ed8] transition-colors text-base lg:text-lg px-6 lg:px-8 py-6 lg:py-7"
-                  aria-label="Começar a praticar com questões oficiais"
                 >
                   <Notebook className="w-4 h-5 lg:w-6 lg:h-6" />
-                  Questões Oficiais
+                  Resolver questões
                 </Button>
 
                 <Button
                   size="lg"
                   variant="outline"
-                  onClick={() => navigate("/estudo")}
-                  className="w-full sm:w-auto bg-[#10b981] hover:bg-[#059669] text-white transition-colors text-base lg:text-lg px-6 lg:px-8 py-6 lg:py-7"
-                  aria-label="Acessar flashcards personalizados"
+                  onClick={() => navigate("/concursos")}
+                  className="w-full sm:w-auto text-base lg:text-lg px-6 lg:px-8 py-6 lg:py-7"
                 >
                   <BookOpen className="w-5 h-5 lg:w-6 lg:h-6 mr-2" />
-                  Flashcards
+                  Ver concursos abertos
                 </Button>
               </div>
             </div>
@@ -301,10 +284,10 @@ const Home = () => {
           <div className="mx-auto w-full max-w-screen-2xl px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16">
             <div className="text-center mb-8">
               <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
-                Editais Recentes de Concursos Públicos
+Concursos com inscrições abertas
               </h2>
               <p className="text-sm sm:text-base text-muted-foreground">
-                Fique por dentro das últimas oportunidades de concursos públicos abertos e em destaque
+Os prazos mais próximos primeiro. A lista é atualizada toda semana.
               </p>
             </div>
 
@@ -348,176 +331,36 @@ const Home = () => {
           </div>
         </section>
 
-        {/*FAQ Section para SEO*/}
-        <section className="py-12 bg-gray-50 dark:bg-gray-900/50">
+        {/* Perguntas frequentes. A lista PERGUNTAS alimenta a tela e o JSON-LD:
+            dado estruturado que diz outra coisa que a página é motivo de
+            punição, e era o caso quando os dois textos viviam separados. */}
+        <section className="py-12 bg-muted/40">
           <div className="container mx-auto px-4">
-            <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 text-gray-900 dark:text-white">
-              Perguntas Frequentes sobre Concursos Públicos
+            <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 text-foreground">
+              Perguntas frequentes
             </h2>
             <div className="max-w-3xl mx-auto space-y-4">
-              <details className="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:border-blue-500/50 dark:hover:border-blue-500/30 transition-all duration-300 ease-in-out">
-                <summary className="font-semibold text-lg mb-2 text-gray-900 dark:text-white cursor-pointer flex justify-between items-center list-none">
-                  <span>Como funciona o treino com questões oficiais?</span>
-                  <svg 
-                    className="w-5 h-5 text-gray-500 dark:text-gray-400 group-open:rotate-180 transition-transform duration-300"
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </summary>
-                <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-700">
-                  <p className="text-gray-600 dark:text-gray-300">
-                    Oferecemos questões retiradas diretamente de provas anteriores de concursos públicos, 
-                    permitindo que você pratique com conteúdo real e atualizado.
-                  </p>
-                </div>
-              </details>
-              
-              <details className="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:border-blue-500/50 dark:hover:border-blue-500/30 transition-all duration-300 ease-in-out">
-                <summary className="font-semibold text-lg mb-2 text-gray-900 dark:text-white cursor-pointer flex justify-between items-center list-none">
-                  <span>Os flashcards são personalizados?</span>
-                  <svg 
-                    className="w-5 h-5 text-gray-500 dark:text-gray-400 group-open:rotate-180 transition-transform duration-300"
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </summary>
-                <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-700">
-                  <p className="text-gray-600 dark:text-gray-300">
-                    Sim, você pode criar flashcards personalizados com base nas questões que praticou, focando nos tópicos onde precisa de mais revisão para concursos públicos.
-                  </p>
-                </div>
-              </details>
-              
-              <details className="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:border-blue-500/50 dark:hover:border-blue-500/30 transition-all duration-300 ease-in-out">
-                <summary className="font-semibold text-lg mb-2 text-gray-900 dark:text-white cursor-pointer flex justify-between items-center list-none">
-                  <span>Como acompanhar os editais mais recentes?</span>
-                  <svg 
-                    className="w-5 h-5 text-gray-500 dark:text-gray-400 group-open:rotate-180 transition-transform duration-300"
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </summary>
-                <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-700">
-                  <p className="text-gray-600 dark:text-gray-300">
-                    Mantemos uma lista atualizada de concursos públicos em destaque, abertos e 
-                    em breve, com informações completas sobre vagas, salários, prazos e links oficiais. 
-                  </p>
-                </div>
-              </details>
-
-              <details className="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:border-blue-500/50 dark:hover:border-blue-500/30 transition-all duration-300 ease-in-out">
-                <summary className="font-semibold text-lg mb-2 text-gray-900 dark:text-white cursor-pointer flex justify-between items-center list-none">
-                  <span>É necessário pagar para usar a plataforma?</span>
-                  <svg 
-                    className="w-5 h-5 text-gray-500 dark:text-gray-400 group-open:rotate-180 transition-transform duration-300"
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </summary>
-                <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-700">
-                  <p className="text-gray-600 dark:text-gray-300">
-                    Oferecemos acesso gratuito a questões básicas e listas de concursos. Nossos planos 
-                    premium desbloqueiam funcionalidades avançadas como flashcards ilimitados, planner de 
-                    estudos, simulados completos e estatísticas detalhadas do seu desempenho.
-                  </p>
-                </div>
-              </details>
-
-              <details className="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:border-blue-500/50 dark:hover:border-blue-500/30 transition-all duration-300 ease-in-out">
-                <summary className="font-semibold text-lg mb-2 text-gray-900 dark:text-white cursor-pointer flex justify-between items-center list-none">
-                  <span>Como funciona a subscrição?</span>
-                  <svg 
-                    className="w-5 h-5 text-gray-500 dark:text-gray-400 group-open:rotate-180 transition-transform duration-300"
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </summary>
-                <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-700">
-                  <p className="text-gray-600 dark:text-gray-300">
-                  Você pode assinar a subscrição mensal através da nossa página de planos.
-                  Oferecemos duas opções de subscrição para atender às suas necessidades de estudo.  
-                  </p>
-                </div>
-              </details>
+              {PERGUNTAS.map(({ pergunta, resposta }) => (
+                <details
+                  key={pergunta}
+                  className="group bg-card p-6 rounded-lg shadow-sm border border-border hover:border-primary/40 transition-colors"
+                >
+                  <summary className="font-semibold text-lg text-foreground cursor-pointer flex justify-between items-center gap-4 list-none">
+                    <span>{pergunta}</span>
+                    <ChevronDown
+                      className="w-5 h-5 shrink-0 text-muted-foreground group-open:rotate-180 transition-transform duration-300"
+                      aria-hidden="true"
+                    />
+                  </summary>
+                  <div className="pt-4 mt-4 border-t border-border">
+                    <p className="text-muted-foreground">{resposta}</p>
+                  </div>
+                </details>
+              ))}
             </div>
-
-            {/* Adicionado: Schema Markup para FAQ */}
-            <script
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{
-                __html: JSON.stringify({
-                  "@context": "https://schema.org",
-                  "@type": "FAQPage",
-                  "mainEntity": [
-                    {
-                      "@type": "Question",
-                      "name": "Como funciona o treino com questões oficiais?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Oferecemos questões retiradas diretamente de provas anteriores de concursos públicos, permitindo que você pratique com conteúdo real e atualizado."
-                      }
-                    },
-                    {
-                      "@type": "Question",
-                      "name": "Os flashcards são personalizados?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Sim, existem flashcards prontos para diversos temas e áreas. Além disso, você pode criar seus próprios flashcards personalizados para revisar os tópicos que achar mais importantes."
-                      }
-                    },
-                    {
-                      "@type": "Question",
-                      "name": "Como acompanhar os editais mais recentes?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Mantemos uma lista atualizada de concursos públicos em destaque, abertos e em breve, com informações completas sobre vagas, salários, prazos e links oficiais."
-                      }
-                    },
-                    {
-                      "@type": "Question",
-                      "name": "É necessário pagar para usar a plataforma?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Oferecemos acesso gratuito a questões básicas e listas de concursos. Temos dois planos 'Basico' e 'Avançado' que desbloqueiam funcionalidades avançadas como questões comentadas por IA, flashcards personalizaveis, Planner de estudos, simulados completos e estatísticas detalhadas do seu desempenho."
-                      }
-                    },
-                    {
-                      "@type": "Question",
-                      "name": "Como funciona a subscrição?",
-                      "acceptedAnswer": {
-                          "@type": "Answer",
-                          "text": "Você pode assinar a subscrição mensal através da nossa página de planos. Oferecemos duas opções de subscrição para atender às suas necessidades de estudo."
-                      }
-                    }
-                  ]
-                })
-              }}
-            />
           </div>
         </section>
 
-        {/* Pricing Section - só aparece se necessário */}
-        
       </div>
     </>
   );
