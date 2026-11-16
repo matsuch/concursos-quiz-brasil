@@ -151,6 +151,27 @@ SEO is involved.
 
 ---
 
+## Marketing
+
+Use as skills abaixo, em `.claude/skills/`, para tarefas de marketing que não
+são SEO:
+
+- `copywriting` — texto de página (home, landing, chamadas)
+- `cro` — por que uma página ou formulário não converte
+- `signup` — fluxo de cadastro
+- `onboarding` — primeiro acesso e ativação
+- `launch` — planejamento de lançamento e divulgação
+- `analytics` — o que medir e como nomear eventos
+
+Origem: `coreyhaines31/marketingskills` (MIT), commit `1f837447`, copiadas em
+2026-11-16 sem a pasta `evals`. São só Markdown; as menções a ferramentas e
+parceiros dentro delas são sugestões do autor, não escolhas deste projeto.
+
+A regra de integridade de dados deste arquivo vale também para texto de
+marketing: não prometa volume, recurso ou resultado que o produto não entrega.
+
+---
+
 # Skill Selection
 
 Before starting a task, determine whether one or more specialized

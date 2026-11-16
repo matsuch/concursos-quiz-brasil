@@ -1,8 +1,8 @@
 # Passar Concursos
 
 > Plataforma gratuita de preparação para concursos públicos no Brasil:
-> listagem de concursos com inscrições abertas, banco de questões, flashcards,
-> simulados e planner de estudos. Sem cadastro pago e sem anúncio.
+> listagem de concursos com inscrições abertas, questões por matéria,
+> flashcards, planner de estudos e guias. Sem cadastro pago e sem anúncio.
 
 As páginas de concurso, os guias e as duas listagens são pré-renderizados: o HTML
 servido já traz o conteúdo, sem depender de JavaScript. As demais rotas são
@@ -64,14 +64,21 @@ Ressalvas que importam para quem for citar:
   número — não significa zero vaga.
 - A escolaridade indicada é a MENOR exigida pelo concurso, quando o edital
   abrange mais de um nível.
-- Concurso com inscrição encerrada é removido a cada coleta.
+- Concurso com inscrição encerrada é removido a cada coleta. Entre uma coleta e
+  outra, a listagem esconde os que venceram e a página do concurso passa a
+  avisar que o prazo terminou.
 
 Para conferência, o edital original prevalece sempre sobre o que está aqui.
 
 ## Áreas que exigem login
 
-Planner de estudos, ciclos, revisões, anotações, simulados e conta do usuário.
+Planner de estudos, ciclos, revisões, anotações, flashcards e conta do usuário.
 Não há conteúdo indexável nesses endereços.
+
+## Institucional
+
+- [Política de privacidade](https://passar-concursos.vercel.app/privacidade)
+- [Termos de uso](https://passar-concursos.vercel.app/termos)
 
 ## Contato
 

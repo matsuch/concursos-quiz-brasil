@@ -32,6 +32,10 @@ const ROTAS = [
   // As questões aparecem para quem não está logado; o login só é exigido para
   // responder. Então há conteúdo indexável aqui.
   { caminho: '/quiz', changefreq: 'weekly', priority: '0.8' },
+  // Texto institucional: público, estável, e é onde o rodapé de toda página
+  // aponta. lastmod fixo na data da última revisão do texto.
+  { caminho: '/privacidade', changefreq: 'yearly', priority: '0.2', lastmod: '2026-11-16' },
+  { caminho: '/termos', changefreq: 'yearly', priority: '0.2', lastmod: '2026-11-16' },
 ];
 
 // Guias: uma entrada por guia publicado, com lastmod vindo do próprio

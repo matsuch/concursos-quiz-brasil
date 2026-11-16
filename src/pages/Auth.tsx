@@ -1,19 +1,50 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { track } from "@vercel/analytics";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Brain, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { z } from "zod";
 import { Helmet } from 'react-helmet-async';
 
-const authSchema = z.object({
-  email: z.string().email("Email inválido"),
-  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
+// No login a senha só precisa existir: quem criou conta com a regra antiga
+// (6 caracteres) tem de continuar entrando. O mínimo de 8 vale para conta nova.
+const loginSchema = z.object({
+  email: z.string().email("E-mail inválido"),
+  password: z.string().min(1, "Informe a senha"),
 });
+const cadastroSchema = z.object({
+  email: z.string().email("E-mail inválido"),
+  password: z.string().min(8, "A senha deve ter pelo menos 8 caracteres"),
+});
+
+/**
+ * Traduz a falha de auth para algo que a pessoa consiga resolver. O adapter
+ * normaliza os erros no formato do supabase-js (status + message), então a
+ * checagem vai pelo status e, na falta dele, pelo texto.
+ */
+function mensagemDeErro(error: Error & { status?: number; code?: string }, acao: "login" | "cadastro") {
+  const texto = `${error.code ?? ""} ${error.message ?? ""}`.toLowerCase();
+  if (error.status === 429 || texto.includes("too many")) {
+    return "Muitas tentativas em pouco tempo. Aguarde um minuto e tente de novo.";
+  }
+  if (acao === "cadastro" && (texto.includes("already") || texto.includes("exists"))) {
+    return "Este e-mail já tem conta. Tente entrar.";
+  }
+  if (acao === "cadastro" && texto.includes("password")) {
+    return "A senha não foi aceita. Use pelo menos 8 caracteres.";
+  }
+  if (acao === "login" && (error.status === 400 || error.status === 401 || texto.includes("invalid"))) {
+    return "E-mail ou senha incorretos.";
+  }
+  return acao === "login"
+    ? "Não foi possível entrar agora. Tente de novo em instantes."
+    : "Não foi possível criar a conta agora. Tente de novo em instantes.";
+}
 
 const Auth = () => {
   // /auth abre no login; /auth?modo=cadastro abre direto no cadastro, que é
@@ -37,7 +68,7 @@ const Auth = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const validation = authSchema.safeParse({ email, password });
+    const validation = (isLogin ? loginSchema : cadastroSchema).safeParse({ email, password });
     if (!validation.success) {
       toast({
         title: "Erro de validação",
@@ -53,38 +84,20 @@ const Auth = () => {
       if (isLogin) {
         const { error } = await signIn(email, password);
         if (error) {
-          let message = "Erro ao fazer login";
-          if (error.message.includes("Invalid login credentials")) {
-            message = "Email ou senha incorretos";
-          }
-          toast({
-            title: "Erro",
-            description: message,
-            variant: "destructive",
-          });
+          toast({ title: "Não foi possível entrar", description: mensagemDeErro(error, "login"), variant: "destructive" });
         } else {
-          toast({
-            title: "Bem-vindo!",
-            description: "Login realizado com sucesso",
-          });
+          track("login", { metodo: "email" });
+          toast({ title: "Bem-vindo!", description: "Login realizado com sucesso" });
         }
       } else {
         const { error } = await signUp(email, password);
         if (error) {
-          let message = "Erro ao criar conta";
-          if (error.message.includes("User already registered")) {
-            message = "Este email já está cadastrado";
-          }
-          toast({
-            title: "Erro",
-            description: message,
-            variant: "destructive",
-          });
+          toast({ title: "Não foi possível criar a conta", description: mensagemDeErro(error, "cadastro"), variant: "destructive" });
         } else {
-          toast({
-            title: "Conta criada!",
-            description: "Verifique seu email para confirmar o cadastro",
-          });
+          track("cadastro", { metodo: "email" });
+          // Sem "verifique seu e-mail": a confirmação por e-mail não está
+          // ligada no Neon Auth, e a conta já entra em uso.
+          toast({ title: "Conta criada!", description: "Você já pode começar a estudar." });
         }
       }
     } finally {
@@ -104,7 +117,7 @@ const Auth = () => {
     <>
     <Helmet>
       <title>{isLogin ? 'Entrar' : 'Criar Conta'} | Passar Concursos</title>
-      <meta name="description" content={isLogin ? 'Entre na sua conta para acessar questões, flashcards e plano de estudos personalizado.' : 'Crie sua conta grátis e comece a estudar para concursos públicos com questões oficiais.'} />
+      <meta name="description" content={isLogin ? 'Entre na sua conta para acessar questões, flashcards e plano de estudos personalizado.' : 'Crie sua conta grátis e comece a estudar para concursos públicos.'} />
       <link rel="canonical" href="https://passar-concursos.vercel.app/auth" />
       <meta name="robots" content="noindex, nofollow" />
     </Helmet>
@@ -115,9 +128,9 @@ const Auth = () => {
           <div className="flex justify-center">
           </div>
           <div>
-            <CardTitle className="text-2xl font-bold">
-              {isLogin ? "Entrar" : "Criar Conta"}
-            </CardTitle>
+            <h1 className="text-2xl font-bold leading-none tracking-tight">
+              {isLogin ? "Entrar" : "Criar conta gratuita"}
+            </h1>
             <CardDescription className="mt-2">
               {isLogin 
                 ? "Entre na sua conta para continuar" 
@@ -131,6 +144,7 @@ const Auth = () => {
             className="w-full mb-4"
             onClick={async () => {
               setIsGoogleLoading(true);
+              track(isLogin ? "login" : "cadastro", { metodo: "google" });
               const { error } = await signInWithGoogle();
               if (error) {
                 toast({
@@ -171,6 +185,7 @@ const Auth = () => {
               <Input
                 id="email"
                 type="email"
+                autoComplete="email"
                 placeholder="seu@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -188,7 +203,8 @@ const Auth = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isSubmitting || isGoogleLoading}
-                minLength={6}
+                minLength={isLogin ? undefined : 8}
+                autoComplete={isLogin ? "current-password" : "new-password"}
               />
             </div>
             <Button 
@@ -209,6 +225,14 @@ const Auth = () => {
             </Button>
           </form>
           
+          {!isLogin && (
+            <p className="mt-4 text-xs text-muted-foreground text-center">
+              Ao criar a conta você concorda com os{" "}
+              <Link to="/termos" className="underline hover:text-foreground">Termos de uso</Link> e com a{" "}
+              <Link to="/privacidade" className="underline hover:text-foreground">Política de privacidade</Link>.
+            </p>
+          )}
+
           <div className="mt-6 text-center">
             <button
               type="button"

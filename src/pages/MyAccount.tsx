@@ -7,7 +7,11 @@ import {
   Coffee, Rocket, Target, Zap, Star, Shield, Flame,
 } from 'lucide-react';
 import { db } from '@/integrations/neon/client';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
+  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -89,6 +93,26 @@ const MyAccount = () => {
       console.error('Erro:', err);
       setError('Erro ao carregar dados da conta');
     } finally { setLoading(false); }
+  };
+
+  /**
+   * Exclusão de conta. delete_my_account() apaga os dados de estudo de quem
+   * chama (o alvo é sempre auth.user_id(), nunca um parâmetro) e registra o
+   * pedido para o cadastro de login ser removido no Neon Auth.
+   */
+  const [excluindo, setExcluindo] = useState(false);
+  const excluirConta = async () => {
+    setExcluindo(true);
+    setError(null);
+    const { error: rpcError } = await db.rpc('delete_my_account');
+    if (rpcError) {
+      console.error('Erro ao excluir conta:', rpcError);
+      setError('Não foi possível excluir a conta agora. Tente de novo em alguns minutos.');
+      setExcluindo(false);
+      return;
+    }
+    await db.auth.signOut();
+    navigate('/', { replace: true });
   };
 
   const getStatusInfo = (status: string) => {
@@ -270,6 +294,46 @@ const MyAccount = () => {
             </TabsContent>
 
           </Tabs>
+
+          {/* Privacidade e exclusão de conta */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Privacidade</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Veja como seus dados são tratados na{' '}
+                <Link to="/privacidade" className="text-primary underline">Política de privacidade</Link> e nos{' '}
+                <Link to="/termos" className="text-primary underline">Termos de uso</Link>.
+              </p>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive" disabled={excluindo}>
+                    {excluindo && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                    Excluir minha conta
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Excluir sua conta?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Todo o seu progresso, anotações, flashcards criados e dados do planner serão apagados agora.
+                      Seu cadastro de login é removido em seguida. Não é possível desfazer.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={excluirConta}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Excluir conta
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </>

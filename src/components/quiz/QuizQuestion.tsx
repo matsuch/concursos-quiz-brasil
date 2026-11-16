@@ -1,4 +1,5 @@
 // components/quiz/QuizQuestion.tsx
+import { EXPLICACAO_IA_HABILITADA } from "@/config/features";
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
@@ -217,7 +218,7 @@ export function QuizQuestion({
       {/* AI Explanation — recurso de quem tem conta. Sem sessão o texto nem
           chega ao navegador: `ai_explanation` está fora do GRANT do role
           `anonymous` (ver neon/schema.sql). */}
-      {answered && (
+      {answered && (user ? Boolean(question.ai_explanation) : EXPLICACAO_IA_HABILITADA) && (
         <Card className="p-4 sm:p-6 border-primary/30 bg-primary/5">
           <button
             onClick={handleAIExplanationClick}

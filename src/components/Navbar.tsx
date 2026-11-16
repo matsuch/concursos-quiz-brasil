@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/hooks/useAuth";
-import { Trophy, Notebook, Swords, Home, BookOpen, Award, Menu, LogIn, LogOut, User, Landmark, Scale, CreditCard, Map, CalendarDays, FileText, Library } from "lucide-react";
+import { Notebook, Home, BookOpen, Menu, LogIn, LogOut, User, Landmark, Scale, CalendarDays, FileText, Library, Timer, Briefcase } from "lucide-react";
+import { Link } from "react-router-dom";
+import { SIMULADOS_HABILITADOS } from "@/config/features";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +14,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 // no menu e o que da caminho de rastreio para a secao inteira.
 const publicNavItems = [
   { to: "/", icon: Home, label: "Início" },
+  { to: "/concursos", icon: Briefcase, label: "Concursos" },
   { to: "/guias", icon: Library, label: "Guias" },
   { to: "/quiz", icon: Notebook, label: "Questões" },
 ];
@@ -20,7 +23,8 @@ const authOnlyNavItems = [
   { to: "/anotacoes", icon: FileText, label: "Anotações" },
   { to: "/planner", icon: CalendarDays, label: "Planner" },
   { to: "/estudo", icon: BookOpen, label: "Flashcards" },
-  { to: "/simulado", icon: BookOpen, label: "Simulado" },
+  // Fora do menu enquanto não houver simulado cadastrado (ver features.ts).
+  ...(SIMULADOS_HABILITADOS ? [{ to: "/simulado", icon: Timer, label: "Simulado" }] : []),
   { to: "/minha-conta", icon: Landmark, label: "Minha Conta" },
 ];
 
@@ -46,14 +50,14 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 w-full bg-card/95 backdrop-blur-lg border-b border-border shadow-sm">
       <div className="container mx-auto px-3 sm:px-4">
         <div className="flex items-center justify-between h-14 sm:h-16">
-          <div className="flex items-center gap-2 min-w-0">
+          <Link to="/" className="flex items-center gap-2 min-w-0 rounded-lg" aria-label="Passar Concursos — página inicial">
             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-[#2563eb] flex items-center justify-center flex-shrink-0">
-              <Scale className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              <Scale className="w-5 h-5 sm:w-6 sm:h-6 text-white" aria-hidden="true" />
             </div>
             <span className="text-base sm:text-lg lg:text-xl font-bold text-blue-600 truncate">
-              Passar Concursos Brasil
+              Passar Concursos
             </span>
-          </div>
+          </Link>
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-1">
@@ -61,11 +65,14 @@ const Navbar = () => {
               <NavLink
                 key={item.to}
                 to={item.to}
+                title={item.label}
                 className="px-3 lg:px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center gap-2"
                 activeClassName="!text-primary !bg-primary/10"
               >
-                <item.icon className="w-4 h-4" />
-                <span className="hidden lg:inline">{item.label}</span>
+                {/* Entre md e lg só o ícone aparece: o rótulo segue no DOM
+                    para leitor de tela e vira dica ao passar o mouse. */}
+                <item.icon className="w-4 h-4" aria-hidden="true" />
+                <span className="sr-only lg:not-sr-only">{item.label}</span>
               </NavLink>
             ))}
             
@@ -75,6 +82,7 @@ const Navbar = () => {
               variant={user ? "ghost" : "default"}
               size="sm"
               onClick={handleAuthClick}
+              aria-label={user ? "Sair" : "Entrar"}
               className={user 
                 ? "ml-2 text-blue-600 hover:bg-blue-50" 
                 : "ml-2 bg-[#2563eb] hover:bg-[#1d4ed8]"
@@ -103,6 +111,7 @@ const Navbar = () => {
               variant={user ? "ghost" : "default"}
               size="sm"
               onClick={handleAuthClick}
+              aria-label={user ? "Sair" : "Entrar"}
               className={user 
                 ? "text-blue-600 hover:bg-blue-50" 
                 : "bg-[#2563eb] hover:bg-[#1d4ed8]"
@@ -118,7 +127,7 @@ const Navbar = () => {
             {/* Menu hamburguer */}
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="hover:text-blue-600 hover:bg-blue-50">
+                <Button variant="ghost" size="icon" aria-label="Abrir menu" className="hover:text-blue-600 hover:bg-blue-50">
                   <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
                 </Button>
               </SheetTrigger>
@@ -129,7 +138,7 @@ const Navbar = () => {
                       <Scale className="w-6 h-6 text-white" />
                     </div>
                     <span className="text-lg font-bold text-blue-600">
-                      Passar Concursos Brasil
+                      Passar Concursos
                     </span>
                   </div>
                   

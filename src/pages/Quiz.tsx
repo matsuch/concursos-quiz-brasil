@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from 'react-helmet-async';
+import { track } from "@vercel/analytics";
 import { QuizFilters } from "@/components/quiz/QuizFilters";
 import { QuizQuestion } from "@/components/quiz/QuizQuestion";
 import { QUESTOES_SEM_CONTA, useQuizData } from "@/hooks/useQuizData";
@@ -61,6 +62,7 @@ const Quiz = () => {
     if (selectedAnswer === null || answered) return;
 
     setAnswered(true);
+    track('questao_respondida', { logado: Boolean(user) });
     if (selectedAnswer === questions[currentQuestionIndex].correct_answer) {
       setScore(score + 1);
     }
@@ -93,20 +95,19 @@ const Quiz = () => {
   return (
     <>
       <Helmet>
-        <title>Questões de Concursos Públicos | Banco com Milhares de Questões Oficiais</title>
-        <meta name="description" content="Treine com questões oficiais de concursos públicos. Filtros por banca, matéria, dificuldade e assunto. Prepare-se com questões reais de provas anteriores." />
-        <meta name="keywords" content="questões concurso, questões oficiais, banco de questões, treinar concurso, provas anteriores, questões por banca, questões por matéria" />
+        <title>Questões de Concursos Públicos por Matéria | Passar Concursos</title>
+        <meta name="description" content="Resolva questões de concursos públicos por matéria e dificuldade, com gabarito na hora. Gratuito: crie uma conta para registrar seu desempenho." />
         <link rel="canonical" href="https://passar-concursos.vercel.app/quiz" />
         
         {/* Open Graph */}
-        <meta property="og:title" content="Questões de Concursos - Treine com Questões Oficiais" />
-        <meta property="og:description" content="Milhares de questões oficiais de concursos públicos para você treinar." />
+        <meta property="og:title" content="Questões de Concursos Públicos por Matéria" />
+        <meta property="og:description" content="Resolva questões de concursos públicos por matéria e dificuldade, com gabarito na hora." />
         <meta property="og:url" content="https://passar-concursos.vercel.app/quiz" />
         <meta property="og:type" content="website" />
         
         {/* Twitter */}
         <meta name="twitter:title" content="Questões de Concursos - Passar Concursos" />
-        <meta name="twitter:description" content="Treine com questões oficiais de concursos públicos." />
+        <meta name="twitter:description" content="Resolva questões de concursos públicos por matéria e dificuldade." />
         
         {/* Schema.org - FAQ Page */}
         <script type="application/ld+json">
@@ -114,7 +115,7 @@ const Quiz = () => {
             "@context": "https://schema.org",
             "@type": "WebPage",
             "name": "Questões de Concursos Públicos",
-            "description": "Banco de questões oficiais de concursos públicos",
+            "description": "Questões de concursos públicos por matéria e dificuldade",
             "url": "https://passar-concursos.vercel.app/quiz",
             "breadcrumb": {
               "@type": "BreadcrumbList",
@@ -137,12 +138,12 @@ const Quiz = () => {
         </script>
       </Helmet>
     
-      <main className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background">
         <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8 pb-24 sm:pb-8">
           <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
             
             {/* SEO: Título H1 visível apenas para screen readers */}
-            <h1 className="sr-only">Questões de Concursos Públicos - Banco de Questões Oficiais</h1>
+            <h1 className="sr-only">Questões de concursos públicos por matéria</h1>
             
             <section aria-label="Filtros de questões">
               <QuizFilters
@@ -176,6 +177,15 @@ const Quiz = () => {
                 <div className="text-xs sm:text-sm text-muted-foreground px-1" role="status" aria-live="polite">
                   Mostrando {currentQuestionIndex + 1} de {questions.length} questões
                 </div>
+                {!user && (
+                  <p className="text-xs sm:text-sm text-muted-foreground px-1">
+                    Esta é uma amostra de {questions.length} questões, sorteada a cada visita.{" "}
+                    <Link to="/auth?modo=cadastro" className="text-primary underline">
+                      Crie uma conta gratuita
+                    </Link>{" "}
+                    para ver todas.
+                  </p>
+                )}
                 
                 <QuizQuestion
                   question={questions[currentQuestionIndex]}
@@ -193,7 +203,7 @@ const Quiz = () => {
 
           </div>
         </div>
-      </main>
+      </div>
     </>
   );
 };

@@ -560,27 +560,37 @@ CREATE POLICY "Simulados são visíveis por todos"
 CREATE POLICY "Questões de simulado são visíveis por todos"
   ON public.simulado_questions FOR SELECT USING (true);
 
--- --- profiles: leitura pública, escrita do próprio ---------------------------
+-- --- profiles: leitura e escrita só do próprio -------------------------------
+-- Era leitura pública enquanto existia ranking. Ele saiu do ar, nada mais lê
+-- perfil alheio, e display_name nasce do prefixo do e-mail.
 
-CREATE POLICY "Profiles são visíveis por todos"
-  ON public.profiles FOR SELECT USING (true);
+CREATE POLICY "Usuário vê o próprio profile"
+  ON public.profiles FOR SELECT USING (auth.user_id()::text = user_id);
 CREATE POLICY "Usuário cria o próprio profile"
   ON public.profiles FOR INSERT WITH CHECK (auth.user_id()::text = user_id);
 CREATE POLICY "Usuário atualiza o próprio profile"
   ON public.profiles FOR UPDATE USING (auth.user_id()::text = user_id);
 
--- --- questions: leitura pública, escrita do autor ----------------------------
+-- --- questions: oficiais para todos, as demais só para o autor ---------------
+-- "Oficial" é marca do sistema: quem popula é o seed, como dono do banco. O
+-- cliente não pode gravar is_official = true, senão qualquer usuário publicaria
+-- conteúdo "oficial" para todos. E como não há moderação, questão criada por
+-- usuário só é vista por ele.
 
-CREATE POLICY "Questões são visíveis por todos"
-  ON public.questions FOR SELECT USING (true);
+CREATE POLICY "Questões oficiais ou do próprio autor"
+  ON public.questions FOR SELECT
+  USING (is_official IS TRUE OR auth.user_id()::text = created_by);
 CREATE POLICY "Usuário autenticado cria questões"
-  ON public.questions FOR INSERT WITH CHECK (auth.user_id()::text = created_by);
+  ON public.questions FOR INSERT
+  WITH CHECK (auth.user_id()::text = created_by AND is_official IS NOT TRUE);
 CREATE POLICY "Usuário atualiza as próprias questões"
-  ON public.questions FOR UPDATE USING (auth.user_id()::text = created_by);
+  ON public.questions FOR UPDATE
+  USING (auth.user_id()::text = created_by)
+  WITH CHECK (auth.user_id()::text = created_by AND is_official IS NOT TRUE);
 CREATE POLICY "Usuário apaga as próprias questões"
   ON public.questions FOR DELETE USING (auth.user_id()::text = created_by);
 
--- A policy acima libera as linhas, mas RLS só filtra o que o GRANT já deixou
+-- A policy acima libera as linhas oficiais, mas RLS só filtra o que o GRANT já deixou
 -- passar. Sem este GRANT o visitante deslogado — que chega na Data API com um
 -- JWT anônimo e portanto como o role `anonymous` — leva "permission denied" na
 -- página /quiz, ainda que a policy diga "visíveis por todos".
@@ -605,14 +615,19 @@ BEGIN
 END;
 $$;
 
--- --- flashcards: leitura pública, escrita do autor ---------------------------
+-- --- flashcards: oficiais para todos, os demais só para o autor --------------
+-- Mesma regra de questions, pelo mesmo motivo.
 
-CREATE POLICY "Flashcards são visíveis por todos"
-  ON public.flashcards FOR SELECT USING (true);
+CREATE POLICY "Flashcards oficiais ou do próprio autor"
+  ON public.flashcards FOR SELECT
+  USING (is_official IS TRUE OR auth.user_id()::text = created_by);
 CREATE POLICY "Usuário autenticado cria flashcards"
-  ON public.flashcards FOR INSERT WITH CHECK (auth.user_id()::text = created_by);
+  ON public.flashcards FOR INSERT
+  WITH CHECK (auth.user_id()::text = created_by AND is_official IS NOT TRUE);
 CREATE POLICY "Usuário atualiza os próprios flashcards"
-  ON public.flashcards FOR UPDATE USING (auth.user_id()::text = created_by);
+  ON public.flashcards FOR UPDATE
+  USING (auth.user_id()::text = created_by)
+  WITH CHECK (auth.user_id()::text = created_by AND is_official IS NOT TRUE);
 CREATE POLICY "Usuário apaga os próprios flashcards"
   ON public.flashcards FOR DELETE USING (auth.user_id()::text = created_by);
 
@@ -725,8 +740,17 @@ CREATE INDEX idx_flashcards_created_by       ON public.flashcards (created_by);
 -- =============================================================================
 -- EXCLUSÃO DE CONTA
 -- =============================================================================
--- Substitui o ON DELETE CASCADE que existia via FK para auth.users. Chame ao
--- excluir uma conta, ANTES de remover o usuário no Neon Auth.
+-- Substitui o ON DELETE CASCADE que existia via FK para auth.users.
+--
+-- São duas funções, e a separação é a parte que importa:
+--
+--   delete_user_data(p_user_id)  recebe o alvo por parâmetro. Só o dono do
+--                                banco executa. Função nasce com EXECUTE para
+--                                PUBLIC; sem o REVOKE abaixo, qualquer cliente
+--                                da Data API apagaria os dados de qualquer
+--                                usuário chamando /rpc/delete_user_data.
+--   delete_my_account()          sem parâmetro: o alvo é sempre auth.user_id().
+--                                É a que o app chama em "Excluir minha conta".
 --
 -- profiles sai por último: o trigger de badges lê a linha durante o UPDATE e
 -- apagá-la antes deixaria user_badges inconsistente.
@@ -761,5 +785,56 @@ BEGIN
   UPDATE public.flashcards SET created_by = NULL WHERE created_by = p_user_id;
 
   DELETE FROM public.profiles WHERE user_id = p_user_id;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.delete_user_data(TEXT) FROM PUBLIC;
+
+-- Pedidos de exclusão. O cadastro de login vive no Neon Auth e não é removido
+-- por SQL daqui; a linha fica para quem administra saber qual usuário remover
+-- lá. RLS ligado e nenhuma policy: cliente da Data API não lê nem grava.
+CREATE TABLE public.account_deletion_requests (
+  user_id TEXT PRIMARY KEY,
+  requested_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+);
+ALTER TABLE public.account_deletion_requests ENABLE ROW LEVEL SECURITY;
+
+CREATE OR REPLACE FUNCTION public.delete_my_account()
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+DECLARE
+  v_user_id TEXT := auth.user_id()::text;
+BEGIN
+  IF v_user_id IS NULL THEN
+    RAISE EXCEPTION 'not authenticated' USING ERRCODE = '28000';
+  END IF;
+
+  PERFORM public.delete_user_data(v_user_id);
+
+  INSERT INTO public.account_deletion_requests (user_id)
+  VALUES (v_user_id)
+  ON CONFLICT (user_id) DO UPDATE SET requested_at = now();
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.delete_my_account() FROM PUBLIC;
+
+-- Mesmo cuidado do GRANT de questions: os roles só existem depois que a Data
+-- API é habilitada.
+DO $$
+DECLARE r TEXT;
+BEGIN
+  FOREACH r IN ARRAY ARRAY['anonymous', 'authenticated'] LOOP
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = r) THEN
+      EXECUTE format('REVOKE ALL ON FUNCTION public.delete_user_data(TEXT) FROM %I', r);
+      EXECUTE format('REVOKE ALL ON FUNCTION public.delete_my_account() FROM %I', r);
+    END IF;
+  END LOOP;
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN
+    GRANT EXECUTE ON FUNCTION public.delete_my_account() TO authenticated;
+  END IF;
 END;
 $$;
