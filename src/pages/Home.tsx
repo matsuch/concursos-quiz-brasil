@@ -85,7 +85,9 @@ const Home = () => {
         .sort((a, b) =>
           a.inscricoes_ate.localeCompare(b.inscricoes_ate) || (b.salario ?? 0) - (a.salario ?? 0),
         )
-        .slice(0, 12)
+        // Sem cortar a lista antes de separar por status: os "em breve" têm
+        // prazo mais distante e ficavam de fora dos 12 primeiros, deixando a
+        // aba vazia. Cada aba pega os seus 4 mais adiante.
         .map((c) => ({
           id: c.slug,
           slug: c.slug,

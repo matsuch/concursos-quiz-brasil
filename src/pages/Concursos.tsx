@@ -34,6 +34,8 @@ interface Filters {
   orgao: string;
 }
 
+const POR_PAGINA = 24;
+
 const ConcursosPage = () => {
   const navigate = useNavigate();
   const [concursos, setConcursos] = useState<Concurso[]>([]);
@@ -55,8 +57,14 @@ const ConcursosPage = () => {
     fetchConcursos();
   }, []);
 
+  // Lote exibido por vez. Renderizar os ~500 cartões de uma só vez pesa no
+  // celular; o botão "Carregar mais" revela o próximo lote.
+  const [visiveis, setVisiveis] = useState(POR_PAGINA);
+
   useEffect(() => {
     applyFilters();
+    // Filtro novo, lista nova: volta para o primeiro lote.
+    setVisiveis(POR_PAGINA);
   }, [concursos, filters]);
 
   const fetchConcursos = async () => {
@@ -243,7 +251,7 @@ const ConcursosPage = () => {
     <>
       <SeoHead
         title="Concursos Públicos Abertos - Lista Completa com Filtros por Estado e Nível"
-        description={`Encontre ${filteredConcursos.length} concursos públicos abertos, em destaque e em breve. Filtre por estado, órgão, salário e nível. Vagas atualizadas diariamente.`}
+        description={`Encontre ${filteredConcursos.length} concursos públicos abertos, em destaque e em breve. Filtre por estado, órgão, salário e nível. Lista atualizada toda semana.`}
         canonical="/concursos"
         structuredData={generateStructuredData()}
       />
@@ -501,10 +509,8 @@ const ConcursosPage = () => {
                   ) : (
                     <>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {filteredConcursos.map((concurso) => (
-                          <div 
-                            key={concurso.id}
-                          >
+                        {filteredConcursos.slice(0, visiveis).map((concurso) => (
+                          <div key={concurso.id}>
                             <ConcursoCard
                               {...concurso}
                               salario={concurso.salario ?? 0}
@@ -516,11 +522,14 @@ const ConcursosPage = () => {
                       </div>
 
                       {/* Paginação */}
-                      {filteredConcursos.length > 12 && (
-                        <div className="flex justify-center mt-12">
-                          <Button 
-                            variant="outline" 
-                            className="gap-2"
+                      {filteredConcursos.length > visiveis && (
+                        <div className="flex flex-col items-center gap-2 mt-10">
+                          <p className="text-sm text-muted-foreground tabular-nums" aria-live="polite">
+                            Mostrando {visiveis} de {filteredConcursos.length}
+                          </p>
+                          <Button
+                            variant="outline"
+                            onClick={() => setVisiveis((v) => v + POR_PAGINA)}
                           >
                             Carregar mais concursos
                           </Button>
