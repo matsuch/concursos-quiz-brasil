@@ -47,14 +47,14 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-card/95 backdrop-blur-lg border-b border-border shadow-sm">
+    <nav className="sticky top-0 z-50 w-full bg-card border-b border-border">
       <div className="container mx-auto px-3 sm:px-4">
         <div className="flex items-center justify-between h-14 sm:h-16">
           <Link to="/" className="flex items-center gap-2 min-w-0 rounded-lg" aria-label="Passar Concursos — página inicial">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-[#2563eb] flex items-center justify-center flex-shrink-0">
-              <Scale className="w-5 h-5 sm:w-6 sm:h-6 text-white" aria-hidden="true" />
+            <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center flex-shrink-0">
+              <Scale className="w-5 h-5 text-primary-foreground" aria-hidden="true" />
             </div>
-            <span className="text-base sm:text-lg lg:text-xl font-bold text-blue-600 truncate">
+            <span className="text-base sm:text-lg font-bold tracking-tight text-foreground truncate">
               Passar Concursos
             </span>
           </Link>
@@ -66,8 +66,8 @@ const Navbar = () => {
                 key={item.to}
                 to={item.to}
                 title={item.label}
-                className="px-3 lg:px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center gap-2"
-                activeClassName="!text-primary !bg-primary/10"
+                className="relative px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+                activeClassName="!text-foreground after:absolute after:inset-x-3 after:-bottom-[13px] after:h-0.5 after:bg-primary"
               >
                 {/* Entre md e lg só o ícone aparece: o rótulo segue no DOM
                     para leitor de tela e vira dica ao passar o mouse. */}
@@ -83,10 +83,7 @@ const Navbar = () => {
               size="sm"
               onClick={handleAuthClick}
               aria-label={user ? "Sair" : "Entrar"}
-              className={user 
-                ? "ml-2 text-blue-600 hover:bg-blue-50" 
-                : "ml-2 bg-[#2563eb] hover:bg-[#1d4ed8]"
-              }
+className="ml-2"
             >
               {user ? (
                 <>
@@ -112,10 +109,7 @@ const Navbar = () => {
               size="sm"
               onClick={handleAuthClick}
               aria-label={user ? "Sair" : "Entrar"}
-              className={user 
-                ? "text-blue-600 hover:bg-blue-50" 
-                : "bg-[#2563eb] hover:bg-[#1d4ed8]"
-              }
+
             >
               {user ? (
                 <LogOut className="w-4 h-4" />
@@ -127,17 +121,17 @@ const Navbar = () => {
             {/* Menu hamburguer */}
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Abrir menu" className="hover:text-blue-600 hover:bg-blue-50">
+                <Button variant="ghost" size="icon" aria-label="Abrir menu" >
                   <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-[280px] p-0">
                 <div className="flex flex-col h-full">
                   <div className="flex items-center gap-2 p-4 border-b border-border">
-                    <div className="w-10 h-10 rounded-lg bg-[#2563eb] flex items-center justify-center">
-                      <Scale className="w-6 h-6 text-white" />
+                    <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center">
+                      <Scale className="w-5 h-5 text-primary-foreground" aria-hidden="true" />
                     </div>
-                    <span className="text-lg font-bold text-blue-600">
+                    <span className="text-lg font-bold tracking-tight text-foreground">
                       Passar Concursos
                     </span>
                   </div>
@@ -157,8 +151,8 @@ const Navbar = () => {
                         key={item.to}
                         to={item.to}
                         onClick={() => setOpen(false)}
-                        className="flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-                        activeClassName="!text-blue-600 !bg-blue-600/10"
+                        className="flex items-center gap-3 px-4 py-3 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                        activeClassName="!text-foreground !bg-muted font-medium"
                       >
                         <item.icon className="w-5 h-5" />
                         {item.label}
@@ -169,10 +163,7 @@ const Navbar = () => {
                   <div className="p-4 border-t border-border">
                     <Button 
                       variant={user ? "outline" : "default"}
-                      className={user 
-                        ? "w-full border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white" 
-                        : "w-full bg-[#2563eb] hover:bg-[#1d4ed8]"
-                      }
+                      className="w-full"
                       onClick={() => {
                         setOpen(false);
                         handleAuthClick();

@@ -262,7 +262,7 @@ const SimuladoPage = () => {
                     size="lg"
                     onClick={startSimulado}
                     disabled={loading}
-                    className="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary"
+                    className="w-full sm:w-auto"
                   >
                     <Play className="w-5 h-5 mr-2" />
                     Iniciar Simulado
@@ -319,7 +319,7 @@ const SimuladoPage = () => {
                 </p>
               )}
               <Card className="p-8 mb-8 max-w-md mx-auto">
-                <div className="text-6xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                <div className="text-6xl font-extrabold mb-2 text-foreground tabular-nums">
                   {percentage.toFixed(0)}%
                 </div>
                 <p className="text-sm text-muted-foreground">de aproveitamento</p>

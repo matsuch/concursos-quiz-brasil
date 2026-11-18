@@ -76,7 +76,7 @@ export function QuizQuestion({
 
     if (!answered) {
       return cn(
-        isSelected ? "border-primary text-primary" : "border-warning text-warning"
+        isSelected ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground"
       );
     }
 
@@ -114,7 +114,7 @@ export function QuizQuestion({
 
         <div className="flex items-center gap-2 mt-2 sm:mt-3 flex-wrap">
           {!question.is_official && (
-            <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/30 text-xs sm:text-sm">
+            <Badge variant="outline" className="text-muted-foreground text-xs sm:text-sm">
               Questão de usuário
             </Badge>
           )}
@@ -124,7 +124,7 @@ export function QuizQuestion({
               className={cn(
                 "text-xs sm:text-sm",
                 question.difficulty === "easy" && "bg-success/10 text-success border-success/30",
-                question.difficulty === "medium" && "bg-amber-500/10 text-amber-600 border-amber-500/30",
+                question.difficulty === "medium" && "bg-muted text-foreground border-border",
                 question.difficulty === "hard" && "bg-destructive/10 text-destructive border-destructive/30"
               )}
             >
@@ -152,15 +152,15 @@ export function QuizQuestion({
                 onClick={() => onSelectOption(index)}
                 disabled={answered}
                 className={cn(
-                  "w-full flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg border-2 transition-all text-left",
-                  !answered && "hover:border-primary hover:bg-primary/5 cursor-pointer active:scale-[0.99]",
+                  "w-full flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg border transition-colors text-left",
+                  !answered && "hover:border-foreground/40 hover:bg-muted/50 cursor-pointer",
                   answered && "cursor-not-allowed",
                   getOptionStyle(index)
                 )}
               >
                 <span
                   className={cn(
-                    "flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 flex items-center justify-center font-medium text-xs sm:text-sm transition-colors",
+                    "flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full border flex items-center justify-center font-semibold text-xs sm:text-sm transition-colors",
                     getLetterStyle(index)
                   )}
                 >
@@ -168,7 +168,7 @@ export function QuizQuestion({
                 </span>
                 <span
                   className={cn(
-                    "text-xs sm:text-sm pt-0.5 sm:pt-1 leading-relaxed",
+                    "text-sm sm:text-base pt-0.5 sm:pt-1 leading-relaxed text-foreground",
                     answered && isCorrect && "text-success font-medium",
                     answered && isSelected && !isCorrect && "text-destructive"
                   )}
@@ -185,7 +185,7 @@ export function QuizQuestion({
           <Button
             onClick={onSubmitAnswer}
             disabled={selectedAnswer === null || answered}
-            className="w-full sm:w-auto bg-warning hover:bg-warning/90 text-warning-foreground border border-warning/50 hover:border-warning/70 rounded-md text-sm sm:text-base py-2.5 sm:py-2"
+            className="w-full sm:w-auto px-6"
           >
             Responder
           </Button>

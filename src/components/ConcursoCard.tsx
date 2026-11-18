@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Banknote, Users, ExternalLink, MapPin } from "lucide-react";
+import { ExternalLink } from "lucide-react";
+import { formatarDataBr } from "@/dados/concursos";
 import { Link } from "react-router-dom";
 
 interface ConcursoCardProps {
@@ -14,7 +15,7 @@ interface ConcursoCardProps {
   salarioAte?: boolean;
   status: "destaque" | "breve" | "aberto";
   urlEdital?: string | null;
-  id?: string; // Adicionado para schema markup
+  id?: string;
   slug?: string | null;
 }
 
@@ -29,108 +30,25 @@ const ConcursoCard = ({
   salarioAte = false,
   status,
   urlEdital,
-  id,
   slug,
 }: ConcursoCardProps) => {
   const statusConfig = {
     destaque: {
       label: "Destaque",
-      className: "bg-success/10 text-success border-success/20",
-      schemaType: "JobPosting" as const,
+      className: "bg-accent text-accent-foreground border-transparent",
     },
     aberto: {
       label: "Abertos",
-      className: "bg-yellow-500/15 text-yellow-900 dark:text-yellow-100 border-yellow-500/30 dark:bg-yellow-500/10",
-      schemaType: "JobPosting" as const,
+      className: "bg-transparent text-foreground border-border",
     },
     breve: {
       label: "Em Breve",
-      className: "bg-muted text-muted-foreground border-border",
-      schemaType: "Event" as const,
+      className: "bg-muted text-muted-foreground border-transparent",
     },
   };
 
   const config = statusConfig[status];
   const isDisabled = status === "breve" || !urlEdital;
-
-  // Função para formatar data para Schema.org
-  const formatDateForSchema = (dateString: string) => {
-    if (!dateString) return "";
-    try {
-      return new Date(dateString).toISOString();
-    } catch {
-      return "";
-    }
-  };
-
-  // Adicionado: Schema markup para SEO
-  const generateJobPostingSchema = () => {
-    const baseUrl = "https://passar-concursos.vercel.app";
-    
-    // Para concursos em breve, usar Event schema
-    if (status === "breve") {
-      return {
-        "@context": "https://schema.org",
-        "@type": "Event",
-        "name": `Concurso Público: ${titulo}`,
-        "description": `Concurso público ${titulo} do órgão ${orgao} com ${vagas} vagas em ${local}`,
-        "startDate": formatDateForSchema(inscricoesAte) || new Date().toISOString(),
-        "organizer": {
-          "@type": "Organization",
-          "name": orgao
-        },
-        "location": {
-          "@type": "Place",
-          "name": local
-        }
-      };
-    }
-
-    // Para concursos abertos e em destaque, usar JobPosting schema
-    return {
-      "@context": "https://schema.org",
-      "@type": "JobPosting",
-      "title": titulo,
-      "description": `Concurso público para ${titulo} no órgão ${orgao}. ${vagas} vagas disponíveis em ${local}. Nível: ${nivel}.`,
-      "hiringOrganization": {
-        "@type": "Organization",
-        "name": orgao,
-        "url": baseUrl
-      },
-      "jobLocation": {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": local,
-          "addressRegion": local.split('/')[0]?.trim() || local,
-          "addressCountry": "BR"
-        }
-      },
-      "datePosted": new Date().toISOString(),
-      "validThrough": formatDateForSchema(inscricoesAte),
-      "employmentType": "FULL_TIME",
-      "identifier": {
-        "@type": "PropertyValue",
-        "name": orgao,
-        "value": id || titulo.replace(/\s+/g, '-').toLowerCase()
-      },
-      "qualifications": `Nível: ${nivel}`,
-      "responsibilities": `Exercer atividades conforme edital do concurso público ${titulo}`,
-      "baseSalary": salario ? {
-        "@type": "MonetaryAmount",
-        "currency": "BRL",
-        "value": {
-          "@type": "QuantitativeValue",
-          "value": salario,
-          "unitText": "MONTH",
-          "minValue": salario * 0.9,
-          "maxValue": salario * 1.1
-        }
-      } : undefined,
-      "jobBenefits": "Conforme previsto em edital de concurso público",
-      "totalJobOpenings": vagas
-    };
-  };
 
   // Adicionado: Função para extrair cidade/estado do local
   const getLocationInfo = () => {
@@ -148,158 +66,132 @@ const ConcursoCard = ({
 
   return (
     <>
-      {/* Schema Markup para SEO */}
-      <script 
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(generateJobPostingSchema())
-        }}
-      />
-
-      <Card 
-        className="p-6 hover:shadow-lg transition-all duration-300 border-border hover:border-primary/20 relative h-full flex flex-col"
-        itemScope
-        itemType="https://schema.org/JobPosting"
-        itemID={id ? `concurso-${id}` : undefined}
+      {/* Sem dado estruturado no cartão. JobPosting vale para a página da
+          vaga, não para listagens (diretriz do Google), e a página de cada
+          concurso já publica o seu, com os dados reais. O que vivia aqui
+          inventava faixa salarial (±10%), data de publicação (o momento da
+          visita) e endereço da página errado. */}
+      <Card
+        className="p-5 border-border hover:border-foreground/25 transition-colors relative h-full flex flex-col"
         role="article"
         aria-label={`Concurso público: ${titulo} - ${orgao}`}
       >
-        <div className="flex flex-col items-start mb-4 gap-3 flex-grow">
-          <Badge 
-            variant="outline" 
+        <div className="flex items-center justify-between gap-3 mb-3">
+          <Badge
+            variant="outline"
             className={config.className}
-            itemProp="employmentType"
           >
             {config.label}
           </Badge>
-
-          <div className="min-w-0 flex-grow">
-            <h3 
-              className="text-lg font-semibold leading-tight mb-2"
-              itemProp="title"
-            >
-              {/* Link interno para a pagina do concurso: e o caminho que o
-                  rastreador segue ate ela, e o que evita pagina orfa. */}
-              {slug ? (
-                <Link to={`/concursos/${slug}`} className="hover:text-primary transition-colors">
-                  {titulo}
-                </Link>
-              ) : (
-                titulo
-              )}
-            </h3>
-            
-            <div 
-              className="flex items-center gap-1 text-sm text-muted-foreground mb-2"
-              itemProp="hiringOrganization"
-              itemScope
-              itemType="https://schema.org/Organization"
-            >
-              <span itemProp="name">{orgao}</span>
-            </div>
-
-            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-              <MapPin className="w-4 h-4 flex-shrink-0" />
-              <span itemProp="jobLocation" itemScope itemType="https://schema.org/Place">
-                <span itemProp="address" itemScope itemType="https://schema.org/PostalAddress">
-                  <span itemProp="addressLocality">{locationInfo.city}</span>
-                  {locationInfo.state && (
-                    <>, <span itemProp="addressRegion">{locationInfo.state}</span></>
-                  )}
-                  <meta itemProp="addressCountry" content="BR" />
-                </span>
-              </span>
-            </div>
-          </div>
+          <span className="text-xs text-muted-foreground truncate">
+            {nivel}
+          </span>
         </div>
 
-        <div className="space-y-3 mb-4">
-          <div 
-            className="flex items-center gap-2 text-sm font-medium text-emerald-600"
-            itemProp="baseSalary"
-            itemScope
-            itemType="https://schema.org/MonetaryAmount"
-          >
-            <Banknote className="w-5 h-5 flex-shrink-0" />
-            <span className="truncate font-bold">
+        <h3
+          className="text-base font-semibold leading-snug text-foreground"
+        >
+          {/* Link interno para a pagina do concurso: e o caminho que o
+              rastreador segue ate ela, e o que evita pagina orfa. */}
+          {slug ? (
+            <Link to={`/concursos/${slug}`} className="hover:underline underline-offset-4">
+              {titulo}
+            </Link>
+          ) : (
+            titulo
+          )}
+        </h3>
+
+        <div
+          className="mt-1 text-sm text-muted-foreground"
+        >
+          <span>{orgao}</span>
+        </div>
+
+        <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm flex-grow content-start">
+          <div className="min-w-0">
+            <dt className="text-xs text-muted-foreground">Salário</dt>
+            <dd
+              className="font-semibold text-foreground tabular-nums truncate"
+            >
               {salario ? (
                 <>
-                  <meta itemProp="currency" content="BRL" />
                   {/* A fonte quase sempre publica o teto da faixa do concurso,
                       e não o salário de um cargo. Exibir sem o "até" afirmaria
                       um número que ninguém vai receber. */}
-                  <span itemProp="value">
-                    {salarioAte ? 'até ' : ''}R$ {salario.toLocaleString('pt-BR')}
+                  <span>
+                    {salarioAte ? 'até ' : ''}R$ {salario.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
-                  <meta itemProp="unitText" content="MONTH" />
                 </>
               ) : (
-                'Salário não informado'
+                <span className="font-normal text-muted-foreground">Não informado</span>
               )}
-            </span>
+            </dd>
           </div>
 
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Users className="w-4 h-4 flex-shrink-0" />
-            {/* Boa parte dos concursos reais é cadastro de reserva, ou não
-                publica o número no edital. Nesses casos a fonte não informa e
-                vagas chega 0 — "0 vagas" seria afirmar algo falso. */}
-            {vagas > 0 ? (
-              <span itemProp="totalJobOpenings">
-                {vagas} vaga{vagas !== 1 ? "s" : ""}
-              </span>
-            ) : (
-              <span>Vagas a definir</span>
-            )}
-            <span 
-              className="text-xs px-2 py-0.5 rounded-full bg-muted ml-auto"
-              itemProp="qualifications"
-            >
-              {nivel}
-            </span>
+          <div className="min-w-0">
+            <dt className="text-xs text-muted-foreground">Vagas</dt>
+            <dd className="font-medium text-foreground tabular-nums">
+              {/* Boa parte dos concursos reais é cadastro de reserva, ou não
+                  publica o número no edital. Nesses casos a fonte não informa e
+                  vagas chega 0 — "0 vagas" seria afirmar algo falso. */}
+              {vagas > 0 ? (
+                <span>
+                  {vagas} vaga{vagas !== 1 ? "s" : ""}
+                </span>
+              ) : (
+                <span className="font-normal text-muted-foreground">A definir</span>
+              )}
+            </dd>
           </div>
 
-          <div 
-            className="flex items-center gap-2 text-sm text-muted-foreground"
-            itemProp="validThrough"
-            content={formatDateForSchema(inscricoesAte)}
+          <div
+            className="min-w-0"
           >
-            <Calendar className="w-4 h-4 flex-shrink-0" />
-            <span>
-              Inscrições até <time dateTime={formatDateForSchema(inscricoesAte)}>{inscricoesAte}</time>
-            </span>
+            <dt className="text-xs text-muted-foreground">Inscrições até</dt>
+            <dd className="font-medium text-foreground tabular-nums">
+              <time dateTime={inscricoesAte}>{formatarDataBr(inscricoesAte)}</time>
+            </dd>
           </div>
-        </div>
 
-        {/* Botão Ver Edital */}
-        <div className="mt-auto">
+          <div className="min-w-0">
+            <dt className="text-xs text-muted-foreground">Local</dt>
+            <dd className="font-medium text-foreground truncate">
+              <span>
+                <span>
+                  <span>{locationInfo.city}</span>
+                  {locationInfo.state && (
+                    <>, <span>{locationInfo.state}</span></>
+                  )}
+                </span>
+              </span>
+            </dd>
+          </div>
+        </dl>
+
+        <div className="mt-5 pt-4 border-t border-border">
           {isDisabled ? (
-            <div 
-              className="flex w-full items-center justify-center gap-2 px-4 py-2 border rounded-md text-sm text-muted-foreground bg-muted cursor-not-allowed"
+            <span
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground"
               aria-label="Edital não disponível no momento"
             >
-              <ExternalLink className="w-4 h-4" />
-              Ver Edital
-            </div>
+              <ExternalLink className="w-4 h-4" aria-hidden="true" />
+              Edital ainda não disponível
+            </span>
           ) : (
             <a
               href={urlEdital!}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex w-full items-center justify-center gap-2 px-4 py-2 border rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
+              className="inline-flex items-center gap-2 text-sm font-medium text-primary underline underline-offset-4 hover:no-underline"
               aria-label={`Abrir edital do concurso ${titulo} em nova aba`}
-              itemProp="url"
             >
-              <ExternalLink className="w-4 h-4" />
-              Ver Edital Completo
+              <ExternalLink className="w-4 h-4" aria-hidden="true" />
+              Ver edital completo
             </a>
           )}
         </div>
 
-        {/* Microdados adicionais */}
-        <meta itemProp="datePosted" content={new Date().toISOString()} />
-        <meta itemProp="description" content={`Concurso público para ${titulo} no órgão ${orgao} com ${vagas} vagas em ${local}. Nível: ${nivel}.`} />
-        <link itemProp="mainEntityOfPage" href={`https://passar-concursos.vercel.app/concurso/${id || titulo.replace(/\s+/g, '-').toLowerCase()}`} />
       </Card>
     </>
   );
