@@ -120,7 +120,7 @@ const ConcursoCard = ({
                       e não o salário de um cargo. Exibir sem o "até" afirmaria
                       um número que ninguém vai receber. */}
                   <span>
-                    {salarioAte ? 'até ' : ''}R$ {salario.toLocaleString('pt-BR')}
+                    {salarioAte ? 'até ' : ''}R$ {salario.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </>
               ) : (
