@@ -33,8 +33,8 @@ export function Flashcard({ front, back, category, onFlip }: FlashcardProps) {
         )}
       >
         {/* Front */}
-        <div className="absolute inset-0 backface-hidden bg-gradient-to-br from-primary/20 to-secondary/20 border border-border rounded-2xl p-6 flex flex-col justify-between">
-          <span className="text-xs font-semibold text-primary uppercase tracking-wider">
+        <div className="absolute inset-0 backface-hidden bg-card border border-border rounded-xl shadow-card p-6 flex flex-col justify-between">
+          <span className="text-sm font-medium text-muted-foreground">
             {category}
           </span>
           <p className="text-lg font-medium text-foreground text-center leading-relaxed">
@@ -47,8 +47,8 @@ export function Flashcard({ front, back, category, onFlip }: FlashcardProps) {
         </div>
 
         {/* Back */}
-        <div className="absolute inset-0 backface-hidden rotate-y-180 bg-gradient-to-br from-accent/30 to-primary/10 border border-primary/30 rounded-2xl p-6 flex flex-col justify-between">
-          <span className="text-xs font-semibold text-accent-foreground uppercase tracking-wider">
+        <div className="absolute inset-0 backface-hidden rotate-y-180 bg-muted border border-border rounded-xl p-6 flex flex-col justify-between">
+          <span className="text-sm font-medium text-muted-foreground">
             Resposta
           </span>
           <p className="text-base text-foreground text-center leading-relaxed">

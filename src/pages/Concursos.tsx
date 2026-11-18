@@ -4,8 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Search, Filter, MapPin, Calendar, Banknote, Users, ChevronRight, Loader2, Sparkles, AlertCircle, Clock } from "lucide-react";
+import { Search, Filter, Calendar, ChevronRight, Loader2 } from "lucide-react";
 import ConcursoCard from "@/components/ConcursoCard";
 import { SeoHead } from "@/components/SeoHead";
 import { apenasAbertos, carregarConcursos, formatarDataBr } from '@/dados/concursos';
@@ -272,9 +271,9 @@ const ConcursosPage = () => {
 
               <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
                 <div>
-                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-foreground">
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4 text-foreground">
                     Concursos Públicos
-                    <span className="block text-xl md:text-2xl text-primary mt-2 font-semibold">
+                    <span className="block text-lg md:text-xl text-muted-foreground mt-2 font-normal tracking-normal">
                       Encontre a oportunidade ideal para sua carreira
                     </span>
                   </h1>
@@ -283,13 +282,12 @@ const ConcursosPage = () => {
                     Explore nossa lista completa de concursos públicos filtrados por estado, órgão, salário e nível. 
                   </p>
                   <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Sparkles className="w-4 h-4 text-primary" />
+                    <div className="tabular-nums">
                       <span className="font-semibold text-foreground">{concursos.length} oportunidades</span> disponíveis
                     </div>
-                    <span className="text-border">•</span>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4 text-primary" />
+                    <span aria-hidden="true" className="h-4 w-px bg-border" />
+                    <div className="flex items-center gap-1 tabular-nums">
+                      <Calendar className="w-4 h-4" aria-hidden="true" />
                       {/* Data da coleta, e não a de hoje: é o que diz de quando
                           são os dados que a pessoa está lendo. */}
                       {geradoEm ? `Dados coletados em ${formatarDataBr(geradoEm)}` : 'Atualização semanal'}
@@ -305,7 +303,7 @@ const ConcursosPage = () => {
                   <Input
                     type="search"
                     placeholder="Buscar concursos por título, órgão ou localidade..."
-                    className="pl-12 py-6 text-base bg-card/80 backdrop-blur-sm border-primary/20 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="pl-12 py-6 text-base bg-card"
                     value={filters.search}
                     onChange={(e) => handleFilterChange("search", e.target.value)}
                     aria-label="Buscar concursos públicos"
@@ -323,13 +321,11 @@ const ConcursosPage = () => {
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 {/* Sidebar de Filtros melhorada */}
                 <div className="lg:col-span-1">
-                  <Card className="sticky top-6 border-border shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <Card className="sticky top-20 border-border">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-2">
-                          <div className="p-2 bg-primary/10 rounded-lg">
-                            <Filter className="w-5 h-5 text-primary" />
-                          </div>
+                          <Filter className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
                           <h2 className="text-lg font-semibold">
                             Filtros
                           </h2>
@@ -350,34 +346,27 @@ const ConcursosPage = () => {
                           <h3 className="font-medium mb-3 text-foreground">Status do Concurso</h3>
                           <div className="space-y-2">
                             {[
-                              { value: "todos", label: "Todos", count: concursos.length, icon: null },
-                              { value: "aberto", label: "Abertos", count: getStatusCount("aberto"), icon: "🔴" },
-                              { value: "destaque", label: "Destaque", count: getStatusCount("destaque"), icon: "⭐" },
-                              { value: "breve", label: "Em Breve", count: getStatusCount("breve"), icon: "⏳" }
+                              { value: "todos", label: "Todos", count: concursos.length },
+                              { value: "aberto", label: "Abertos", count: getStatusCount("aberto") },
+                              { value: "destaque", label: "Destaque", count: getStatusCount("destaque") },
+                              { value: "breve", label: "Em Breve", count: getStatusCount("breve") }
                             ].map((item) => (
                               <button
                                 key={item.value}
                                 onClick={() => handleFilterChange("status", item.value)}
-                                className={`flex items-center justify-between w-full p-3 rounded-lg text-sm transition-all duration-200 ${
+                                aria-pressed={filters.status === item.value}
+                                className={`flex items-center justify-between w-full px-3 py-2 rounded-md text-sm transition-colors ${
                                   filters.status === item.value
-                                    ? "bg-primary/10 text-primary border border-primary/20"
-                                    : "hover:bg-muted border border-transparent"
+                                    ? "bg-muted text-foreground font-medium"
+                                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                 }`}
                               >
                                 <div className="flex items-center gap-2">
-                                  {item.icon && <span>{item.icon}</span>}
                                   <span>{item.label}</span>
                                 </div>
-                                <Badge 
-                                  variant="outline" 
-                                  className={`text-xs ${
-                                    filters.status === item.value 
-                                      ? "border-primary/30 bg-primary/5" 
-                                      : "bg-muted"
-                                  }`}
-                                >
+                                <span className="text-xs tabular-nums text-muted-foreground">
                                   {item.count}
-                                </Badge>
+                                </span>
                               </button>
                             ))}
                           </div>
@@ -392,7 +381,7 @@ const ConcursosPage = () => {
                             value={filters.estado}
                             onValueChange={(value) => handleFilterChange("estado", value)}
                           >
-                            <SelectTrigger className="bg-background border-border hover:border-primary/50 transition-colors">
+                            <SelectTrigger className="bg-background border-border ">
                               <SelectValue placeholder="Selecione um estado" />
                             </SelectTrigger>
                             <SelectContent>
@@ -415,7 +404,7 @@ const ConcursosPage = () => {
                             value={filters.orgao}
                             onValueChange={(value) => handleFilterChange("orgao", value)}
                           >
-                            <SelectTrigger className="bg-background border-border hover:border-primary/50 transition-colors">
+                            <SelectTrigger className="bg-background border-border ">
                               <SelectValue placeholder="Selecione um órgão" />
                             </SelectTrigger>
                             <SelectContent>
@@ -438,7 +427,7 @@ const ConcursosPage = () => {
                             value={filters.salarioMin}
                             onValueChange={(value) => handleFilterChange("salarioMin", value)}
                           >
-                            <SelectTrigger className="bg-background border-border hover:border-primary/50 transition-colors">
+                            <SelectTrigger className="bg-background border-border ">
                               <SelectValue placeholder="Salário mínimo" />
                             </SelectTrigger>
                             <SelectContent>
@@ -461,7 +450,7 @@ const ConcursosPage = () => {
                             value={filters.nivel}
                             onValueChange={(value) => handleFilterChange("nivel", value)}
                           >
-                            <SelectTrigger className="bg-background border-border hover:border-primary/50 transition-colors">
+                            <SelectTrigger className="bg-background border-border ">
                               <SelectValue placeholder="Selecione o nível" />
                             </SelectTrigger>
                             <SelectContent>
@@ -482,60 +471,14 @@ const ConcursosPage = () => {
                 <div className="lg:col-span-3">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
                     <div>
-                      <h2 className="text-2xl font-bold text-foreground">
-                        {filteredConcursos.length} Concursos Encontrados
+                      <h2 className="text-xl sm:text-2xl font-bold text-foreground tabular-nums">
+                        {filteredConcursos.length} concursos encontrados
                       </h2>
                       {filters.search && (
                         <p className="text-muted-foreground mt-1">
-                          Resultados para: <span className="font-medium text-primary">"{filters.search}"</span>
+                          Resultados para: <span className="font-medium text-foreground">"{filters.search}"</span>
                         </p>
                       )}
-                    </div>
-                    <div className="flex items-center gap-2 px-4 py-2 bg-muted rounded-lg">
-                      <Users className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">
-                        <span className="font-semibold text-foreground">{filteredConcursos.length}</span> resultados
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Estatísticas melhoradas */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-                    <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-200 dark:border-blue-800/30">
-                      <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 rounded-full bg-blue-500 animate-pulse" />
-                        <div>
-                          <p className="text-sm text-muted-foreground">Concursos Abertos</p>
-                          <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{getStatusCount("aberto")}</p>
-                        </div>
-                      </div>
-                      <div className="mt-2 text-xs text-muted-foreground">
-                        Inscrições em andamento
-                      </div>
-                    </div>
-                    <div className="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/30">
-                      <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                        <div>
-                          <p className="text-sm text-muted-foreground">Em Destaque</p>
-                          <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{getStatusCount("destaque")}</p>
-                        </div>
-                      </div>
-                      <div className="mt-2 text-xs text-muted-foreground">
-                        Vagas prioritárias
-                      </div>
-                    </div>
-                    <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl border border-amber-200 dark:border-amber-800/30">
-                      <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 rounded-full bg-amber-500" />
-                        <div>
-                          <p className="text-sm text-muted-foreground">Em Breve</p>
-                          <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{getStatusCount("breve")}</p>
-                        </div>
-                      </div>
-                      <div className="mt-2 text-xs text-muted-foreground">
-                        Futuras oportunidades
-                      </div>
                     </div>
                   </div>
 
@@ -543,28 +486,24 @@ const ConcursosPage = () => {
                   {filteredConcursos.length === 0 ? (
                     <div className="text-center py-16">
                       <div className="max-w-md mx-auto">
-                        <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
-                          <Search className="w-10 h-10 text-primary" />
-                        </div>
                         <h3 className="text-xl font-semibold mb-2 text-foreground">Nenhum concurso encontrado</h3>
                         <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
                           Tente ajustar os filtros, buscar por outras palavras-chave ou limpar todos os filtros.
                         </p>
                         <Button 
                           onClick={clearFilters}
-                          className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white px-8"
+                          variant="outline"
                         >
-                          Limpar Todos os Filtros
+                          Limpar todos os filtros
                         </Button>
                       </div>
                     </div>
                   ) : (
                     <>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {filteredConcursos.map((concurso) => (
                           <div 
                             key={concurso.id}
-                            className="transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                           >
                             <ConcursoCard
                               {...concurso}
@@ -581,10 +520,9 @@ const ConcursosPage = () => {
                         <div className="flex justify-center mt-12">
                           <Button 
                             variant="outline" 
-                            className="gap-2 border-border hover:border-primary hover:bg-primary/5 transition-all duration-300 group"
+                            className="gap-2"
                           >
                             Carregar mais concursos
-                            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                           </Button>
                         </div>
                       )}
@@ -597,11 +535,11 @@ const ConcursosPage = () => {
                       Perguntas Frequentes sobre Concursos Públicos
                     </h2>
                     <div className="space-y-4">
-                      <details className="group bg-card p-6 rounded-xl border border-border hover:border-primary/30 transition-all duration-300">
+                      <details className="group bg-card p-5 rounded-lg border border-border">
                         <summary className="font-semibold text-lg mb-2 text-foreground cursor-pointer flex justify-between items-center list-none">
                           <span>Como saber se um concurso é confiável?</span>
                           <svg 
-                            className="w-5 h-5 text-muted-foreground group-open:rotate-180 transition-transform duration-300"
+                            className="w-5 h-5 text-muted-foreground group-open:rotate-180 transition-transform duration-200"
                             fill="none" 
                             stroke="currentColor" 
                             viewBox="0 0 24 24"
@@ -618,11 +556,11 @@ const ConcursosPage = () => {
                         </div>
                       </details>
                       
-                      <details className="group bg-card p-6 rounded-xl border border-border hover:border-primary/30 transition-all duration-300">
+                      <details className="group bg-card p-5 rounded-lg border border-border">
                         <summary className="font-semibold text-lg mb-2 text-foreground cursor-pointer flex justify-between items-center list-none">
                           <span>Posso me inscrever em mais de um concurso?</span>
                           <svg 
-                            className="w-5 h-5 text-muted-foreground group-open:rotate-180 transition-transform duration-300"
+                            className="w-5 h-5 text-muted-foreground group-open:rotate-180 transition-transform duration-200"
                             fill="none" 
                             stroke="currentColor" 
                             viewBox="0 0 24 24"
@@ -639,11 +577,11 @@ const ConcursosPage = () => {
                         </div>
                       </details>
                       
-                      <details className="group bg-card p-6 rounded-xl border border-border hover:border-primary/30 transition-all duration-300">
+                      <details className="group bg-card p-5 rounded-lg border border-border">
                         <summary className="font-semibold text-lg mb-2 text-foreground cursor-pointer flex justify-between items-center list-none">
                           <span>Como se preparar para concursos públicos?</span>
                           <svg 
-                            className="w-5 h-5 text-muted-foreground group-open:rotate-180 transition-transform duration-300"
+                            className="w-5 h-5 text-muted-foreground group-open:rotate-180 transition-transform duration-200"
                             fill="none" 
                             stroke="currentColor" 
                             viewBox="0 0 24 24"

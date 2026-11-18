@@ -2,49 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Public Sans: a sans da identidade visual do governo dos EUA (fork da Libre
+   Franklin, licença OFL, ver public/fonts/PublicSans-LICENSE.md). Escolhida
+   por ser feita para serviço público e ler bem em tela densa de dados.
+   Auto-hospedada e só no subconjunto latino, que cobre o português. */
+@font-face {
+  font-family: "Public Sans";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/public-sans-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/*
+ * Paleta: o material de quem estuda para concurso é o edital impresso, a
+ * caneta azul e o marca-texto. Daí três papéis:
+ *   --primary  azul de caneta: ações, links, item atual. Só isso.
+ *   --accent   marca-texto: seleção de texto, "hoje" no calendário, destaque
+ *              pontual. Nunca como fundo de hover.
+ *   neutros    papel frio (não creme) e tinta quase preta azulada.
+ * Verde e vermelho ficam reservados para acerto e erro.
+ */
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 215 25% 15%;
+    --background: 220 20% 97%;
+    --foreground: 224 32% 13%;
 
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 15%;
+    --card-foreground: 224 32% 13%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 15%;
+    --popover-foreground: 224 32% 13%;
 
-    --primary: 158 64% 42%;
+    --primary: 226 66% 40%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 217 91% 48%;
+    --secondary: 190 52% 30%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 30% 94%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 220 18% 93%;
+    --muted-foreground: 222 12% 40%;
 
-    --accent: 45 93% 58%;
-    --accent-foreground: 215 25% 15%;
+    --accent: 52 100% 62%;
+    --accent-foreground: 224 32% 13%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 68% 46%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 158 64% 42%;
+    --success: 152 58% 30%;
     --success-foreground: 0 0% 100%;
 
-    --border: 214 20% 88%;
-    --input: 214 20% 88%;
-    --ring: 158 64% 42%;
+    --border: 220 16% 86%;
+    --input: 220 16% 80%;
+    --ring: 226 66% 40%;
 
-    --radius: 0.75rem;
-    
-    --gradient-primary: linear-gradient(135deg, hsl(158 64% 42%), hsl(158 64% 52%));
-    --gradient-secondary: linear-gradient(135deg, hsl(217 91% 48%), hsl(217 91% 58%));
-    --gradient-hero: linear-gradient(135deg, hsl(158 64% 42%), hsl(217 91% 48%));
-    
-    --shadow-glow: 0 10px 40px -10px hsl(158 64% 42% / 0.3);
-    --shadow-card: 0 4px 20px -2px hsl(215 25% 15% / 0.08);
-    
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --radius: 0.5rem;
+
+    --shadow-card: 0 1px 2px hsl(224 32% 13% / 0.05), 0 2px 8px -2px hsl(224 32% 13% / 0.06);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -57,43 +72,38 @@
   }
 
   .dark {
-    --background: 215 28% 12%;
-    --foreground: 210 20% 95%;
+    --background: 224 24% 9%;
+    --foreground: 220 20% 92%;
 
-    --card: 215 25% 16%;
-    --card-foreground: 210 20% 95%;
+    --card: 224 22% 12%;
+    --card-foreground: 220 20% 92%;
 
-    --popover: 215 25% 16%;
-    --popover-foreground: 210 20% 95%;
+    --popover: 224 22% 12%;
+    --popover-foreground: 220 20% 92%;
 
-    --primary: 158 64% 52%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 224 90% 74%;
+    --primary-foreground: 224 40% 10%;
 
-    --secondary: 217 91% 58%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 188 50% 56%;
+    --secondary-foreground: 224 40% 10%;
 
-    --muted: 215 25% 20%;
-    --muted-foreground: 215 16% 65%;
+    --muted: 224 18% 17%;
+    --muted-foreground: 220 12% 66%;
 
-    --accent: 45 93% 68%;
-    --accent-foreground: 215 28% 12%;
+    --accent: 52 92% 64%;
+    --accent-foreground: 224 32% 10%;
 
-    --destructive: 0 84% 65%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 80% 68%;
+    --destructive-foreground: 224 40% 10%;
 
-    --success: 158 64% 52%;
-    --success-foreground: 0 0% 100%;
+    --success: 152 52% 56%;
+    --success-foreground: 224 40% 10%;
 
-    --border: 215 25% 22%;
-    --input: 215 25% 22%;
-    --ring: 158 64% 52%;
-    
-    --gradient-primary: linear-gradient(135deg, hsl(158 64% 52%), hsl(158 64% 62%));
-    --gradient-secondary: linear-gradient(135deg, hsl(217 91% 58%), hsl(217 91% 68%));
-    --gradient-hero: linear-gradient(135deg, hsl(158 64% 52%), hsl(217 91% 58%));
-    
-    --shadow-glow: 0 10px 40px -10px hsl(158 64% 52% / 0.4);
-    --shadow-card: 0 4px 20px -2px hsl(0 0% 0% / 0.3);
+    --border: 224 16% 21%;
+    --input: 224 16% 27%;
+    --ring: 224 90% 74%;
+
+    --shadow-card: 0 1px 2px hsl(0 0% 0% / 0.3);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -116,8 +126,8 @@
   }
 
   body {
-    @apply bg-background text-foreground;
-    overflow-x: hidden;
+    @apply bg-background text-foreground antialiased;
+    overflow-x: clip;
     height: 100%;
     position: relative;
     min-height: 100vh;
@@ -131,6 +141,40 @@
   img {
     max-width: 100%;
     height: auto;
+  }
+
+  h1, h2, h3 {
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  /* As superfícies que o navegador desenha também levam a paleta: o texto
+     selecionado sai com cor de marca-texto. */
+  ::selection {
+    background: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  a {
+    text-underline-offset: 0.2em;
+  }
+
+  html {
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 

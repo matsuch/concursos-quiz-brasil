@@ -46,7 +46,7 @@ export function QuizResults({ score, total, onRetry, onNewQuiz }: QuizResultsPro
         )}
 
         <Card className="p-8 mb-8">
-          <div className="text-5xl sm:text-6xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <div className="text-5xl sm:text-6xl font-extrabold mb-2 text-foreground tabular-nums">
             {percentage.toFixed(0)}%
           </div>
           <p className="text-sm text-muted-foreground">de aproveitamento</p>

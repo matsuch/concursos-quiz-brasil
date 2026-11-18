@@ -172,6 +172,35 @@ marketing: não prometa volume, recurso ou resultado que o produto não entrega.
 
 ---
 
+## Design de interface
+
+Use as skills abaixo, em `.claude/skills/`, para qualquer mudança visual
+(layout, tipografia, cor, componentes):
+
+- `frontend-design` — direção visual e lista dos vícios de página gerada por
+  IA a evitar. Origem: `anthropics/skills`, commit `e4bb5d9`, Apache 2.0.
+- `impeccable` — refinamento de UI existente (`polish`, `layout`, `typeset`,
+  `audit`, `quieter`) e o piso de qualidade em `reference/craft-floor.md`.
+  Origem: `pbakaus/impeccable` v4.9.2, commit `d41d986`, Apache 2.0. Copiada
+  **sem** a pasta `scripts/`: o lançador baixa um binário de terceiros, então
+  siga o caminho "Launcher unavailable" do SKILL.md (ler o contexto direto,
+  sem rodar o detector).
+
+Direção visual em vigor (definida em 2026-11-18; tokens em `src/index.css`):
+
+- Material do assunto: edital impresso, caneta azul e marca-texto.
+- `--primary` (azul de caneta) só para ação, link e item atual.
+- `--accent` (marca-texto) só para destaque pontual: seleção de texto,
+  "termina hoje", selo de destaque, dia atual no calendário. Nunca como
+  fundo de hover; hover usa `muted`.
+- Verde e vermelho só para acerto e erro.
+- Uma família, Public Sans, auto-hospedada em `public/fonts/`.
+- Sem gradiente decorativo, texto em gradiente, emoji como ícone, rótulo em
+  caixa-alta espaçada, seta "→" colada em texto de link, cartão que sobe no
+  hover ou trio de cartões de estatística coloridos.
+
+---
+
 # Skill Selection
 
 Before starting a task, determine whether one or more specialized

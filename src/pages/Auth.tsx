@@ -122,8 +122,8 @@ const Auth = () => {
       <meta name="robots" content="noindex, nofollow" />
     </Helmet>
 
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-secondary/5 to-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-lg">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-4">
           <div className="flex justify-center">
           </div>
@@ -174,7 +174,7 @@ const Auth = () => {
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-border" />
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
+            <div className="relative flex justify-center text-xs">
               <span className="bg-card px-2 text-muted-foreground">ou</span>
             </div>
           </div>
@@ -209,7 +209,7 @@ const Auth = () => {
             </div>
             <Button 
               type="submit" 
-              className="w-full bg-gradient-to-r from-primary to-primary/90"
+              className="w-full"
               disabled={isSubmitting || isGoogleLoading}
             >
               {isSubmitting ? (
