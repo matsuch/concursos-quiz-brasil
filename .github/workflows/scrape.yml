@@ -105,6 +105,15 @@ jobs:
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "- Antes: **$ANTES** | Depois: **$DEPOIS**" >> "$GITHUB_STEP_SUMMARY"
 
+      # Antes do commit, para comparar com a versão anterior do arquivo.
+      - name: Avisar no Telegram
+        if: ${{ env.MODO == 'concursos' }}
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: python scripts/telegram/avisar.py
+
       - name: Commitar resultado
         if: ${{ env.MODO != 'nenhum' }}
         run: |
