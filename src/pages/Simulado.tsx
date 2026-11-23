@@ -9,6 +9,7 @@ import { db } from "@/integrations/neon/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Helmet } from 'react-helmet-async';
+import { SITE_URL } from '@/lib/seo-constants';
 
 interface SimuladoQuestion {
   id: string;
@@ -441,11 +442,11 @@ const SimuladoPage = () => {
     <Helmet>
       <title>Simulados de Concursos Públicos | Teste seus Conhecimentos</title>
       <meta name="description" content="Simulados cronometrados de concursos públicos." />
-      <link rel="canonical" href="https://passar-concursos.vercel.app/simulado" />
+      <link rel="canonical" href={`${SITE_URL}/simulado`} />
       <meta name="robots" content="noindex, nofollow" />
       <meta property="og:title" content="Simulados - Passar Concursos" />
       <meta property="og:description" content="Simulados cronometrados de concursos públicos." />
-      <meta property="og:url" content="https://passar-concursos.vercel.app/simulado" />
+      <meta property="og:url" content={`${SITE_URL}/simulado`} />
     </Helmet>
 
     <div className="min-h-screen bg-background">

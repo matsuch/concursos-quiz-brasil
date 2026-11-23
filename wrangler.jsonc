@@ -1,0 +1,22 @@
+// Hospedagem na Cloudflare (Workers com arquivos estáticos, plano gratuito).
+//
+// Por que sair da Vercel: o plano Hobby é só para uso pessoal e não comercial,
+// e o site vai cobrar assinatura. Na Cloudflare gratuita, requisições a
+// arquivos estáticos não têm limite; só código de Worker conta na cota diária.
+//
+// Hoje não há Worker: o site é o dist/ do build. A função de IA (api/) segue
+// desligada e só vai para um Worker quando a assinatura existir.
+{
+  "name": "passar-concursos",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    // As páginas pré-renderizadas são dist/concursos/<slug>/index.html, e as
+    // canonicals não têm barra no fim. O padrão da Cloudflare redirecionaria
+    // /concursos/x para /concursos/x/, contrariando a canonical; com
+    // drop-trailing-slash a URL servida é a mesma do sitemap.
+    "html_handling": "drop-trailing-slash",
+    // Qualquer rota sem arquivo cai no index.html, como o rewrite do vercel.json.
+    "not_found_handling": "single-page-application"
+  }
+}

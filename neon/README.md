@@ -16,6 +16,7 @@ pausa-e-apaga-em-90-dias que custou os dados do projeto anterior.
 |---|---|
 | `schema.sql` | Schema completo adaptado para Neon: 21 tabelas, 63 policies, índices, funções |
 | `seed.sql` | Conteúdo oficial: 12 badges, 49 questões, 26 flashcards (idêntico ao do Supabase) |
+| `seed/questoes_bancarias.sql` | 145 questões oficiais Cesgranrio (BANESE 2025, BASA 2024, BNB 2024), com banca e prova; idempotente |
 | `migrations/` | Alterações incrementais para bancos que já rodam um `schema.sql` anterior |
 
 ## Como aplicar

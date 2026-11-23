@@ -1,0 +1,35 @@
+{
+  "comentario": "Provas oficiais de concursos bancários publicadas pela própria banca. Só entra aqui o que a banca ou o órgão publica; nunca sites de questões de terceiros. 'evento' é o id do portal da Cesgranrio (concursos.cesgranrio.org.br/portal/avaliacoes/<id>). 'provas' e 'gabaritos' são trechos do texto do link, comparados sem acento e sem caixa.",
+  "fontes": [
+    {
+      "slug": "banese-2025-tecnico-bancario-i",
+      "concurso": "BANESE 01/2025",
+      "cargo": "Técnico Bancário I",
+      "banca": "Cesgranrio",
+      "ano": 2025,
+      "evento": 17,
+      "provas": ["PROVA A - GABARITO 1 - TECNICO BANCARIO I"],
+      "gabaritos": ["GABARITO PROVA A - TECNICO BANCARIO I"]
+    },
+    {
+      "slug": "basa-2024-tecnico-bancario",
+      "concurso": "BASA 01/2024",
+      "cargo": "Técnico Bancário",
+      "banca": "Cesgranrio",
+      "ano": 2024,
+      "evento": 13,
+      "provas": ["TECNICO BANCARIO - PROVA A - GABARITO 1"],
+      "gabaritos": ["*GABARITOS"]
+    },
+    {
+      "slug": "bnb-2024-analista-bancario",
+      "concurso": "BNB 01/2024",
+      "cargo": "Analista Bancário 1",
+      "banca": "Cesgranrio",
+      "ano": 2024,
+      "evento": 10,
+      "provas": ["PROVA ANALISTA BANCARIO 1 - GABARITO 1"],
+      "gabaritos": ["GABARITO FINAL BANCO DO NORDESTE"]
+    }
+  ]
+}

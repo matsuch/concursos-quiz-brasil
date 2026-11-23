@@ -8,8 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { SeoHead } from '@/components/SeoHead';
 import { apenasAbertos, carregarConcursos, inscricaoEncerrada, ordenarPorUrgencia, type Concurso as ConcursoDados } from '@/dados/concursos';
+import { SITE_URL } from '@/lib/seo-constants';
 
-const SITE = 'https://passar-concursos.vercel.app';
+const SITE = SITE_URL;
 
 const ROTULO_STATUS: Record<string, string> = {
   destaque: 'Destaque',

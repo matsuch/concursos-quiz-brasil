@@ -41,6 +41,7 @@ import {
   Trash2
 } from "lucide-react";
 import { Helmet } from 'react-helmet-async';
+import { SITE_URL } from '@/lib/seo-constants';
 
 const subjectConfig: Record<string, { icon: LucideIcon; color: string; summary: string }> = {
   "Direito Constitucional": {
@@ -357,10 +358,10 @@ export default function Estudo() {
     <Helmet>
       <title>Flashcards para Concursos | Sistema de Revisão Espaçada</title>
       <meta name="description" content="Revise com flashcards personalizados usando repetição espaçada. Memorize conteúdos importantes para concursos públicos de forma eficiente." />
-      <link rel="canonical" href="https://passar-concursos.vercel.app/estudo" />
+      <link rel="canonical" href={`${SITE_URL}/estudo`} />
       <meta property="og:title" content="Flashcards - Passar Concursos" />
       <meta property="og:description" content="Sistema de revisão espaçada para memorização eficiente." />
-      <meta property="og:url" content="https://passar-concursos.vercel.app/estudo" />
+      <meta property="og:url" content={`${SITE_URL}/estudo`} />
     </Helmet>
 
     <div className="min-h-screen bg-background">

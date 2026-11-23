@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { z } from "zod";
 import { Helmet } from 'react-helmet-async';
+import { SITE_URL } from '@/lib/seo-constants';
 
 // No login a senha só precisa existir: quem criou conta com a regra antiga
 // (6 caracteres) tem de continuar entrando. O mínimo de 8 vale para conta nova.
@@ -118,7 +119,7 @@ const Auth = () => {
     <Helmet>
       <title>{isLogin ? 'Entrar' : 'Criar Conta'} | Passar Concursos</title>
       <meta name="description" content={isLogin ? 'Entre na sua conta para acessar questões, flashcards e plano de estudos personalizado.' : 'Crie sua conta grátis e comece a estudar para concursos públicos.'} />
-      <link rel="canonical" href="https://passar-concursos.vercel.app/auth" />
+      <link rel="canonical" href={`${SITE_URL}/auth`} />
       <meta name="robots" content="noindex, nofollow" />
     </Helmet>
 

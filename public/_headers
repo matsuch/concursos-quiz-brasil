@@ -1,0 +1,9 @@
+# Cabeçalhos para a Cloudflare Pages: os mesmos do vercel.json. Os dois
+# arquivos convivem enquanto o site estiver nas duas hospedagens; ao desligar
+# a Vercel, o vercel.json pode sair. Na Vercel, este arquivo é só estático.
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Content-Security-Policy: frame-ancestors 'none'; base-uri 'self'; object-src 'none'

@@ -33,7 +33,8 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 
-const BASE = 'https://passar-concursos.vercel.app';
+// Mesma variável do frontend (src/lib/seo-constants.tsx).
+const BASE = (process.env.VITE_SITE_URL || 'https://passar-concursos.vercel.app').replace(/\/+$/, '');
 const DIST = 'dist';
 
 if (!existsSync(DIST)) {
