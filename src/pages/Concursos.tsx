@@ -9,6 +9,7 @@ import ConcursoCard from "@/components/ConcursoCard";
 import { SeoHead } from "@/components/SeoHead";
 import { apenasAbertos, carregarConcursos, formatarDataBr } from '@/dados/concursos';
 import { Helmet } from 'react-helmet-async';
+import { SITE_URL } from '@/lib/seo-constants';
 
 interface Concurso {
   id: string;
@@ -175,7 +176,7 @@ const ConcursosPage = () => {
 
   // Structured Data para SEO
   const generateStructuredData = () => {
-    const baseUrl = "https://passar-concursos.vercel.app";
+    const baseUrl = SITE_URL;
     
     return [
       {
@@ -257,7 +258,7 @@ const ConcursosPage = () => {
       />
 
       <Helmet>
-        <link rel="preload" as="image" href="https://passar-concursos.vercel.app/og-image.jpg" />
+        <link rel="preload" as="image" href={`${SITE_URL}/og-image.jpg`} />
       </Helmet>
 
       <div className="min-h-screen bg-background">

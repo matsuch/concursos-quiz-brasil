@@ -10,6 +10,7 @@ import { Loader2, Sparkles } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { SITE_URL } from '@/lib/seo-constants';
 
 interface Filters {
   subject: string;
@@ -97,12 +98,12 @@ const Quiz = () => {
       <Helmet>
         <title>Questões de Concursos Públicos por Matéria | Passar Concursos</title>
         <meta name="description" content="Resolva questões de concursos públicos por matéria e dificuldade, com gabarito na hora. Gratuito: crie uma conta para registrar seu desempenho." />
-        <link rel="canonical" href="https://passar-concursos.vercel.app/quiz" />
+        <link rel="canonical" href={`${SITE_URL}/quiz`} />
         
         {/* Open Graph */}
         <meta property="og:title" content="Questões de Concursos Públicos por Matéria" />
         <meta property="og:description" content="Resolva questões de concursos públicos por matéria e dificuldade, com gabarito na hora." />
-        <meta property="og:url" content="https://passar-concursos.vercel.app/quiz" />
+        <meta property="og:url" content={`${SITE_URL}/quiz`} />
         <meta property="og:type" content="website" />
         
         {/* Twitter */}
@@ -116,7 +117,7 @@ const Quiz = () => {
             "@type": "WebPage",
             "name": "Questões de Concursos Públicos",
             "description": "Questões de concursos públicos por matéria e dificuldade",
-            "url": "https://passar-concursos.vercel.app/quiz",
+            "url": `${SITE_URL}/quiz`,
             "breadcrumb": {
               "@type": "BreadcrumbList",
               "itemListElement": [
@@ -124,13 +125,13 @@ const Quiz = () => {
                   "@type": "ListItem",
                   "position": 1,
                   "name": "Home",
-                  "item": "https://passar-concursos.vercel.app"
+                  "item": `${SITE_URL}`
                 },
                 {
                   "@type": "ListItem",
                   "position": 2,
                   "name": "Questões",
-                  "item": "https://passar-concursos.vercel.app/quiz"
+                  "item": `${SITE_URL}/quiz`
                 }
               ]
             }

@@ -19,7 +19,8 @@
 import { writeFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const BASE = 'https://passar-concursos.vercel.app';
+// Mesma variável do frontend (src/lib/seo-constants.tsx).
+const BASE = (process.env.VITE_SITE_URL || 'https://passar-concursos.vercel.app').replace(/\/+$/, '');
 const DIST = 'dist';
 
 // changefreq e priority são dicas fracas (o Google ignora priority há anos),
@@ -100,3 +101,16 @@ if (!existsSync(DIST)) {
 mkdirSync(DIST, { recursive: true });
 writeFileSync(join(DIST, 'sitemap.xml'), xml, 'utf-8');
 console.log(`[sitemap] ${ROTAS.length} URLs (${dados.concursos.length} concursos, ${guias.length} guias) -> ${DIST}/sitemap.xml`);
+
+// robots.txt e llms.txt são estáticos em public/ e citam o endereço do site.
+// Quando o build roda com outro VITE_SITE_URL (domínio próprio), a cópia em
+// dist/ passa a apontar para ele; os arquivos-fonte não mudam.
+const URL_PADRAO = 'https://passar-concursos.vercel.app';
+if (BASE !== URL_PADRAO) {
+  for (const arquivo of ['robots.txt', 'llms.txt']) {
+    const caminho = join(DIST, arquivo);
+    if (!existsSync(caminho)) continue;
+    writeFileSync(caminho, readFileSync(caminho, 'utf-8').replaceAll(URL_PADRAO, BASE), 'utf-8');
+    console.log(`[sitemap] ${arquivo}: endereço trocado para ${BASE}`);
+  }
+}

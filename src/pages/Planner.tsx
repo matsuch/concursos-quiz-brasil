@@ -17,6 +17,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { ProposalsTab } from '@/components/planner/ProposalsTab';
 import { NotificationsPopover } from '@/components/planner/NotificationsPopover';
 import { IA_PLANO_ESTUDOS_HABILITADA } from '@/config/features';
+import { SITE_URL } from '@/lib/seo-constants';
 
 function PlannerSidebar({
   selectedDate,
@@ -216,7 +217,7 @@ export default function Planner() {
       <Helmet>
         <title>Planner de Estudos para Concursos | Organize seu Cronograma e Edital</title>
         <meta name="description" content="Organize seu cronograma de estudos, controle o edital do concurso e agende revisões. Planner inteligente para maximizar seu aprendizado e aprovação." />
-        <link rel="canonical" href="https://passar-concursos.vercel.app/planner" />
+        <link rel="canonical" href={`${SITE_URL}/planner`} />
       </Helmet>
 
       <div className="min-h-screen bg-muted/30">

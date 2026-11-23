@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { apenasAbertos, carregarConcursos, formatarDataBr, hojeIso } from "@/dados/concursos";
 import { SeoHead } from "@/components/SeoHead";
+import { SITE_URL } from '@/lib/seo-constants';
 
 interface Concurso {
   id: string;
@@ -23,7 +24,7 @@ interface Concurso {
   slug: string;
 }
 
-const SITE = "https://passar-concursos.vercel.app";
+const SITE = SITE_URL;
 
 const DESCRICAO =
   "Plataforma gratuita para quem estuda para concursos públicos: lista de concursos com inscrições abertas, questões por matéria, flashcards, planner de estudos e guias práticos.";

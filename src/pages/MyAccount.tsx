@@ -19,6 +19,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Helmet } from 'react-helmet-async';
 import { PerformanceDashboard } from '@/components/account/PerformanceDashboard';
+import { SITE_URL } from '@/lib/seo-constants';
 
 // Mapeamento de strings para componentes de ícones Lucide
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -171,7 +172,7 @@ const MyAccount = () => {
       <Helmet>
         <title>Minha Conta | Passar Concursos - Gerenciar Perfil</title>
         <meta name="description" content="Gerencie sua conta e atualize suas informações pessoais." />
-        <link rel="canonical" href="https://passar-concursos.vercel.app/minha-conta" />
+        <link rel="canonical" href={`${SITE_URL}/minha-conta`} />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       <div className="min-h-screen bg-background py-6 px-4 md:py-10">

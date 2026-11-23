@@ -17,6 +17,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Helmet } from 'react-helmet-async';
+import { SITE_URL } from '@/lib/seo-constants';
 
 /**
  * O conteúdo das anotações vai para dangerouslySetInnerHTML. O texto é
@@ -341,10 +342,10 @@ export default function Anotacoes() {
     <Helmet>
       <title>Anotações de Estudo | Organize seus Resumos para Concursos</title>
       <meta name="description" content="Crie e organize suas anotações de estudo. Mantenha todos os seus resumos e materiais importantes em um só lugar." />
-      <link rel="canonical" href="https://passar-concursos.vercel.app/anotacoes" />
+      <link rel="canonical" href={`${SITE_URL}/anotacoes`} />
       <meta property="og:title" content="Anotações - Passar Concursos" />
       <meta property="og:description" content="Organize seus resumos e materiais de estudo." />
-      <meta property="og:url" content="https://passar-concursos.vercel.app/anotacoes" />
+      <meta property="og:url" content={`${SITE_URL}/anotacoes`} />
     </Helmet>
     <div className="min-h-screen bg-muted/30">
       <div className="container mx-auto px-4 py-6 max-w-6xl">

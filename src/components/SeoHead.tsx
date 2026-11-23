@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { SITE_URL } from '@/lib/seo-constants';
 
 interface SeoHeadProps {
   title: string;
@@ -9,7 +10,7 @@ interface SeoHeadProps {
   structuredData?: Record<string, any>[];
 }
 
-const SITE = 'https://passar-concursos.vercel.app';
+const SITE = SITE_URL;
 
 /** Aceita '/concursos' ou a URL inteira e devolve sempre absoluta: canonical
  *  relativa o navegador resolve, mas og:url exige absoluta — e quem lê og:url
@@ -22,7 +23,7 @@ export const SeoHead = ({
   description,
   canonical = SITE + '/',
   keywords,
-  ogImage = 'https://passar-concursos.vercel.app/og-image.jpg',
+  ogImage = `${SITE_URL}/og-image.jpg`,
   structuredData = []
 }: SeoHeadProps) => {
   const url = absoluta(canonical);
