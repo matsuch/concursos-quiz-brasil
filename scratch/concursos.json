@@ -984,6 +984,18 @@
     "url_edital": "https://www.pciconcursos.com.br/noticias/trt4-rs-abre-concurso-publico-para-analistas-e-tecnicos-judiciarios"
   },
   {
+    "titulo": "Prefeitura de Ponto Belo - ES abre processo seletivo com salário de R$ 15.000,00 para médicos",
+    "orgao": "Prefeitura de Ponto Belo",
+    "local": "ES",
+    "nivel": "Superior",
+    "vagas": 0,
+    "salario": 15000.0,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-11-25",
+    "status": "destaque",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-ponto-belo-es-abre-processo-seletivo-com-salario-de-15000-para-medicos"
+  },
+  {
     "titulo": "Prefeitura de Suzano - SP abre concurso público com salários de até R$ 12.062,91",
     "orgao": "Prefeitura de Suzano",
     "local": "SP",
@@ -1860,6 +1872,18 @@
     "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-coronel-sapucaia-ms-abre-processo-seletivo-para-a-secretaria-municipal-de-saude"
   },
   {
+    "titulo": "Secretaria Municipal de Educação de Guia Lopes da Laguna - MS abre seleção para monitor de transporte escolar",
+    "orgao": "Secretaria Municipal de Educação de Guia Lopes da Laguna",
+    "local": "MS",
+    "nivel": "Fundamental",
+    "vagas": 6,
+    "salario": null,
+    "salario_ate": false,
+    "inscricoes_ate": "2026-11-26",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/secretaria-municipal-de-educacao-de-guia-lopes-da-laguna-ms-abre-selecao-para-monitor-de-transporte-escolar"
+  },
+  {
     "titulo": "FURB - SC abre processo seletivo para aprimoramento profissional em medicina veterinária",
     "orgao": "FURB - Fundação Universidade Regional de Blumenau",
     "local": "SC",
@@ -1968,6 +1992,18 @@
     "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-mogi-guacu-sp-abre-tres-novos-concursos-para-cadastro-de-reserva-em-diversas-areas"
   },
   {
+    "titulo": "Unifesp - SP abre vaga para professor substituto com salário de R$ 6.157,29",
+    "orgao": "Unifesp - Universidade Federal de São Paulo",
+    "local": "SP",
+    "nivel": "Superior",
+    "vagas": 1,
+    "salario": 6157.29,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-11-27",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/unifesp-sp-abre-vaga-para-professor-substituto-com-salario-de-6157"
+  },
+  {
     "titulo": "HCFMRP - USP abre concurso público para médico na área de alergia e imunologia",
     "orgao": "HCFMRP - Hospital das Clínicas da Faculdade de Medicina de Ribeirão Preto da Universidade de São Paulo",
     "local": "SP",
@@ -1990,6 +2026,18 @@
     "inscricoes_ate": "2026-11-27",
     "status": "aberto",
     "url_edital": "https://www.pciconcursos.com.br/noticias/hcfmrp-usp-abre-tres-concursos-publicos-para-medicos"
+  },
+  {
+    "titulo": "UFJF - MG abre processo seletivo para professor substituto de jornalismo",
+    "orgao": "UFJF - Universidade Federal de Juiz de Fora",
+    "local": "MG",
+    "nivel": "Superior",
+    "vagas": 1,
+    "salario": 5949.08,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-11-27",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/ufjf-mg-abre-processo-seletivo-para-professor-substituto-de-jornalismo"
   },
   {
     "titulo": "Prefeitura de São Pedro do Iguaçu - PR abre processo seletivo com 14 vagas para professores",
@@ -2218,6 +2266,18 @@
     "inscricoes_ate": "2026-11-27",
     "status": "aberto",
     "url_edital": "https://www.pciconcursos.com.br/noticias/cpgi-de-andradas-mg-abre-processo-seletivo-para-auxiliar-de-limpeza"
+  },
+  {
+    "titulo": "Prefeitura de Coronel Sapucaia - MS abre seleção para educação com vagas imediatas e cadastro reserva",
+    "orgao": "Secretaria Municipal de Educação e Cultura de Coronel Sapucaia",
+    "local": "MS",
+    "nivel": "Fundamental",
+    "vagas": 48,
+    "salario": null,
+    "salario_ate": false,
+    "inscricoes_ate": "2026-11-27",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-coronel-sapucaia-ms-abre-selecao-para-educacao-com-vagas-imediatas-e-cadastro-reserva"
   },
   {
     "titulo": "Município de Nova Trento - SC abre três novos processos seletivos com salários de até R$ 14.189,97",
@@ -2688,6 +2748,18 @@
     "url_edital": "https://www.pciconcursos.com.br/noticias/ifpr-abre-selecao-para-professor-visitante-em-medicina-tradicional-chinesa"
   },
   {
+    "titulo": "IFFar - RS abre seleção para professores substitutos com salários de até R$ 8 mil",
+    "orgao": "IFFar - Instituto Federal de Educação, Ciência e Tecnologia Farroupilha",
+    "local": "RS",
+    "nivel": "Superior",
+    "vagas": 2,
+    "salario": 8058.29,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-11-30",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/iffar-rs-abre-selecao-para-professores-substitutos-com-salarios-de-ate-8-mil"
+  },
+  {
     "titulo": "Unespar - PR abre processo seletivo para agente universitário profissional",
     "orgao": "Unespar - Universidade Estadual do Paraná",
     "local": "PR",
@@ -2808,6 +2880,30 @@
     "url_edital": "https://www.pciconcursos.com.br/noticias/uemg-mg-abre-selecao-com-19-vagas-para-professor-de-educacao-superior-em-guanhaes"
   },
   {
+    "titulo": "UFJF - MG abre seleções para professores com salários de até R$ 5.949,08",
+    "orgao": "UFJF - Universidade Federal de Juiz de Fora",
+    "local": "MG",
+    "nivel": "Superior",
+    "vagas": 2,
+    "salario": 5949.08,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-11-30",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/ufjf-mg-abre-selecoes-para-professores-com-salarios-de-ate-5949"
+  },
+  {
+    "titulo": "UFJF - MG abre processo seletivo para professor substituto com salário de R$ 5.949,08",
+    "orgao": "UFJF - Universidade Federal de Juiz de Fora",
+    "local": "MG",
+    "nivel": "Superior",
+    "vagas": 1,
+    "salario": 5949.08,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-11-30",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/ufjf-mg-abre-processo-seletivo-para-professor-substituto-com-salario-de-5949"
+  },
+  {
     "titulo": "Prefeitura de Montes Claros - MG abre processo seletivo com 123 vagas na saúde",
     "orgao": "Prefeitura de Montes Claros",
     "local": "MG",
@@ -2854,6 +2950,18 @@
     "inscricoes_ate": "2026-11-30",
     "status": "aberto",
     "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-correia-pinto-sc-abre-concurso-publico-na-area-da-educacao"
+  },
+  {
+    "titulo": "UFJF - MG abre processo seletivo para professor substituto com salário de R$ 4.975,59 em Governador Valadares",
+    "orgao": "UFJF - Universidade Federal de Juiz de Fora",
+    "local": "MG",
+    "nivel": "Superior",
+    "vagas": 1,
+    "salario": 4975.59,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-11-30",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/ufjf-mg-abre-processo-seletivo-para-professor-substituto-com-salario-de-4975-em-governador-valadares"
   },
   {
     "titulo": "Prefeitura de Uirapuru - GO abre concurso público com salários de até R$ 4.428,13",
@@ -3396,6 +3504,18 @@
     "url_edital": "https://www.pciconcursos.com.br/noticias/ifms-abre-processo-seletivo-para-professores-substitutos-no-campus-ponta-pora"
   },
   {
+    "titulo": "IFRS - RS abre seleção para professores substitutos no Campus Porto Alegre",
+    "orgao": "IFRS - Instituto Federal de Educação, Ciência e Tecnologia do Rio Grande do Sul",
+    "local": "RS",
+    "nivel": "Superior",
+    "vagas": 2,
+    "salario": 8340.33,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-12-02",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/ifrs-rs-abre-selecao-para-professores-substitutos-no-campus-porto-alegre"
+  },
+  {
     "titulo": "Prefeitura de Nova Lima - MG abre processo seletivo com salários de até R$ 8.106,76",
     "orgao": "SEMSA - Secretaria Municipal de Saúde de Nova Lima",
     "local": "MG",
@@ -3468,6 +3588,18 @@
     "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-abelardo-luz-sc-abre-processo-seletivo-com-12-vagas-e-cadastro-reserva"
   },
   {
+    "titulo": "UFJF - MG abre processo seletivo para professor substituto com salário de R$ 5.130,63",
+    "orgao": "UFJF - Universidade Federal de Juiz de Fora",
+    "local": "MG",
+    "nivel": "Superior",
+    "vagas": 1,
+    "salario": 5130.63,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-12-02",
+    "status": "breve",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/ufjf-mg-abre-processo-seletivo-para-professor-substituto-com-salario-de-5130"
+  },
+  {
     "titulo": "Município de Nova Veneza - SC abre processo seletivo para a Secretaria de Educação",
     "orgao": "Prefeitura de Nova Veneza",
     "local": "SC",
@@ -3526,6 +3658,18 @@
     "inscricoes_ate": "2026-12-02",
     "status": "aberto",
     "url_edital": "https://www.pciconcursos.com.br/noticias/unesp-sp-abre-concurso-publico-para-professores-substitutos-em-araraquara"
+  },
+  {
+    "titulo": "Prefeitura de Casca - RS abre processos seletivos para Motorista e Operador de Máquinas com salários de até R$ 3.380,41",
+    "orgao": "Prefeitura de Casca",
+    "local": "RS",
+    "nivel": "Fundamental",
+    "vagas": 2,
+    "salario": 3380.41,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-12-02",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-casca-rs-abre-processos-seletivos-para-motorista-e-operador-de-maquinas-com-salarios-de-ate-3380"
   },
   {
     "titulo": "CORECA - SP abre concurso público com vagas na Casa Abrigo de Jales",
@@ -3694,6 +3838,18 @@
     "inscricoes_ate": "2026-12-03",
     "status": "aberto",
     "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-realeza-pr-abre-concurso-publico-para-controlador-interno-e-procurador-juridico"
+  },
+  {
+    "titulo": "Prefeitura de Sertãozinho - SP abre seleção com salários de até R$ 8.732,86 na educação",
+    "orgao": "Prefeitura da Estância Turística de Sertãozinho",
+    "local": "SP",
+    "nivel": "Médio",
+    "vagas": 0,
+    "salario": 8732.86,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-12-03",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-sertaozinho-sp-abre-selecao-com-salarios-de-ate-8732-na-educacao"
   },
   {
     "titulo": "Prefeitura de Vila Bela da Santíssima Trindade - MT abre seleção com vagas imediatas e cadastro de reserva",
@@ -5148,6 +5304,18 @@
     "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-cosmopolis-sp-abre-concurso-publico-para-profissionais-da-educacao"
   },
   {
+    "titulo": "Prefeitura de Torres - RS abre processo seletivo para diretores e vice-diretores escolares",
+    "orgao": "Prefeitura de Torres",
+    "local": "RS",
+    "nivel": "Superior",
+    "vagas": 0,
+    "salario": null,
+    "salario_ate": false,
+    "inscricoes_ate": "2026-12-10",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-torres-rs-abre-processo-seletivo-para-diretores-e-vice-diretores-escolares"
+  },
+  {
     "titulo": "IFMG abre processo seletivo para professores substitutos no campus Bambuí",
     "orgao": "IFMG - Instituto Federal de Educação, Ciência e Tecnologia de Minas Gerais",
     "local": "MG",
@@ -5194,6 +5362,18 @@
     "inscricoes_ate": "2026-12-11",
     "status": "breve",
     "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-sao-tomas-de-aquino-mg-abre-processo-seletivo-com-salarios-de-ate-4978"
+  },
+  {
+    "titulo": "Prefeitura de Acreúna - GO abre seleção com 19 vagas e salários de até R$ 4,5 mil",
+    "orgao": "Prefeitura de Acreúna",
+    "local": "GO",
+    "nivel": "Superior",
+    "vagas": 19,
+    "salario": 4569.09,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-12-11",
+    "status": "breve",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-acreuna-go-abre-selecao-com-19-vagas-e-salarios-de-ate-4-5-mil"
   },
   {
     "titulo": "Banestes Corretora - ES abre concurso para assistente securitário",
@@ -6166,6 +6346,18 @@
     "inscricoes_ate": "2026-12-22",
     "status": "aberto",
     "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-saquarema-rj-abre-selecao-para-agentes-de-saude-e-endemias"
+  },
+  {
+    "titulo": "Prefeitura de Nova Aliança do Ivaí - PR abre concurso para Agente de Combate às Endemias",
+    "orgao": "Prefeitura do Município de Nova Aliança do Ivaí",
+    "local": "PR",
+    "nivel": "Médio",
+    "vagas": 0,
+    "salario": 3242.0,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-12-22",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-nova-alianca-do-ivai-pr-abre-concurso-para-agente-de-combate-as-endemias"
   },
   {
     "titulo": "Prefeitura de Munhoz - MG abre concurso público para cargos de nível superior",
