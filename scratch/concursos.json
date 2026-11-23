@@ -1536,6 +1536,18 @@
     "url_edital": "https://www.pciconcursos.com.br/noticias/ifrs-abre-processo-seletivo-para-professor-substituto-de-zootecnia-em-sertao"
   },
   {
+    "titulo": "IFC - SC abre processo seletivo para professor substituto de Química em Blumenau",
+    "orgao": "IFC - Instituto Federal Catarinense",
+    "local": "SC",
+    "nivel": "Superior",
+    "vagas": 1,
+    "salario": 8340.33,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-11-26",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/ifc-sc-abre-processo-seletivo-para-professor-substituto-de-quimica-em-blumenau"
+  },
+  {
     "titulo": "Prefeitura de São Desidério - BA abre seleção com salários de até R$ 8.032,62",
     "orgao": "Prefeitura de São Desidério",
     "local": "BA",
@@ -2314,6 +2326,18 @@
     "inscricoes_ate": "2026-11-28",
     "status": "aberto",
     "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-armazem-sc-abre-processo-seletivo-para-cadastro-de-reserva"
+  },
+  {
+    "titulo": "Mobi-Rio - RJ abre processo seletivo com 45 vagas para motorista de articulado",
+    "orgao": "CMTC - Companhia Municipal de Transportes Coletivos",
+    "local": "RJ",
+    "nivel": "Fundamental",
+    "vagas": 45,
+    "salario": 4310.48,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-11-28",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/mobi-rio-rj-abre-processo-seletivo-com-45-vagas-para-motorista-de-articulado"
   },
   {
     "titulo": "Prefeitura de Itanhaém - SP abre processos seletivos para níveis fundamental e médio",
@@ -3516,6 +3540,18 @@
     "url_edital": "https://www.pciconcursos.com.br/noticias/ifrs-rs-abre-selecao-para-professores-substitutos-no-campus-porto-alegre"
   },
   {
+    "titulo": "IFC - SC abre processo seletivo para professor substituto no Campus Luzerna",
+    "orgao": "IFC - Instituto Federal Catarinense",
+    "local": "SC",
+    "nivel": "Superior",
+    "vagas": 1,
+    "salario": 8340.33,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-12-02",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/ifc-sc-abre-processo-seletivo-para-professor-substituto-no-campus-luzerna"
+  },
+  {
     "titulo": "Prefeitura de Nova Lima - MG abre processo seletivo com salários de até R$ 8.106,76",
     "orgao": "SEMSA - Secretaria Municipal de Saúde de Nova Lima",
     "local": "MG",
@@ -4164,6 +4200,18 @@
     "url_edital": "https://www.pciconcursos.com.br/noticias/ufms-abre-concurso-publico-para-cargos-tecnico-administrativos-em-educacao"
   },
   {
+    "titulo": "Prefeitura de Otacílio Costa - SC abre seleção para professores de educação infantil em regime de plantão",
+    "orgao": "Prefeitura de Otacílio Costa",
+    "local": "SC",
+    "nivel": "Médio",
+    "vagas": 0,
+    "salario": 3848.2,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-12-04",
+    "status": "breve",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-otacilio-costa-sc-abre-selecao-para-professores-de-educacao-infantil-em-regime-de-plantao"
+  },
+  {
     "titulo": "Prefeitura de Rosana - SP abre processo seletivo para profissionais da educação",
     "orgao": "Prefeitura de Rosana",
     "local": "SP",
@@ -4414,6 +4462,18 @@
     "inscricoes_ate": "2026-12-06",
     "status": "aberto",
     "url_edital": "https://www.pciconcursos.com.br/noticias/idaf-es-abre-concurso-publico-com-salarios-de-ate-8477"
+  },
+  {
+    "titulo": "Prefeitura de Arroio Trinta - SC abre processos seletivos com salários de até R$ 7.221,38",
+    "orgao": "Prefeitura de Arroio Trinta",
+    "local": "SC",
+    "nivel": "Médio",
+    "vagas": 2,
+    "salario": 7221.38,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-12-06",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-arroio-trinta-sc-abre-processos-seletivos-com-salarios-de-ate-7221"
   },
   {
     "titulo": "Prefeitura de Brusque - SC abre seleção com 20 vagas e cadastro reserva na Educação",
@@ -4894,6 +4954,18 @@
     "inscricoes_ate": "2026-12-08",
     "status": "aberto",
     "url_edital": "https://www.pciconcursos.com.br/noticias/unesp-abre-quatro-concursos-para-professores-substitutos-na-faculdade-de-ciencias-e-letras-de-assis-sp"
+  },
+  {
+    "titulo": "UFJF - MG abre processo seletivo para professor substituto de Medicina em Governador Valadares",
+    "orgao": "UFJF - Universidade Federal de Juiz de Fora",
+    "local": "MG",
+    "nivel": "Superior",
+    "vagas": 1,
+    "salario": 3399.47,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-12-08",
+    "status": "breve",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/ufjf-mg-abre-processo-seletivo-para-professor-substituto-de-medicina-em-governador-valadares"
   },
   {
     "titulo": "Câmara de Boa Vista do Incra - RS abre concurso público para Agente Administrativo e Agente de Apoio",
@@ -6132,6 +6204,18 @@
     "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-iepe-sp-abre-concurso-com-salarios-de-ate-6520"
   },
   {
+    "titulo": "Prefeitura de Sete Barras - SP abre concurso público com 42 vagas e salários de até R$ 6.449,63",
+    "orgao": "Prefeitura de Sete Barras",
+    "local": "SP",
+    "nivel": "Médio",
+    "vagas": 42,
+    "salario": 6449.63,
+    "salario_ate": true,
+    "inscricoes_ate": "2026-12-20",
+    "status": "breve",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/prefeitura-de-sete-barras-sp-abre-concurso-publico-com-42-vagas-e-salarios-de-ate-6449"
+  },
+  {
     "titulo": "Prefeitura de Urânia - SP abre concurso público com salários de até R$ 4.252,53",
     "orgao": "Prefeitura de Urânia",
     "local": "SP",
@@ -6670,6 +6754,18 @@
     "inscricoes_ate": "2027-01-04",
     "status": "destaque",
     "url_edital": "https://www.pciconcursos.com.br/noticias/unesp-abre-concurso-publico-para-professor-titular-no-instituto-de-biociencias-de-botucatu-sp"
+  },
+  {
+    "titulo": "Câmara de Guarujá - SP abre concurso com salário de R$ 17.868,00 para Procurador Legislativo",
+    "orgao": "Câmara de Guarujá",
+    "local": "SP",
+    "nivel": "Superior",
+    "vagas": 1,
+    "salario": 17868.0,
+    "salario_ate": true,
+    "inscricoes_ate": "2027-01-04",
+    "status": "destaque",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/camara-de-guaruja-sp-abre-concurso-com-salario-de-17868-para-procurador-legislativo"
   },
   {
     "titulo": "UNESP abre concurso público para professor assistente na área de Manejo Florestal em Botucatu - SP",
@@ -7522,6 +7618,18 @@
     "inscricoes_ate": "2027-02-25",
     "status": "aberto",
     "url_edital": "https://www.pciconcursos.com.br/noticias/unesc-sc-abre-processo-seletivo-para-doutorado-em-ciencia-e-engenharia-de-materiais"
+  },
+  {
+    "titulo": "UNESC - SC abre processo seletivo para doutorado em Ciência e Engenharia de Materiais com 21 vagas",
+    "orgao": "UNESC - Universidade do Extremo Sul Catarinense",
+    "local": "SC",
+    "nivel": "Superior",
+    "vagas": 21,
+    "salario": null,
+    "salario_ate": false,
+    "inscricoes_ate": "2027-02-25",
+    "status": "aberto",
+    "url_edital": "https://www.pciconcursos.com.br/noticias/unesc-sc-abre-processo-seletivo-para-doutorado-em-ciencia-e-engenharia-de-materiais-com-21-vagas"
   },
   {
     "titulo": "USP abre concursos para Professores Titulares nas áreas de Psicologia Clínica e Experimental",
